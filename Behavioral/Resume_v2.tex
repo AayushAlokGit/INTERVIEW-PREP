@@ -1,0 +1,114 @@
+%==============================================================
+%  Aayush Alok — Resume
+%  Compile with: pdflatex Resume_v2.tex   (or use Overleaf)
+%  ATS-friendly single column. No exotic packages.
+%==============================================================
+\documentclass[letterpaper,10pt]{article}
+
+\usepackage[margin=0.45in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\hypersetup{
+  colorlinks=true,
+  urlcolor=blue!55!black,
+  pdftitle={Aayush Alok Resume}
+}
+
+% --- Section formatting -------------------------------------
+\titleformat{\section}
+  {\large\bfseries\scshape}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{5pt}{2pt}
+
+\setlist[itemize]{leftmargin=1.2em, topsep=1pt, itemsep=0pt, parsep=0pt}
+\setlength{\parindent}{0pt}
+\pagenumbering{gobble}
+
+% --- Helper for job headers ---------------------------------
+\newcommand{\role}[4]{%
+  \textbf{#1} \hfill \textbf{#3}\\[1pt]
+  \textit{#2} \hfill \textit{#4}\\[2pt]
+}
+
+\begin{document}
+
+%==============================================================
+%  HEADER
+%==============================================================
+\begin{center}
+  {\Huge\bfseries Aayush Alok}\\[4pt]
+  San Francisco, California, USA \quad$\vert$\quad
+  +1 551 338 1575 \quad$\vert$\quad
+  \href{mailto:aayushalok8b@gmail.com}{aayushalok8b@gmail.com}\\[2pt]
+  \href{https://github.com/AayushAlokGit}{github.com/AayushAlokGit} \quad$\vert$\quad
+  \href{https://www.linkedin.com/in/aayush-alok-b728b2171}{linkedin.com/in/aayush-alok}
+\end{center}
+
+%==============================================================
+%  SUMMARY
+%==============================================================
+\section{Summary}
+Fullstack software engineer with 3+ years at Microsoft and Rippling, shipping
+product features end-to-end across React/TypeScript frontends, C\#/Python
+backends, and Azure. Recent focus on LLM-powered agentic features and RAG
+systems --- from prompt and context pipelines to token-cost monitoring ---
+with a track record of revenue- and cost-impacting delivery. US citizen seeking
+fullstack/backend SWE roles in the US.
+
+%==============================================================
+%  EXPERIENCE
+%==============================================================
+\section{Experience}
+
+\role{Microsoft}{Software Engineer}{Bangalore, India}{May 2024 -- Mar 2026}
+\begin{itemize}
+  \item Shipped fullstack features for the \textbf{D365 SalesHub Sales Opportunity Agent}, working across the React/TypeScript frontend and C\#/ASP.NET Core backend services powering the AI agent experience.
+  \item Improved AI-generated research quality by optimizing LLM context engineering and prompt pipelines, and built token-consumption monitoring with automated alerting that flagged abnormal AI usage spikes driving excessive customer billing.
+  \item Designed and built a telemetry data pipeline processing millions of events daily, powering usage reporting and product analytics across the org.
+  \item Cut infrastructure costs by \textbf{\$156K/year} by migrating the global configuration store to a lower-cost solution with zero downtime.
+  \item Built a Playwright UI automation suite covering 10+ P0 user flows for the SalesHub agent, eliminating manual regression testing for critical journeys.
+  \item Extended production services to 4 new Azure regions and led an Azure Network Security Perimeter rollout across 100+ resources for a Microsoft-wide compliance initiative.
+\end{itemize}
+
+\vspace{4pt}
+\role{Rippling}{Software Developer}{Bangalore, India}{Jul 2022 -- Nov 2023}
+\textit{Joined as an early engineer on the India team during Rippling's hypergrowth (Series D --- unicorn era), owning fullstack features end-to-end across a Django/Python backend, React/TypeScript frontend, and MongoDB.}
+\begin{itemize}
+  \item Owned and shipped \textbf{end-to-end payroll filing-fee automation} --- backend billing logic, admin-facing UI, and data migrations --- recovering \textbf{\$45,000} in leaked revenue by eliminating manual billing gaps.
+  \item Built a \textbf{configurable validations framework} for the Unified Churn product (backend rules engine + admin configuration UI), reducing churn-related support tickets by \textbf{20\%}.
+  \item Extended billing infrastructure to support 4+ global timezones, unblocking international payroll operations and enabling expansion into new markets; supported on-call for production billing flows.
+\end{itemize}
+
+%==============================================================
+%  PROJECTS
+%==============================================================
+\section{Projects}
+
+\textbf{Personal Documentation Assistant --- MCP Server} \hfill
+\textit{Python, ChromaDB, Azure AI Foundry, MCP Protocol}
+\begin{itemize}
+  \item Built a VS Code-integrated RAG system for natural-language search over documentation, accessible through GitHub Copilot via the MCP protocol; indexes 375+ documents through a 3-phase strategy-pattern pipeline (Discovery $\rightarrow$ Processing $\rightarrow$ Indexing).
+  \item Implemented semantic vector search with sub-100ms responses using ChromaDB and Azure AI Foundry embeddings.
+\end{itemize}
+
+%==============================================================
+%  SKILLS
+%==============================================================
+\section{Skills}
+\textbf{Languages \& Frameworks:} C\#, Python, TypeScript, ReactJS, ASP.NET Core, Django, REST APIs\\[2pt]
+\textbf{Cloud \& Infrastructure:} Azure (Service Bus, Cosmos DB, Key Vault, Storage, AI Foundry), Azure DevOps (CI/CD), Microservices\\[2pt]
+\textbf{AI \& Data:} GenAI, LLMs, RAG, Vector Databases, ChromaDB, Azure AI Foundry\\[2pt]
+\textbf{Databases \& Tools:} MongoDB, SQL, Git, MCP Protocol, Mongoengine
+
+%==============================================================
+%  EDUCATION
+%==============================================================
+\section{Education}
+\textbf{Indian Institute of Technology (BHU), Varanasi} \hfill \textbf{Jun 2018 -- Jun 2022}\\
+B.Tech, Electrical Engineering \hfill CGPA: 8.71
+
+\end{document}
