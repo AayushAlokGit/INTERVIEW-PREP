@@ -6,9 +6,7 @@ A personal workspace for software engineering interview preparation — behavior
 
 | Path | What's inside |
 |------|---------------|
-| `interview_prep_plan.md` | Overall prep plan and roadmap |
 | `Behavioral/` | STAR-format behavioral stories (`S00x_*_prep.md`), resume source, and behavioral prep notes |
-| `behavioral_prep.md` | Behavioral interview prep notes |
 | `behavioral_weaknesses.md` | Tracked weak spots for behavioral rounds |
 | `dsa_weaknesses.md` | Tracked weak spots for DSA / coding rounds |
 | `system_design_senior_guidance.md` | Senior-level system design guidance |
