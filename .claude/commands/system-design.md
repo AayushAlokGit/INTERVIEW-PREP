@@ -265,4 +265,12 @@ Once the feedback, debrief, transcript, and weaknesses updates are all complete,
 - Lay everything out spaciously: wide column spacing, tall bands between layers, `edgeStyle=orthogonalEdgeStyle`, explicit exit/entry anchors, and NO arrow-text or arrows overlapping shapes. Take as much canvas as needed (enlarge `pageWidth`/`pageHeight`).
 - After saving, tell Aayush both his described design and the full optimal reference section (entities + API + HLD + trade-offs + deep dives) are on the canvas, and remind him to reload the file in draw.io.
 
+**Commit & push — the very last step, after the optimal reference design is drawn:**
+Record this round's changes to the repo so progress is tracked in git.
+1. From `C:/Users/aayus/Desktop/Interview Prep`, stage the tracked files this round changed: `git add system_design_weaknesses.md .claude/commands/*.md`. (Transcripts and `.drawio` files under `transcripts/` are gitignored and will not be staged — expected; do not force-add them.)
+2. Commit with a message naming the system and rating, e.g. `git commit -m "System design round: <System Name> (<Rating>/5)"`. End the message with the standard co-author line.
+3. Push: `git push`. If it fails (no upstream, auth prompt, or non-fast-forward), do NOT retry blindly — tell Aayush exactly what failed and stop.
+4. Confirm to Aayush that the round was committed and pushed (or report the specific failure).
+If `git status` shows nothing to commit (e.g. only gitignored transcript/diagram changed), say so and skip rather than making an empty commit.
+
 Start now: stamp the start time with `Get-Date` yourself, then introduce the problem (with its 45-minute budget) and ask him to start by gathering requirements.

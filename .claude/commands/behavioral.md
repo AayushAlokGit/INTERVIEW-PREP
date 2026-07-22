@@ -164,4 +164,12 @@ Only add a weakness if genuinely observed. If a category had no weaknesses this 
 
 After saving the weaknesses file, tell Aayush it has been updated and share a brief summary of what was added or changed this session.
 
+**Commit & push — final step, after the weaknesses file is saved:**
+Record this round's changes to the repo so progress is tracked in git.
+1. From `C:/Users/aayus/Desktop/Interview Prep`, stage the tracked files this round changed: `git add behavioral_weaknesses.md .claude/commands/*.md`. (Transcripts under `transcripts/` are gitignored and will not be staged — expected; do not force-add them.)
+2. Commit with a descriptive message, e.g. `git commit -m "Behavioral round: <themes covered>"`. End the message with the standard co-author line.
+3. Push: `git push`. If it fails (no upstream, auth prompt, or non-fast-forward), do NOT retry blindly — tell Aayush exactly what failed and stop.
+4. Confirm to Aayush that the round was committed and pushed (or report the specific failure).
+If `git status` shows nothing to commit, say so and skip rather than making an empty commit.
+
 Start now: silently do the prep/weaknesses/transcript reads above, record the start time with Bash, then greet Aayush and ask the first behavioral question. Do not summarize what you loaded — just begin the interview.

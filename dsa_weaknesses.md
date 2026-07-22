@@ -1,22 +1,22 @@
 # DSA Weaknesses
-Last updated: 2026-07-14 (Cherry Pickup II)
+Last updated: 2026-07-22 (132 Pattern)
 
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Skips clarifying questions on value ranges / scale | 23 | 2026-07-08 |
+| Skips clarifying questions on value ranges / scale | 24 | 2026-07-22 |
 | Asks for constraints but can't translate them to a budget | 3 | 2026-07-14 |
 | Doesn't proactively ask about input semantics (negatives, sorted) | 7 | 2026-07-14 |
-| Retreats into definitional questions when stuck | 1 | 2026-07-13 |
+| Asks for more examples instead of attacking the problem | 1 | 2026-07-22 |
 | Doesn't clarify strict vs non-strict / inclusive vs exclusive | 4 | 2026-06-30 |
 
 ## Approach & Thought Process
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Defaults to generic pattern over structure-exploiting one | 16 | 2026-07-13 |
-| Applies generic template, misses problem-specific constraints | 9 | 2026-06-22 |
-| Requests hint before attempting the sub-problem | 2 | 2026-07-13 |
-| Never shrinks to smallest case (n=3) to find the insight | 1 | 2026-07-13 |
+| Defaults to generic pattern over structure-exploiting one | 17 | 2026-07-22 |
+| Pattern-hunts instead of eliminating the wasteful loop | 1 | 2026-07-22 |
+| Requests hint/examples before attempting the sub-problem | 3 | 2026-07-22 |
+| Never shrinks to smallest case (n=3) to find the insight | 2 | 2026-07-22 |
 | Wrong binary-search anchor → non-monotonic predicate | 4 | 2026-05-26 |
 
 ## Code Quality & Correctness
@@ -24,8 +24,8 @@ Last updated: 2026-07-14 (Cherry Pickup II)
 |---|---|---|
 | Doesn't self-verify/dry-run before declaring done | 63 | 2026-07-14 |
 | Off-by-one / boundary bugs (loop/empty/single-node/null) | 12 | 2026-07-14 |
+| Abandons problem before writing any code | 2 | 2026-07-22 |
 | Writes reflexive code he can't justify (dead backtracking) | 1 | 2026-07-14 |
-| Abandons problem before writing any code | 1 | 2026-07-13 |
 | Tests masking input, not the boundary that breaks code | 9 | 2026-06-22 |
 
 ## Complexity Analysis
@@ -40,7 +40,7 @@ Last updated: 2026-07-14 (Cherry Pickup II)
 ## Communication
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Drops one of multiple sub-questions asked | 8 | 2026-07-14 |
+| Long silence (10+ min) when stuck instead of thinking aloud | 1 | 2026-07-22 |
 | Shallow edge case coverage — only one case volunteered | 23 | 2026-07-06 |
 | Stops at "not sure" / abandons correct idea on obstacle | 19 | 2026-07-13 |
 | Defends/asserts instead of tracing when asked to dry-run | 14 | 2026-07-14 |
@@ -49,3 +49,5 @@ Last updated: 2026-07-14 (Cherry Pickup II)
 ## Time Management
 | Weakness | Sessions | Last Seen |
 |---|---|---|
+| Never reaches approach independently within budget | 1 | 2026-07-22 |
+| No code written within the coding-phase budget | 1 | 2026-07-22 |

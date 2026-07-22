@@ -67,6 +67,19 @@ After the rubric, distill the round into a single **Performance Rating: X/5** us
 - **1 — Poor:** did not reach a working solution, or core insight had to be given outright. **Eligible for re-ask.**
 Ratings **< 4 (≤ 3) become eligible to be re-asked in a future round**; ratings **≥ 4 are "Mastered" and retired.** When choosing which eligible problem to re-serve, prefer the lowest rating first.
 
+**Algorithmic Thought-Process Debrief (REQUIRED — deliver after the rubric + rating, on EVERY round regardless of outcome):**
+The rubric says how he did; this section teaches how the solution is *derived* — the transferable meta-skill, so he stops pattern-matching and starts deriving. Make it **specific to this exact problem**, never generic. Include all of:
+1. **The derivation chain for THIS problem** — the actual sequence of questions that takes you from brute force to the optimal, one decision at a time. For each step state the *trigger* (the observation that prompts it) and the *move* it justifies. A good default spine to adapt (drop/reorder steps that don't apply):
+   - Name the wasteful loop in brute force — what work is redundant?
+   - Which variable/element is most constrained? Fix that one; express the rest as a query about it.
+   - Can one side be precomputed or carried, so each step is O(1)?
+   - Which scan direction / ordering makes the thing you need become free?
+   - Name the exact per-step operation, then match it to the structure whose job that is (monotonic stack = "pop while worse"; heap = "keep the extreme"; hashmap = "seen before?"; two pointers = "monotone window"; binary search = "monotone predicate on the answer").
+2. **The signal he missed** — the specific observation in THIS problem that unlocks the optimal (e.g. "the middle value is constrained on both sides, so fix it"), and where in his thinking he walked past it.
+3. **The generalization** — name the class of problems this technique unlocks and the tell that should trigger it next time ("find indices with an order + value relationship → think monotonic stack + directional scan").
+4. **One concrete drill** — a small, specific exercise tied to the gap he showed this round (e.g. "re-derive 5 monotonic-stack problems you've already solved out loud using the 5-step chain").
+Keep it tight and re-derivable, not a lecture. This section is the point of the round for a mid/senior candidate — never skip it, even on a 5/5 (there, show how a strong solver would have reasoned so he can name what he did right).
+
 **Time Tracking — YOU keep the clock, never ask Aayush for the time:**
 - Run `Get-Date -Format "HH:mm:ss"` via the PowerShell tool immediately before presenting the problem. That is the round start time. State it to him once, then stop narrating the clock.
 - Run `Get-Date -Format "HH:mm:ss"` again at the START of every one of your turns during the round. The timestamp equals the moment he submitted his message, so the elapsed time is exact. Track it silently.
@@ -180,5 +193,13 @@ Last updated: <YYYY-MM-DD>
 Only add a weakness if genuinely observed. If a category had no weaknesses this session, leave its rows unchanged.
 
 After saving the weaknesses file, tell Aayush it has been updated and share a brief summary of what was added or changed this session.
+
+**Commit & push — final step, after the weaknesses file is saved:**
+Record this round's changes to the repo so progress is tracked in git.
+1. From `C:/Users/aayus/Desktop/Interview Prep`, stage the tracked files this round changed — the weaknesses file, and any command/skill file edited this session: `git add dsa_weaknesses.md .claude/commands/*.md`. (Transcripts under `transcripts/` are gitignored and will not be staged — that is expected; do not force-add them.)
+2. Commit with a message naming the problem and rating, e.g. `git commit -m "DSA round: <Problem Name> (<Rating>/5)"`. End the message with the standard co-author line.
+3. Push: `git push`. If it fails (no upstream, auth prompt, or non-fast-forward), do NOT retry blindly — tell Aayush exactly what failed and stop; he may need to authenticate or pull first.
+4. Confirm to Aayush that the round was committed and pushed (or report the specific failure).
+If `git status` shows nothing to commit (e.g. only the gitignored transcript changed), say so and skip the commit rather than making an empty commit.
 
 Start now: stamp the start time with `Get-Date` yourself, then present the problem (with its difficulty, topic, and time budget) and ask if he has any clarifying questions.
