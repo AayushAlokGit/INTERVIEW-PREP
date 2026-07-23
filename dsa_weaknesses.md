@@ -1,5 +1,5 @@
 # DSA Weaknesses
-Last updated: 2026-07-23 (Maximum Score of a Good Subarray)
+Last updated: 2026-07-23 (K-th Smallest Pair Distance)
 
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Last Seen |
@@ -17,13 +17,13 @@ Last updated: 2026-07-23 (Maximum Score of a Good Subarray)
 | Pattern-hunts instead of eliminating the wasteful loop | 1 | 2026-07-22 |
 | Requests hint/examples before attempting the sub-problem | 3 | 2026-07-22 |
 | Never shrinks to smallest case (n=3) to find the insight | 2 | 2026-07-22 |
-| Wrong binary-search anchor → non-monotonic predicate | 4 | 2026-05-26 |
+| Wrong binary-search anchor → non-monotonic predicate | 5 | 2026-07-23 |
 
 ## Code Quality & Correctness
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Doesn't self-verify/dry-run before declaring done | 64 | 2026-07-23 |
-| Off-by-one / boundary bugs (loop/empty/single-node/null) | 13 | 2026-07-23 |
+| Doesn't self-verify/dry-run before declaring done | 65 | 2026-07-23 |
+| Off-by-one / boundary bugs (loop/empty/single-node/null) | 14 | 2026-07-23 |
 | Abandons problem before writing any code | 2 | 2026-07-22 |
 | Writes reflexive code he can't justify (dead backtracking) | 1 | 2026-07-14 |
 | Tests masking input, not the boundary that breaks code | 9 | 2026-06-22 |
