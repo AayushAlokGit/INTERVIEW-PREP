@@ -1,5 +1,5 @@
 # DSA Weaknesses
-Last updated: 2026-07-22 (132 Pattern)
+Last updated: 2026-07-23 (Maximum Score of a Good Subarray)
 
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Last Seen |
@@ -22,8 +22,8 @@ Last updated: 2026-07-22 (132 Pattern)
 ## Code Quality & Correctness
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Doesn't self-verify/dry-run before declaring done | 63 | 2026-07-14 |
-| Off-by-one / boundary bugs (loop/empty/single-node/null) | 12 | 2026-07-14 |
+| Doesn't self-verify/dry-run before declaring done | 64 | 2026-07-23 |
+| Off-by-one / boundary bugs (loop/empty/single-node/null) | 13 | 2026-07-23 |
 | Abandons problem before writing any code | 2 | 2026-07-22 |
 | Writes reflexive code he can't justify (dead backtracking) | 1 | 2026-07-14 |
 | Tests masking input, not the boundary that breaks code | 9 | 2026-06-22 |
@@ -43,7 +43,7 @@ Last updated: 2026-07-22 (132 Pattern)
 | Long silence (10+ min) when stuck instead of thinking aloud | 1 | 2026-07-22 |
 | Shallow edge case coverage — only one case volunteered | 23 | 2026-07-06 |
 | Stops at "not sure" / abandons correct idea on obstacle | 19 | 2026-07-13 |
-| Defends/asserts instead of tracing when asked to dry-run | 14 | 2026-07-14 |
+| Defends/asserts instead of tracing when asked to dry-run | 15 | 2026-07-23 |
 | Traces intent not actual code (ignores own loop bounds) | 10 | 2026-07-14 |
 
 ## Time Management
