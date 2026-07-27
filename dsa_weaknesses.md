@@ -1,5 +1,5 @@
 # DSA Weaknesses
-Last updated: 2026-07-27 (132 Pattern)
+Last updated: 2026-07-27 (Regular Expression Matching)
 
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Last Seen |
@@ -13,20 +13,20 @@ Last updated: 2026-07-27 (132 Pattern)
 ## Approach & Thought Process
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Defaults to generic pattern over structure-exploiting one | 17 | 2026-07-22 |
+| Defaults to generic pattern over structure-exploiting one | 18 | 2026-07-27 |
 | Fixes wrong element; doesn't count residual query dimensions | 2 | 2026-07-27 |
 | Requests hint/examples before attempting the sub-problem | 4 | 2026-07-27 |
-| Never shrinks to smallest case (n=3) to find the insight | 2 | 2026-07-22 |
+| Guesses/revises recurrence instead of deriving from consumption | 1 | 2026-07-27 |
 | Wrong binary-search anchor / wrong scan direction | 6 | 2026-07-27 |
 
 ## Code Quality & Correctness
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Doesn't self-verify/dry-run before declaring done | 65 | 2026-07-23 |
+| Doesn't self-verify/dry-run before declaring done | 66 | 2026-07-27 |
 | Off-by-one / boundary bugs (loop/empty/single-node/null) | 14 | 2026-07-23 |
 | Abandons problem before writing any code | 2 | 2026-07-22 |
-| States inequality direction backwards in prose vs code | 1 | 2026-07-27 |
-| Tests masking input, not the boundary that breaks code | 9 | 2026-06-22 |
+| States inequality/index direction backwards in prose vs code | 2 | 2026-07-27 |
+| Mixes length-based vs position-based indexing conventions | 1 | 2026-07-27 |
 
 ## Complexity Analysis
 | Weakness | Sessions | Last Seen |
@@ -40,15 +40,15 @@ Last updated: 2026-07-27 (132 Pattern)
 ## Communication
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Long silence (8+ min) when stuck instead of thinking aloud | 2 | 2026-07-27 |
-| Answers in fragments when asked for several specifics | 1 | 2026-07-27 |
+| Ignores a specific input handed to him; won't run the trace | 2 | 2026-07-27 |
+| Long silence (7+ min) when stuck instead of thinking aloud | 3 | 2026-07-27 |
+| Answers in fragments when asked for several specifics | 2 | 2026-07-27 |
 | Stops at "not sure" / abandons correct idea on obstacle | 19 | 2026-07-13 |
-| Defends/asserts instead of tracing when asked to dry-run | 16 | 2026-07-27 |
-| Traces intent not actual code (ignores own loop bounds) | 10 | 2026-07-14 |
+| Defends/asserts instead of tracing when asked to dry-run | 17 | 2026-07-27 |
 
 ## Time Management
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Never reaches approach independently within budget | 2 | 2026-07-27 |
+| Never reaches approach independently within budget | 3 | 2026-07-27 |
 | No code written within the coding-phase budget | 2 | 2026-07-27 |
 | Long silent coding stretch on an already-understood algorithm | 1 | 2026-07-27 |

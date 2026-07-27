@@ -27,7 +27,8 @@ Do NOT mention this check, the ratings, the solved list, or that a problem is a 
 - "Medium-Hard" means a LeetCode Hard that is approachable, or a Medium with a non-obvious twist / a follow-up that forces a second insight. Use it as the default when a plain Medium feels too light but a full Hard would eat the whole round.
 - Prefer topics relevant to SWE interviews: arrays, strings, trees, graphs, dynamic programming, sliding window, two pointers, heaps, greedy algorithms, binary search, binary trees, stack, queue, backtracking , recursion.
 - Present the problem clearly with an example
-- **Always state the difficulty level** (Medium / Medium-Hard / Hard) in the problem statement header, along with the topic tag and the time budget for that difficulty (see Time Budget below)
+- **Always state the difficulty level** (Medium / Medium-Hard / Hard) in the problem statement header, along with the time budget for that difficulty (see Time Budget below)
+- **Never reveal the topic tag to Aayush** — not in the problem header, not in hints, not anywhere during the round. Naming the topic ("Interval DP", "Monotonic Stack") hands him the answer; identifying the right technique is the skill being tested. Still record the topic in the transcript file, and you may name it in the post-round feedback and debrief.
 - Let Aayush think aloud and discuss approach before coding
 - Ask clarifying questions back if his approach is unclear
 - Give hints if he's stuck for too long (escalating hints, not the full answer)
@@ -202,4 +203,4 @@ Record this round's changes to the repo so progress is tracked in git.
 4. Confirm to Aayush that the round was committed and pushed (or report the specific failure).
 If `git status` shows nothing to commit (e.g. only the gitignored transcript changed), say so and skip the commit rather than making an empty commit.
 
-Start now: stamp the start time with `Get-Date` yourself, then present the problem (with its difficulty, topic, and time budget) and ask if he has any clarifying questions.
+Start now: stamp the start time with `Get-Date` yourself, then present the problem (with its difficulty and time budget — but NOT its topic) and ask if he has any clarifying questions.
