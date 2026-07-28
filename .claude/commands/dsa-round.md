@@ -160,45 +160,83 @@ After saving, tell Aayush the transcript file has been saved and give him the pa
 After saving the transcript, update the weaknesses file at:
 `C:/Users/aayus/Desktop/Interview Prep/dsa_weaknesses.md`
 
+The file is a **running tracker of current status**, not an append-only history. Weaknesses he has actually fixed must decay out of it, or it stops describing him and starts describing his past.
+
+Each row carries two numbers:
+- **Sessions** — lifetime occurrences. Monotonic; only ever increments. This is the history.
+- **Active** — a rolling severity score from 0 to 10. This is the *current status* number, and it goes **down** when he doesn't exhibit the weakness. Rows are ordered by Active descending, so the top of each table is always what's wrong with him *now*.
+
 To do this:
-1. Read the existing file (it may or may not exist).
-2. Identify weaknesses observed in THIS session — only genuine struggles, skips, or areas needing heavy prompting.
-3. Merge with existing entries: increment Sessions count for recurring ones, add new ones. Max 5 entries per category — if full, only replace an existing entry if the new one is more severe or more specific.
-4. Write the updated file in this compact format — NO examples column, keep entries short (under 10 words each):
+
+1. **Read the existing file** (it may or may not exist).
+
+2. **Migration — only if the file still has the old 3-column format** (`| Weakness | Sessions | Last Seen |`): convert every row to the 4-column format by setting `Active = min(Sessions, 10)`. Do this silently as part of the normal write; don't make a separate pass.
+
+3. **Identify weaknesses observed in THIS session** — only genuine struggles, skips, or areas needing heavy prompting.
+
+4. **For every existing row, decide one of three outcomes:**
+
+   | Case | Sessions | Active | Last Seen |
+   |---|---|---|---|
+   | **Observed again this session** | +1 | +1, capped at 10 | today |
+   | **Not observed, but the round gave a real opportunity to exhibit it** | unchanged | **−1**, floored at 0 | unchanged |
+   | **Not observed, and the round gave no opportunity** | unchanged | unchanged | unchanged |
+
+   **What counts as "a real opportunity"** — be strict and honest here; this is the whole mechanism:
+   - It's an opportunity if the round contained the phase or action the weakness is about. Every round has a clarification phase, a coding phase, and a complexity question, so clarification / self-verification / complexity / time-management / communication weaknesses are **almost always** opportunities and should decay whenever he doesn't exhibit them.
+   - It's **not** an opportunity if the weakness is technique-specific and the problem didn't involve that technique (e.g. "wrong recursion depth bound" on an iterative array problem, "never audits recursion state" on a problem with no recursion). Leave those untouched.
+   - Do not invent an excuse to skip the decrement. If he had a clarification phase and asked good questions, the clarification weaknesses decay — that is the point.
+
+5. **Retire rows.** Delete a row entirely when either:
+   - `Active` reaches 0, or
+   - it has not been observed in **6 or more** sessions (compare Last Seen against the transcript dates).
+
+   When you delete a row, say so in the summary — a retired weakness is the best news the file can carry, and he should hear it.
+
+6. **Add new weaknesses** observed this session at `Sessions = 1, Active = 1`, Last Seen = today.
+
+7. **Cap each category at 5 rows.** If full, drop the row with the **lowest Active** (oldest Last Seen as tiebreak) to make room — not the oldest by Sessions. A high lifetime Sessions count must not protect a row that is no longer current.
+
+8. **Write the updated file** in this compact format — NO examples column, keep entries short (under 10 words each), rows sorted by Active descending:
 
 ```markdown
 # DSA Weaknesses
 Last updated: <YYYY-MM-DD>
 
+<!-- Sessions = lifetime count (never decreases). Active = current severity 0-10;
+     -1 whenever a round gave the chance to exhibit it and he didn't. Row retires at Active 0. -->
+
 ## Problem Understanding & Clarification
-| Weakness | Sessions | Last Seen |
-|---|---|---|
-| <short label> | <N> | <YYYY-MM-DD> |
+| Weakness | Sessions | Active | Last Seen |
+|---|---|---|---|
+| <short label> | <N> | <0-10> | <YYYY-MM-DD> |
 
 ## Approach & Thought Process
-| Weakness | Sessions | Last Seen |
-|---|---|---|
+| Weakness | Sessions | Active | Last Seen |
+|---|---|---|---|
 
 ## Code Quality & Correctness
-| Weakness | Sessions | Last Seen |
-|---|---|---|
+| Weakness | Sessions | Active | Last Seen |
+|---|---|---|---|
 
 ## Complexity Analysis
-| Weakness | Sessions | Last Seen |
-|---|---|---|
+| Weakness | Sessions | Active | Last Seen |
+|---|---|---|---|
 
 ## Communication
-| Weakness | Sessions | Last Seen |
-|---|---|---|
+| Weakness | Sessions | Active | Last Seen |
+|---|---|---|---|
 
 ## Time Management
-| Weakness | Sessions | Last Seen |
-|---|---|---|
+| Weakness | Sessions | Active | Last Seen |
+|---|---|---|---|
 ```
 
-Only add a weakness if genuinely observed. If a category had no weaknesses this session, leave its rows unchanged.
+Only add a weakness if genuinely observed.
 
-After saving the weaknesses file, tell Aayush it has been updated and share a brief summary of what was added or changed this session.
+**When you load this file at the start of a round, probe hardest on the highest-Active rows** — those are his live problems. Treat a high `Sessions` with a low `Active` as something he has largely fixed; don't hunt for it.
+
+After saving the weaknesses file, tell Aayush it has been updated and share a brief summary of what changed this session: what was added, what incremented, **what decayed**, and **what retired**.
 
 **Commit & push — final step, after the weaknesses file is saved:**
 Record this round's changes to the repo so progress is tracked in git.
