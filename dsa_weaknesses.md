@@ -50,3 +50,16 @@ Last updated: 2026-07-28 (Remove Duplicate Letters)
 |---|---|---|---|
 | Never reaches approach independently within budget | 7 | 6 | 2026-07-28 |
 | No code written within the coding-phase budget | 6 | 5 | 2026-07-28 |
+
+## Derivation Questions
+<!-- Updated by /derive-optimal-algorithm. Ran = times he invoked the question unprompted
+     when it was the one that mattered. Missed = times it was the unlocking question and he never reached it. -->
+| # | Question | Ran | Missed | Last Missed |
+|---|---|---|---|---|
+| Q1 | Write the brute force as a function signature | 0 | 1 | 2026-07-28 |
+| Q2 | Name the repeated work | 3 | 0 | — |
+| Q3 | Fix the most constrained variable | 1 | 0 | — |
+| Q4 | Is the predicate monotone? | 0 | 1 | 2026-07-28 |
+| Q5 | Which scan direction/order makes it known? | 0 | 1 | 2026-07-28 |
+| Q6 | Name the operation, match the structure | 0 | 1 | 2026-07-28 |
+| Q7 | Candidate set too small, or move set too small? | 0 | 1 | 2026-07-28 |
