@@ -8,23 +8,26 @@ Because the skill is isolated, the rules differ from `/dsa-round`:
 - **No code, ever.** If he starts writing code, stop him. The deliverable is a derivation chain.
 - Short and high-rep: **3 problems × 7 minutes**, ~25 minutes total.
 
-## The Seven Questions
+## The Nine Questions
 
-The spine of the drill — every derivation is graded against them. Reproduce them for him at the start so he can read down the list.
+The spine of the drill — every derivation is graded against them. Reproduce them for him at the start so he can read down the list. The move code in brackets is the corresponding entry in `dsa_derivation_playbook.md`; use it when picking problems and writing the correct chain, but don't recite codes at him mid-drill.
 
 1. **Write the brute force as a function signature.** `solve(what?) → what?` An actual signature, not prose. This forces the state to be named.
-2. **What work does the brute force repeat?** Name the redundancy.
-3. **Which variable is most constrained? Fix that one**, and express the others as queries about it.
-4. **Is my predicate monotone?** If not, what *bounded auxiliary quantity* would make it monotone, so it can be fixed and enumerated?
-5. **Which scan direction or ordering makes the unknown thing known?** Especially first vs. last, left-to-right vs. right-to-left.
+2. **What work does the brute force repeat?** Name the redundancy. [selects the move]
+3. **Which variable is most constrained? Fix that one**, and express the others as queries about it. [M1 — and the test is: write the residual query as a sentence; still 2-D means you fixed the wrong one]
+4. **Is my predicate monotone?** If not, what *bounded auxiliary quantity* would make it monotone, so it can be fixed and enumerated? [M5 precondition → M2]
+5. **Which scan direction or ordering makes the unknown thing known?** Especially first vs. last, left-to-right vs. right-to-left. [D — scan away from the side you're querying]
 6. **Name the per-step operation in plain words, then match it to the structure whose job that is.** (`pop while worse` → monotonic stack · `keep the extreme` → heap · `seen before?` → hashmap · `monotone window` → two pointers · `monotone predicate on the answer` → binary search · `fewest unweighted steps` → BFS · `range query inside a DP transition` → BIT/segment tree)
-7. **When an approach fails: is my candidate set too small, or my move set too small?** (Coverage failure vs. expressiveness failure — opposite fixes.)
+7. **When an approach fails: is my candidate set too small, or my move set too small?** (Coverage failure vs. expressiveness failure — opposite fixes.) [M6 — his 67%-failure move]
+8. **What is the minimal state?** For each parameter, one line: *"if this changes, does my best move change?"* Yes → state. No → it's history, drop it. And if two arrivals at the same place lead to different futures, the difference joins the state. [M7 — the largest move in the corpus, 18 problems]
+9. **Which constraint have I not spent?** Every stated bound forbids or permits something: a target complexity forbids sorting; `n ≤ 300` specifies cubic; `n ≤ 20` specifies bitmask; a bounded value range buys counting sort; negatives kill sliding windows. [M13 — the most frequently named miss in the corpus]
 
 ## Before starting
 
 1. Read `C:/Users/aayus/Desktop/Interview Prep/dsa_weaknesses.md` — note the highest-`Active` rows and the `## Derivation Questions` section, which records which questions he historically fails to reach. **Bias selection toward the questions he misses most.** Don't mention the file.
 2. Glob `transcripts/*/*/*/dsa/*.md` (base `C:/Users/aayus/Desktop/Interview Prep`) for solved problems; ignore `summary_*.md`. The folder path gives the date solved.
 3. Glob `transcripts/*/*/*/derive/*.md` and read recent ones to see what's already been drilled.
+4. Read `C:/Users/aayus/Desktop/Interview Prep/dsa_derivation_playbook.md` — §1 gives each move's per-move failure rate and its member problems, §2 gives the families. Use it to pick problems and to write the correct chain. Don't mention the file or quote move codes at him during the drill.
 
 `transcripts/` is gitignored, so `Grep` won't see these files — use the `PowerShell` tool with `Get-ChildItem … | Select-String` to search inside them.
 
@@ -35,6 +38,8 @@ Pick **3**, applying in order:
 - **Not drilled in the last 14 days.**
 - **Spread the questions** — the three should be unlocked by *different* questions, so a session isn't one trick repeated.
 - **Weight toward his weak questions.** If the tracker shows he never reaches Q4, over-serve Q4 problems.
+- **Weight toward his weak moves.** The playbook's failure rates are measured, not guessed: M6 67%, M12 50%, M2 45%, M4 38%. Over-serve their member problems; under-serve M5 (8%) and M11/M14 (0%).
+- **One family pair per session where possible.** Two problems from the same playbook family, presented apart and never named as related — that tests retrieval, which §3 identifies as the actual failure mode. F4 (Burst Balloons / Min Cost to Cut a Stick) is the highest-value pair in the corpus.
 - **First three sessions only:** prefer problems he rated 4–5. He needs to feel the chain working before it's pointed at problems that beat him. After that, mix in the 1–3s deliberately.
 
 Never reveal the selection logic, the ratings, or which question you expect to fire.
@@ -84,7 +89,7 @@ Bash `mkdir -p`, then save to `transcripts/<YEAR>/<MONTH>/<DAY>/derive/session_<
 ## Question Tally
 | Q | Ran it? | Notes |
 |---|---|---|
-(Q1..Q7)
+(Q1..Q9)
 
 ---
 
@@ -123,16 +128,18 @@ Update the `## Derivation Questions` section of `dsa_weaknesses.md` (append it i
 | Q5 | Which scan direction/order makes it known? | | | |
 | Q6 | Name the operation, match the structure | | | |
 | Q7 | Candidate set too small, or move set too small? | | | |
+| Q8 | What is the minimal state? | | | |
+| Q9 | Which constraint have I not spent? | | | |
 ```
 
 Increment `Ran` only when the question was genuinely load-bearing and he invoked it himself; `Missed` only when it was the unlocking question and he never got there. A question irrelevant to the problem gets neither. Summarise the movement in two or three lines.
 
 ## Commit & push
 
-1. `git add dsa_weaknesses.md .claude/commands/*.md` from `C:/Users/aayus/Desktop/Interview Prep`. Transcripts are gitignored — don't force-add.
+1. `git add dsa_weaknesses.md dsa_derivation_playbook.md .claude/commands/*.md` from `C:/Users/aayus/Desktop/Interview Prep`. Transcripts are gitignored — don't force-add.
 2. `git commit -m "Derivation drill: <p1>, <p2>, <p3> (<n>/3 key moves reached)"`, ending with the standard co-author line.
 3. `git push`. On failure, report exactly what failed and stop. Nothing to commit → say so, skip the empty commit.
 
 ---
 
-**Start now:** read the weaknesses file and transcript lists, pick the three problems, reproduce the seven questions, state the format (3 × 7 min, derivation only, no code), stamp the clock, and present problem 1.
+**Start now:** read the weaknesses file and transcript lists, pick the three problems, reproduce the nine questions, state the format (3 × 7 min, derivation only, no code), stamp the clock, and present problem 1.

@@ -63,3 +63,5 @@ Last updated: 2026-07-28 (Remove Duplicate Letters)
 | Q5 | Which scan direction/order makes it known? | 0 | 1 | 2026-07-28 |
 | Q6 | Name the operation, match the structure | 0 | 1 | 2026-07-28 |
 | Q7 | Candidate set too small, or move set too small? | 0 | 1 | 2026-07-28 |
+| Q8 | What is the minimal state? | 0 | 0 | — |
+| Q9 | Which constraint have I not spent? | 0 | 0 | — |
