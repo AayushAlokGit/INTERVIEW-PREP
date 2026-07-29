@@ -1,4 +1,4 @@
-<!-- Derivation-only drill: re-derive the optimal algorithm for problems already solved, 13 min each, plus a 3 min adversarial-input round per problem. No code. Trains deriving over pattern-matching, and breaking your own algorithm before shipping it. -->
+<!-- Derivation-only drill: re-derive the optimal algorithm for a problem already solved, 13 min, plus a 3 min adversarial-input round. No code. Defaults to 1 problem; pass a number (e.g. /derive-optimal-algorithm 3) for a longer sitting. Trains deriving over pattern-matching, and breaking your own algorithm before shipping it. -->
 You are running a **derivation drill** for Aayush Alok — a software engineer with ~3.5 years of experience targeting mid/senior SWE roles.
 
 This is not a mock interview. It is deliberate practice on two isolated skills:
@@ -9,7 +9,21 @@ This is not a mock interview. It is deliberate practice on two isolated skills:
 Because the skills are isolated, the rules differ from `/dsa-round`:
 - Problems come **only from ones he has already solved**. Recognition failure isn't what's being tested, so the answer being known is fine.
 - **No code, ever.** If he starts writing code, stop him. The deliverables are a derivation chain and a set of adversarial inputs.
-- Short and high-rep: **3 problems × (13 min derivation + 3 min adversarial)**, ~48 minutes total.
+- Short and high-rep: **13 min derivation + 3 min adversarial** per problem.
+
+## How many problems
+
+**Default: 1.** One problem, graded properly, then stop — do not roll into another. He asked for this explicitly on 2026-07-29: back-to-back problems make the session a slog and the depth lands better one at a time.
+
+`$ARGUMENTS` may carry a count — `/derive-optimal-algorithm 3` runs three in sequence. Read it as an integer; anything unparseable means 1. Call the count **N** below.
+
+When **N = 1** (the common case):
+- Skip the "spread the questions" and "one family pair" selection rules — they need at least two problems. Select purely on *weakest question × weakest move × not drilled recently*.
+- The debrief collapses: no scorecard table, no cross-problem connection. Give the question tally, the adversarial tally, and the one question to focus on next time. Keep it under ~15 lines.
+- Tracker `Attempts` rises by **1** per category, not 3.
+- Still write the transcript, still update the tracker, still commit.
+
+When **N > 1**, run exactly as the multi-problem sections below describe.
 
 ## The Nine Questions
 
@@ -36,14 +50,14 @@ The spine of the drill — every derivation is graded against them. Reproduce th
 
 ## Problem selection
 
-Pick **3**, applying in order:
+Pick **N**, applying in order (the last three bullets only bite when N > 1):
 - **Solved at least 14 days ago** (relax to 7 if the pool is thin) — recent problems test memory, not derivation.
 - **Not drilled in the last 14 days.**
-- **Spread the questions** — the three should be unlocked by *different* questions, so a session isn't one trick repeated.
+- **Spread the questions** — they should be unlocked by *different* questions, so a session isn't one trick repeated.
 - **Weight toward his weak questions.** If the tracker shows he never reaches Q4, over-serve Q4 problems.
 - **Weight toward his weak moves.** The playbook's failure rates are measured, not guessed: M6 67%, M12 50%, M2 45%, M4 38%. Over-serve their member problems; under-serve M5 (8%) and M11/M14 (0%).
-- **One family pair per session where possible.** Two problems from the same playbook family, presented apart and never named as related — that tests retrieval, which §3 identifies as the actual failure mode. F4 (Burst Balloons / Min Cost to Cut a Stick) is the highest-value pair in the corpus.
-- **First three sessions only:** prefer problems he rated 4–5. He needs to feel the chain working before it's pointed at problems that beat him. After that, mix in the 1–3s deliberately.
+- **One family pair per session where possible (N > 1 only).** Two problems from the same playbook family, presented apart and never named as related — that tests retrieval, which §3 identifies as the actual failure mode. F4 (Burst Balloons / Min Cost to Cut a Stick) is the highest-value pair in the corpus.
+- **First three sessions only:** prefer problems he rated 4–5. He needs to feel the chain working before it's pointed at problems that beat him. After that, mix in the 1–3s deliberately. (As of 2026-07-29 this has expired — sessions ran 07/28 and 07/29 ×2.)
 
 Never reveal the selection logic, the ratings, or which question you expect to fire.
 
@@ -205,14 +219,14 @@ Increment `Ran` only when the question was genuinely load-bearing and he invoked
 | Free swing | | | | | |
 ```
 
-Every problem contributes exactly one attempt per category, so `Attempts` rises by 3 per row per session regardless of how he did. This makes the hit rate honest — he can't improve it by not trying. Summarise the movement in two or three lines, and state the **Internal state** hit rate explicitly every session.
+Every problem contributes exactly one attempt per category, so `Attempts` rises by N per row per session regardless of how he did. This makes the hit rate honest — he can't improve it by not trying. Summarise the movement in two or three lines, and state the **Internal state** hit rate explicitly every session.
 
 ## Commit & push
 
 1. `git add dsa_weaknesses.md dsa_derivation_playbook.md .claude/commands/*.md` from `C:/Users/aayus/Desktop/Interview Prep`. Transcripts are gitignored — don't force-add.
-2. `git commit -m "Derivation drill: <p1>, <p2>, <p3> (<n>/3 key moves, <n>/12 adversarial hits)"`, ending with the standard co-author line.
+2. `git commit -m "Derivation drill: <problems> (<n>/N key moves, <n>/<4N> adversarial hits)"`, ending with the standard co-author line.
 3. `git push`. On failure, report exactly what failed and stop. Nothing to commit → say so, skip the empty commit.
 
 ---
 
-**Start now:** read the weaknesses file and transcript lists, pick the three problems, reproduce the nine questions, state the format (3 problems, each 13 min derivation then 3 min adversarial inputs, no code at any point), reproduce the four adversarial categories so he knows what's coming — the four one-line names only, never the grader's probe list, stamp the clock, and present problem 1.
+**Start now:** resolve N from `$ARGUMENTS` (default 1), read the weaknesses file and transcript lists, pick the N problems, reproduce the nine questions, state the format (N problem(s), each 13 min derivation then 3 min adversarial inputs, no code at any point), reproduce the four adversarial categories so he knows what's coming — the four one-line names only, never the grader's probe list, stamp the clock, and present problem 1.
