@@ -65,10 +65,13 @@ Last updated: 2026-07-29 (derivation drill: Car Fleet, Making a Large Island, Ma
 
 ## Adversarial Inputs
 <!-- Updated by /derive-optimal-algorithm. One row per category, 3 attempts per session (one per problem).
+     Categories name an angle of attack, not a species of input; score by what the input attacks,
+     not by the label he filed it under.
      Hit = concrete input + correct predicted-vs-actual output. Weak = right danger, no concrete input
      or wrong prediction. Miss = nothing, or an input the algorithm handles fine. -->
 | Category | Attempts | Hits | Weak | Miss | Last Miss |
 |---|---|---|---|---|---|
-| Degenerate (empty / single / all-identical) | 3 | 1 | 1 | 1 | 2026-07-29 |
-| Assumption-breaker (negatives, ties, boundary) | 3 | 1 | 1 | 1 | 2026-07-29 |
-| Counter desync (increment/decrement not inverses) | 3 | 0 | 0 | 3 | 2026-07-29 |
+| Edge of the input space | 3 | 1 | 1 | 1 | 2026-07-29 |
+| Unstated assumption | 3 | 1 | 1 | 1 | 2026-07-29 |
+| Internal state | 3 | 0 | 0 | 3 | 2026-07-29 |
+| Free swing | 0 | 0 | 0 | 0 | — |

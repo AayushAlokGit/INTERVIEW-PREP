@@ -78,21 +78,30 @@ Run this on every problem, including ones where he missed the derivation entirel
 
 **The ask, stated verbatim each time:**
 
-> 3 minutes. Three inputs that break this, one per category. For each: the input, and the output the algorithm produces versus the output it should produce. No code.
+> 3 minutes. Four inputs that break this, one per category. For each: the input, what the algorithm outputs, and what it should output. No code.
 >
-> 1. **Degenerate** — smallest legal input, empty, single element, all elements identical.
-> 2. **Assumption-breaker** — an input violating something the chain assumes but never states. Negative values, duplicates, ties, an unsorted arrival order, a value at the exact boundary of a `<=`.
-> 3. **Counter desync** — for every running quantity the chain maintains, an input where it must be updated **more than once in a single step**, or updated in opposite directions on consecutive steps. If the chain maintains no running state, say so and substitute a second assumption-breaker.
+> 1. **Edge of the input space** — an input at the boundary of what's legal or of what the chain's comparisons look at.
+> 2. **Unstated assumption** — an input that violates something the chain relies on but never says out loud.
+> 3. **Internal state** — first list every variable your chain carries across steps. Then an input that puts one of them in a state the chain didn't anticipate.
+> 4. **Free swing** — any input you think breaks it, no category.
 
 **Arm a 3-minute alarm:** `sleep 180; echo CHECKPOINT` via Bash with `run_in_background: true`. Cut him off when it fires.
 
 **Stay silent while he works**, same as the derivation phase. Decline hints identically.
 
-Category 3 is the one that matters most and the one he will skip. It is the generalisation of the bug that cost him a full rating point on 2026-07-28: a `duplicates++` that fired on every transition to `freq >= 2` paired with a `duplicates--` that fired only on `2 -> 1`. Two copies of a value would not have caught it; three would. **Whenever an algorithm increments in one branch and decrements in another, the drill is to find the input where the two fire a different number of times.** Push on this category in grading even when the other two are clean.
+The categories are deliberately generic — they name an *angle of attack*, not a species of input, and he is free to satisfy one however he likes. Grade by what the input does, not by the label he filed it under: if he calls an all-negative array "degenerate" and it actually violates an unstated assumption, it scores as category 2. If two of his four inputs land in the same category, say so and score the empty one a Miss — the categories exist because his unaided output collapses into one mode.
+
+**Probes to grade against, and to use when writing the input he should have found.** Never read these to him during the round; they are the grader's list, not a menu for him.
+
+- *Edge of the input space:* smallest legal input · empty · single element · all identical · the maximum size or value the constraints permit · a value sitting exactly on a `<=` boundary.
+- *Unstated assumption:* negatives · duplicates · ties · zero · an arrival order the chain assumed was sorted · integer vs. real arithmetic · "what if the thing being maximised over doesn't exist" · overflow.
+- *Internal state:* a carried variable that must update **more than once in a single step** · two carried variables that must move in **opposite directions on the same step** · an accumulator that must *not* update on a branch where it looks like it should · an invariant that holds inside one loop iteration but not across iterations · a structure that must be cleared or reset between outer steps and isn't.
+
+**Category 3 is the one that matters most and the one he will skip.** Its first sentence — *list every variable the chain carries across steps* — is mandatory and is where the round is won or lost. It is the generalisation of the bug that cost him a full rating point on 2026-07-28: a `duplicates++` that fired on every transition to `freq >= 2` paired with a `duplicates--` that fired only on `2 -> 1`. Two copies of a value would not have caught it; three would. **Whenever an algorithm updates a quantity in one branch and unwinds it in another, the drill is to find the input where the two fire a different number of times.** Push on this category in grading even when the others are clean, and if he skipped the variable list, say that first — no list means the category was never actually attempted.
 
 ### Grading the adversarial round
 
-- **Per category: Hit / Weak / Miss.** *Hit* = a specific concrete input plus a correct predicted-vs-actual output. *Weak* = names the right category of danger but no concrete input, or a concrete input with the wrong prediction. *Miss* = nothing, or an input the algorithm handles fine.
+- **Per category: Hit / Weak / Miss.** *Hit* = a specific concrete input plus a correct predicted-vs-actual output. *Weak* = names the right category of danger but no concrete input, or a concrete input with the wrong prediction. *Miss* = nothing, or an input the algorithm handles fine. Score by what the input attacks, not by the number he filed it under.
 - **Did any input actually break the chain?** If yes, that is a derivation defect surfaced late — say so plainly and retroactively downgrade the derivation grade from Yes to Partially. Finding a real hole in your own chain is the best possible outcome of this round; say that too.
 - **One input he should have found**, with the trace: what the algorithm does on it, what it should do, and which line of the chain is responsible.
 - **Time:** X s of 90.
@@ -101,9 +110,9 @@ Be strict here in a specific way: **a vague input class is a Miss, not a Weak.**
 
 ## End-of-session debrief (keep under ~40 lines)
 
-1. **Scorecard** — table: problem | key move reached (Y/P/N) | unlocking question | derivation time | adversarial (D/A/C as H/W/M).
+1. **Scorecard** — table: problem | key move reached (Y/P/N) | unlocking question | derivation time | adversarial (the four categories as H/W/M).
 2. **Question tally** — which he ran unprompted, which he never touched, compared against his historical tally. Say whether it's improving.
-3. **Adversarial tally** — hit rate per category across the three problems, against his historical rate. Call out category 3 specifically: it is the one tied to his largest open weakness, and a clean sweep there is worth reporting as the headline result of the session.
+3. **Adversarial tally** — hit rate per category across the three problems, against his historical rate. Call out **Internal state** specifically: it is the one tied to his largest open weakness, and a clean sweep there is worth reporting as the headline result of the session. Also report **how many distinct categories his twelve inputs actually covered** — clustering into one mode is the failure this round exists to break, and it is invisible in a per-category hit rate.
 4. **The one question to focus on next session** — pick one, justify it from this session, give a one-line instruction for running it (e.g. *"Q6: before choosing any data structure, say the per-step operation out loud as a verb phrase. If you can't say it, you don't know the operation yet."*).
 5. **Cross-problem connection** — name at least one pair of problems sharing an unlocking question and state the shared tell. Building this index is much of the point.
 
@@ -120,8 +129,8 @@ Bash `mkdir -p`, then save to `transcripts/<YEAR>/<MONTH>/<DAY>/derive/session_<
 **Problems:** <p1>, <p2>, <p3>
 
 ## Scorecard
-| Problem | Unlocking Q | Key move reached | Time | Degenerate | Assumption | Counter desync |
-|---|---|---|---|---|---|---|
+| Problem | Unlocking Q | Key move reached | Time | Edge | Unstated assumption | Internal state | Free swing |
+|---|---|---|---|---|---|---|---|
 
 ## Question Tally
 | Q | Ran it? | Notes |
@@ -131,9 +140,10 @@ Bash `mkdir -p`, then save to `transcripts/<YEAR>/<MONTH>/<DAY>/derive/session_<
 ## Adversarial Tally
 | Category | P1 | P2 | P3 | Session hit rate |
 |---|---|---|---|---|
-| Degenerate | | | | |
-| Assumption-breaker | | | | |
-| Counter desync | | | | |
+| Edge of the input space | | | | |
+| Unstated assumption | | | | |
+| Internal state | | | | |
+| Free swing | | | | |
 
 ---
 
@@ -184,22 +194,25 @@ Increment `Ran` only when the question was genuinely load-bearing and he invoked
 ```markdown
 ## Adversarial Inputs
 <!-- Updated by /derive-optimal-algorithm. One row per category, 3 attempts per session (one per problem).
+     Categories name an angle of attack, not a species of input; score by what the input attacks,
+     not by the label he filed it under.
      Hit = concrete input + correct predicted-vs-actual output. Weak and Miss as defined in the drill. -->
 | Category | Attempts | Hits | Weak | Miss | Last Miss |
 |---|---|---|---|---|---|
-| Degenerate (empty / single / all-identical) | <n> | <n> | <n> | <n> | <date> |
-| Assumption-breaker (negatives, ties, boundary) | | | | | |
-| Counter desync (increment/decrement not inverses) | | | | | |
+| Edge of the input space | <n> | <n> | <n> | <n> | <date> |
+| Unstated assumption | | | | | |
+| Internal state | | | | | |
+| Free swing | | | | | |
 ```
 
-Every problem contributes exactly one attempt per category, so `Attempts` rises by 3 per row per session regardless of how he did. This makes the hit rate honest — he can't improve it by not trying. Summarise the movement in two or three lines, and state the counter-desync hit rate explicitly every session.
+Every problem contributes exactly one attempt per category, so `Attempts` rises by 3 per row per session regardless of how he did. This makes the hit rate honest — he can't improve it by not trying. Summarise the movement in two or three lines, and state the **Internal state** hit rate explicitly every session.
 
 ## Commit & push
 
 1. `git add dsa_weaknesses.md dsa_derivation_playbook.md .claude/commands/*.md` from `C:/Users/aayus/Desktop/Interview Prep`. Transcripts are gitignored — don't force-add.
-2. `git commit -m "Derivation drill: <p1>, <p2>, <p3> (<n>/3 key moves, <n>/9 adversarial hits)"`, ending with the standard co-author line.
+2. `git commit -m "Derivation drill: <p1>, <p2>, <p3> (<n>/3 key moves, <n>/12 adversarial hits)"`, ending with the standard co-author line.
 3. `git push`. On failure, report exactly what failed and stop. Nothing to commit → say so, skip the empty commit.
 
 ---
 
-**Start now:** read the weaknesses file and transcript lists, pick the three problems, reproduce the nine questions, state the format (3 problems, each 13 min derivation then 3 min adversarial inputs, no code at any point), reproduce the three adversarial categories so he knows what's coming, stamp the clock, and present problem 1.
+**Start now:** read the weaknesses file and transcript lists, pick the three problems, reproduce the nine questions, state the format (3 problems, each 13 min derivation then 3 min adversarial inputs, no code at any point), reproduce the four adversarial categories so he knows what's coming — the four one-line names only, never the grader's probe list, stamp the clock, and present problem 1.
