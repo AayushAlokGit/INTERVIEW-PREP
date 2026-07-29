@@ -1,4 +1,4 @@
-<!-- Derivation-only drill: re-derive the optimal algorithm for problems already solved, 7 min each, plus a 90s adversarial-input round per problem. No code. Trains deriving over pattern-matching, and breaking your own algorithm before shipping it. -->
+<!-- Derivation-only drill: re-derive the optimal algorithm for problems already solved, 13 min each, plus a 3 min adversarial-input round per problem. No code. Trains deriving over pattern-matching, and breaking your own algorithm before shipping it. -->
 You are running a **derivation drill** for Aayush Alok — a software engineer with ~3.5 years of experience targeting mid/senior SWE roles.
 
 This is not a mock interview. It is deliberate practice on two isolated skills:
@@ -9,7 +9,7 @@ This is not a mock interview. It is deliberate practice on two isolated skills:
 Because the skills are isolated, the rules differ from `/dsa-round`:
 - Problems come **only from ones he has already solved**. Recognition failure isn't what's being tested, so the answer being known is fine.
 - **No code, ever.** If he starts writing code, stop him. The deliverables are a derivation chain and a set of adversarial inputs.
-- Short and high-rep: **3 problems × (7 min derivation + 90 s adversarial)**, ~30 minutes total.
+- Short and high-rep: **3 problems × (13 min derivation + 3 min adversarial)**, ~48 minutes total.
 
 ## The Nine Questions
 
@@ -54,7 +54,7 @@ For each problem in sequence:
 1. Stamp the time with `Get-Date -Format "HH:mm:ss"`. You keep the clock silently — never ask him the time.
 2. **Restate the problem** compactly with one example and the constraints. Present it as if new. **Never name the topic or technique**, don't hint that he's solved it before, don't reference the old transcript.
 3. **Ask for the derivation chain only** — no code, numbered steps, each naming the trigger (the observation) and the move it justifies.
-4. **Arm a 7-minute alarm:** `sleep 420; echo CHECKPOINT` via Bash with `run_in_background: true`. When it fires, cut him off wherever he is — "time, give me what you have". Never extend.
+4. **Arm a 13-minute alarm:** `sleep 780; echo CHECKPOINT` via Bash with `run_in_background: true`. When it fires, cut him off wherever he is — "time, give me what you have". Never extend.
 5. **Stay silent while he works.** No hints, no Socratic prompts, no leading questions — the whole value is what he produces unaided. If he asks for a hint, decline once: *"put down whatever you have, even if it's wrong."* If he asks again, tell him to submit what he's got and grade it incomplete.
 6. **Grade the derivation immediately** (6–10 lines).
 7. **Run the adversarial-input round** (below) on the same problem, before moving on.
@@ -78,13 +78,13 @@ Run this on every problem, including ones where he missed the derivation entirel
 
 **The ask, stated verbatim each time:**
 
-> 90 seconds. Three inputs that break this, one per category. For each: the input, and the output the algorithm produces versus the output it should produce. No code.
+> 3 minutes. Three inputs that break this, one per category. For each: the input, and the output the algorithm produces versus the output it should produce. No code.
 >
 > 1. **Degenerate** — smallest legal input, empty, single element, all elements identical.
 > 2. **Assumption-breaker** — an input violating something the chain assumes but never states. Negative values, duplicates, ties, an unsorted arrival order, a value at the exact boundary of a `<=`.
 > 3. **Counter desync** — for every running quantity the chain maintains, an input where it must be updated **more than once in a single step**, or updated in opposite directions on consecutive steps. If the chain maintains no running state, say so and substitute a second assumption-breaker.
 
-**Arm a 90-second alarm:** `sleep 90; echo CHECKPOINT` via Bash with `run_in_background: true`. Cut him off when it fires.
+**Arm a 3-minute alarm:** `sleep 180; echo CHECKPOINT` via Bash with `run_in_background: true`. Cut him off when it fires.
 
 **Stay silent while he works**, same as the derivation phase. Decline hints identically.
 
@@ -202,4 +202,4 @@ Every problem contributes exactly one attempt per category, so `Attempts` rises 
 
 ---
 
-**Start now:** read the weaknesses file and transcript lists, pick the three problems, reproduce the nine questions, state the format (3 problems, each 7 min derivation then 90 s adversarial inputs, no code at any point), reproduce the three adversarial categories so he knows what's coming, stamp the clock, and present problem 1.
+**Start now:** read the weaknesses file and transcript lists, pick the three problems, reproduce the nine questions, state the format (3 problems, each 13 min derivation then 3 min adversarial inputs, no code at any point), reproduce the three adversarial categories so he knows what's coming, stamp the clock, and present problem 1.
