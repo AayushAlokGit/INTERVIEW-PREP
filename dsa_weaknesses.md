@@ -56,7 +56,7 @@ Last updated: 2026-07-29 (derivation drill: Car Fleet, Making a Large Island, Ma
 | Q1 | Write the brute force as a function signature | 1 | 1 | 2026-07-28 |
 | Q2 | Name the repeated work | 5 | 0 | — |
 | Q3 | Fix the most constrained variable | 1 | 0 | — |
-| Q4 | Is the predicate monotone? | 0 | 1 | 2026-07-28 |
+| Q4 | Is the predicate monotone? | 1 | 1 | 2026-07-28 |
 | Q5 | Which scan direction/order makes it known? | 1 | 1 | 2026-07-28 |
 | Q6 | Name the operation, match the structure | 0 | 1 | 2026-07-28 |
 | Q7 | Candidate set too small, or move set too small? | 1 | 1 | 2026-07-28 |
@@ -71,7 +71,7 @@ Last updated: 2026-07-29 (derivation drill: Car Fleet, Making a Large Island, Ma
      or wrong prediction. Miss = nothing, or an input the algorithm handles fine. -->
 | Category | Attempts | Hits | Weak | Miss | Last Miss |
 |---|---|---|---|---|---|
-| Edge of the input space | 3 | 1 | 1 | 1 | 2026-07-29 |
-| Unstated assumption | 3 | 1 | 1 | 1 | 2026-07-29 |
-| Internal state | 3 | 0 | 0 | 3 | 2026-07-29 |
-| Free swing | 0 | 0 | 0 | 0 | — |
+| Edge of the input space | 4 | 1 | 1 | 2 | 2026-07-29 |
+| Unstated assumption | 4 | 1 | 1 | 2 | 2026-07-29 |
+| Internal state | 4 | 0 | 0 | 4 | 2026-07-29 |
+| Free swing | 1 | 0 | 0 | 1 | 2026-07-29 |
