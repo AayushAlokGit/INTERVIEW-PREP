@@ -62,16 +62,3 @@ Last updated: 2026-07-29 (derivation drill: Course Schedule III)
 | Q7 | Candidate set too small, or move set too small? | 1 | 2 | 2026-07-29 |
 | Q8 | What is the minimal state? | 0 | 0 | — |
 | Q9 | Which constraint have I not spent? | 0 | 1 | 2026-07-29 |
-
-## Adversarial Inputs
-<!-- Updated by /derive-optimal-algorithm. One row per category, 3 attempts per session (one per problem).
-     Categories name an angle of attack, not a species of input; score by what the input attacks,
-     not by the label he filed it under.
-     Hit = concrete input + correct predicted-vs-actual output. Weak = right danger, no concrete input
-     or wrong prediction. Miss = nothing, or an input the algorithm handles fine. -->
-| Category | Attempts | Hits | Weak | Miss | Last Miss |
-|---|---|---|---|---|---|
-| Edge of the input space | 5 | 1 | 1 | 3 | 2026-07-29 |
-| Unstated assumption | 5 | 1 | 1 | 3 | 2026-07-29 |
-| Internal state | 5 | 0 | 0 | 5 | 2026-07-29 |
-| Free swing | 2 | 0 | 0 | 2 | 2026-07-29 |

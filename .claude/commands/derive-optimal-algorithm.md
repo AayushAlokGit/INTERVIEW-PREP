@@ -121,7 +121,7 @@ Bash `mkdir -p`, then save to `transcripts/<YEAR>/<MONTH>/<DAY>/derive/session_<
 
 ## Tracker update
 
-Update the `## Derivation Questions` section of `dsa_weaknesses.md` (append it if missing). Leave the rest of that file untouched — the interview-weakness tables belong to `/dsa-round`, and the `## Adversarial Inputs` table is a closed historical record from when this drill carried an adversarial round; don't write to it.
+Update the `## Derivation Questions` section of `dsa_weaknesses.md` (append it if missing). Leave the rest of that file untouched — the interview-weakness tables belong to `/dsa-round`.
 
 ```markdown
 ## Derivation Questions
