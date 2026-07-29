@@ -1,0 +1,213 @@
+<mxfile host="65bd71144e">
+    <diagram name="System Design" id="system-design">
+        <mxGraphModel dx="669" dy="206" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="3500" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Design an Ad Click Aggregator" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="frs" value="FRs&#xa;1. Record ad click events from many publisher sites&#xa;2. Dashboard: aggregated click metrics per ad/campaign over time range (last hr/day)&#xa;   - Dimensions: publishing site, region&#xa;3. Near real-time capture of click events&#xa;4. Retention: raw click data 30 days; aggregated data 1 year" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="80" width="640" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="nfrs" value="NFRs&#xa;1. High availability for click reception (99.99% ~ 52 min/yr)&#xa;2. Low latency click to dashboard (under 1 min freshness)&#xa;3. No click event lost (durability — clicks = billing $)&#xa;4. Low-latency dashboard queries (p99 under 1s)&#xa;5. Scale: 1M clicks/s avg, 10M/s peak; 1KB/event&#xa;   1 GB/s avg, 10 GB/s peak; ~86B events/day ~86 TB/day raw; ~2.6 PB / 30 days" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="230" width="640" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="entities" value="Core Entities&#xa;1. ClickEvent (id, timestamp, adId to Advertisement, publishingSite, region)&#xa;2. Advertisement (adId, campaignId, ...)&#xa;3. AggregatedMetric (adId, timePeriod [hour/day], timeRange,&#xa;   aggregateType [count/min/max], dimensions: publishingSite/region, value)" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="400" width="640" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="api" value="API Design (identity from auth token)&#xa;&#xa;WRITE:  POST /ads/:id/clickEvents&#xa;  Headers: Idempotency-Key&#xa;  Request: { timestamp, site, region }&#xa;  Response: 2xx&#xa;&#xa;READ:  GET /clickEvents?aggregate_interval={1hr|1day}&amp;aggregate_type={count|min|max}&#xa;        &amp;dimensions={}&amp;start={}&amp;end={}&amp;cursor={}&amp;limit={}&#xa;  Response: [ AggregatedMetric(timePeriod, value) ]  (+ dimension value per row)&#xa;  Cursor-based pagination; cursor = last (clickEventTimestamp + clickEventId)" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="540" width="640" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_title" value="HLD — Write Path" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="760" width="400" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="pub" value="Publishing Site&#xa;(user clicks ad)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="830" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ingest" value="Ingestion Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="830" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="kafka" value="Kafka&#xa;(durable, at-least-once;&#xa;no ordering needed)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="470" y="820" width="140" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="workers" value="Worker Consumer Group&#xa;(pull events;&#xa;dedupe via Idempotency-Key)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="690" y="820" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="lock" value="Distributed Lock&#xa;(on aggregate record;&#xa;short TTL)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="710" y="970" width="150" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="ddb" value="DynamoDB&#xa;PK = adId, SK = timestamp&#xa;- ClickEvent rows (idempotent insert)&#xa;- AggregatedMetric rows (hour + day,&#xa;per matching dimensions; atomic update)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry x="970" y="810" width="290" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" value="POST /ads/:id/clickEvents" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="pub" target="ingest" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" value="append click event" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="ingest" target="kafka" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" value="pull event" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="kafka" target="workers" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" value="write ClickEvent + update AggregatedMetric" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.3;" parent="1" source="workers" target="ddb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" value="acquire lock" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" parent="1" source="workers" target="lock" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="rld_title" value="HLD — Read Path" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="1100" width="400" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="dash" value="Advertiser&#xa;Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="1160" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="query" value="Query Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="250" y="1160" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ddb2" value="DynamoDB&#xa;(read precomputed&#xa;AggregatedMetric rows)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="470" y="1150" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="r1" value="GET /clickEvents?..." style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="dash" target="query">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r2" value="query aggregated metrics for interval + range" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="query" target="ddb2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dd" value="Deep Dive — Hot Key + Pre-Aggregation + Idempotent Windows (Aayush&#39;s final design)&#xa;&#xa;1. Hot key (viral ad): write-shard the hot adId into N sub-counters across partitions;&#xa;   scatter-gather + sum at read time (accepted read-side cost, within latency budget).&#xa;2. Don&#39;t write per-event: aggregation workers consume Kafka, aggregate in-memory over&#xa;   a 1-MINUTE tumbling window (meets &lt; 1 min freshness NFR), then flush rollups to DB.&#xa;   -&gt; collapses 10M writes/s into far fewer DB writes.&#xa;3. State durability: checkpoint aggregation-worker state to recover from crashes.&#xa;4. Correctness under at-least-once: write the ABSOLUTE count per (key, minute-window)&#xa;   as an idempotent PUT -&gt; replay overwrites with identical value, no double-count.&#xa;   DB rolls per-minute buckets up into hour/day." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="1290" width="900" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="opt_title" value="Optimal HLD (Reference) — what a senior strong-hire would draw" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#1a5e1a;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="1560" width="800" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_pub" value="Publisher Site&#xa;(click redirect)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="1660" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_lb" value="Load Balancer&#xa;/ API Gateway" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="200" y="1660" width="110" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_ing" value="Ingestion Service&#xa;(stateless, autoscaled;&#xa;Idempotency-Key dedupe)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="350" y="1655" width="150" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_kfk" value="Kafka&#xa;(partitioned, durable,&#xa;at-least-once buffer)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="540" y="1650" width="140" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_flink" value="Stream Aggregator&#xa;(Flink / Kafka Streams)&#xa;- 1-min tumbling windows&#xa;- write-shard hot keys&#xa;- checkpoint state + offsets&#xa;- emit ABSOLUTE count/(key,window)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=6;" vertex="1" parent="1">
+                    <mxGeometry x="720" y="1640" width="210" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_agg" value="Aggregate Store&#xa;(Cassandra / Druid / ClickHouse)&#xa;per-minute rollups -&gt; hour/day&#xa;keyed (adId/shard, window, dims)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;spacingLeft=8;" vertex="1" parent="1">
+                    <mxGeometry x="980" y="1635" width="230" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_raw" value="Raw Event Lake&#xa;(S3 / object store)&#xa;30-day retention" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="540" y="1820" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_recon" value="Reconciliation /&#xa;Rollup Job&#xa;(raw vs rollup drift check)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="980" y="1820" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_mon" value="Monitoring / Alerting&#xa;(consumer lag, freshness SLO,&#xa;hot-partition detection, cost)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="1930" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_dash" value="Advertiser&#xa;Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="2000" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_query" value="Query Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="210" y="2000" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_cache" value="Cache&#xa;(hot dashboards)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="210" y="2090" width="130" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe1" value="POST click" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_pub" target="o_lb">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_lb" target="o_ing">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe3" value="append event" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_ing" target="o_kfk">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe4" value="consume" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_kfk" target="o_flink">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe5" value="flush rollups (idempotent)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_flink" target="o_agg">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe6" value="archive raw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o_kfk" target="o_raw">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe7" value="compare" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" edge="1" parent="1" source="o_raw" target="o_recon">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe8" value="correct" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=1;entryY=0.5;dashed=1;" edge="1" parent="1" source="o_agg" target="o_recon">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe9" value="GET /clickEvents" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_dash" target="o_query">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe10" value="read rollups" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=1;" edge="1" parent="1" source="o_query" target="o_agg">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" edge="1" parent="1" source="o_query" target="o_cache">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_tradeoffs" value="Key Trade-offs (vs named alternatives)&#xa;&#xa;- Stream pre-aggregation (Flink) vs DB write-per-event: collapses 10M writes/s into&#xa;  ~per-(key,minute) writes. Give up: streaming infra + windowing complexity, late events.&#xa;- Kafka vs direct write to DB: durability + buffering + replay; cost: extra hop, at-least-once.&#xa;- Idempotent ABSOLUTE-count-per-window vs atomic increment (ADD): replay-safe / exactly-once&#xa;  effect. Atomic increment is simpler but NOT idempotent under redelivery.&#xa;- Write-sharded hot key vs single counter: survives viral ad; cost: scatter-gather on read.&#xa;- Druid/ClickHouse vs DynamoDB for store: flexible dimensional/time-range queries; cost: ops.&#xa;- Cache on read vs always hit store: cheap repeated dashboard loads; cost: short staleness." style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="1260" y="1635" width="600" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_deepdives" value="Deep Dives (specific to this system)&#xa;&#xa;- Scale break: partition-by-adId -&gt; viral ad = one hot partition (~2M/s &gt;&gt; ~1k WCU/partition).&#xa;  Fix: write-shard hot key into N sub-counters; detect hot keys dynamically (don&#39;t over-shard all).&#xa;- Exactly-once under at-least-once: emit absolute count per (key, window); flush + offset commit&#xa;  coordinated via checkpoint barriers; replay overwrites identically.&#xa;- Freshness vs batching: 1-min tumbling windows satisfy &lt;1min SLO; per-minute buckets roll up.&#xa;- Late / out-of-order events: watermarks + allowed lateness; correct the affected window.&#xa;- Operability: consumer lag &amp; backpressure at peak, freshness SLO alerting, raw-vs-rollup&#xa;  reconciliation (the 30-day raw lake), hot-partition metrics, fleet cost at 10M/s.&#xa;- Tie/edge: clock skew on client timestamps -&gt; bucket by ingest time or correct with watermarks." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="1260" y="1860" width="600" height="220" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="dc_title" value="Why a Lock / Atomic Increment Isn't Enough — Double-Counting under at-least-once" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="2230" width="900" height="30" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="dc_two" value="TWO DIFFERENT PROBLEMS (people conflate them):&#xa;&#xa;(A) LOST UPDATE — two workers race a read-modify-write on the SAME counter.&#xa;     read 41 / read 41 -&gt; both write 42 (should be 43). Fixed by: lock  OR  atomic ADD.&#xa;&#xa;(B) DOUBLE COUNT — Kafka delivers the SAME event twice (worker crash before offset&#xa;     commit, or consumer-group rebalance). at-least-once = duplicates WILL happen.&#xa;     NOT fixed by a lock. NOT fixed by atomic ADD." style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="2280" width="900" height="170" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="dc_bad" value="(B) WITH ATOMIC ADD  —  one real click counted TWICE  (WRONG, = billing $ error)&#xa;&#xa;  t1  Worker W1 pulls click C1 (adId=A) from Kafka&#xa;  t2  W1:  ADD +1   -&gt;  count = 42&#xa;  t3  W1 CRASHES before committing its Kafka offset&#xa;  t4  Kafka REDELIVERS C1 to W2  (at-least-once)&#xa;  t5  W2:  ADD +1   -&gt;  count = 43&#xa;&#xa;  => 1 real click, counted twice.  A distributed lock does NOT help —&#xa;     each delivery looks like a separate, legitimate +1." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="2470" width="600" height="210" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="dc_fix" value="FIX: idempotent ABSOLUTE write per (key, window)  (RIGHT, replay-safe)&#xa;&#xa;  - Aggregator buffers 1 min of events, dedupes by clickId, computes total = 87&#xa;  - Writes  SET count[A, minute=12:03] = 87   (absolute value, NOT +1)&#xa;  - On replay: recomputes the SAME window -&gt; 87 again -&gt; SET = 87 (no change)&#xa;  - Writing the same value twice is harmless  =&gt;  effectively-once&#xa;&#xa;PROGRESSION:&#xa;  1) lock + read-modify-write : fixes (A), slow, FAILS (B)&#xa;  2) atomic ADD              : fixes (A), fast, FAILS (B)&#xa;  3) idempotent absolute write: fixes (A) AND (B), + cuts write volume" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="660" y="2470" width="600" height="210" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="mr_title" value="Multi-Resolution Rollups — serving hour/day queries on minute buckets (p99 &lt; 1s)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#1a5e1a;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="2760" width="900" height="30" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="mr_min" value="Minute buckets&#xa;(BASE grain)&#xa;count[A, dims, 12:03]=87&#xa;written by stream aggregator" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;spacingLeft=8;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="2830" width="210" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="mr_rh" value="Hourly Rollup Job&#xa;(runs when an hour closes:&#xa;sum its 60 minute buckets)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="2840" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="mr_hour" value="Hour rows&#xa;count[A, dims, 12:00-13:00]&#xa;= 4,912" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;spacingLeft=8;" vertex="1" parent="1">
+                    <mxGeometry x="590" y="2835" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="mr_rd" value="Daily Rollup Job&#xa;(runs when a day closes:&#xa;sum its 24 hour rows)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="860" y="2840" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="mr_day" value="Day rows&#xa;count[A, dims, 2026-06-09]&#xa;= 118,402" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;spacingLeft=8;" vertex="1" parent="1">
+                    <mxGeometry x="1130" y="2835" width="200" height="90" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="mre1" value="roll up" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="mr_min" target="mr_rh">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="mre2" value="write" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="mr_rh" target="mr_hour">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="mre3" value="roll up" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="mr_hour" target="mr_rd">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="mre4" value="write" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="mr_rd" target="mr_day">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="mr_query" value="QUERY STRATEGY: read the COARSEST grain that covers the range, + fine grain only for the live (incomplete) edge.&#xa;&#xa;Example: &quot;last 24 hours&quot;&#xa;  - 23 completed hours  -&gt; read 23 precomputed HOUR rows&#xa;  - current partial hour -&gt; sum its &#8804;60 MINUTE buckets on the fly&#xa;  => fast (small row count) AND fresh (&lt;1 min on the open interval).&#xa;&#xa;Why not just sum minutes for everything?&#xa;  &quot;last 7 days&quot; = 10,080 minute rows PER dimension value (x50 regions = 500K rows/query) -&gt; blows p99.&#xa;  With rollups: ~7 day rows + a few hour rows + minutes for the open hour only.&#xa;&#xa;Note: the AggregatedMetric entity is NOT redundant — minute/hour/day rows are all AggregatedMetric&#xa;at different granularities (its timePeriod field). Rollup jobs just populate the coarser grains." style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="2990" width="1290" height="290" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

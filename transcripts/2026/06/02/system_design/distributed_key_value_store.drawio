@@ -1,0 +1,157 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1650" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="2" value="Design a Distributed Key-Value Store (Dynamo-style)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="16" width="700" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================== REQUIREMENTS NOTES ===================== -->
+        <mxCell id="frs" value="Functional Requirements&#10;1. put(key, value) — overwrite if exists; value = JSON string&#10;2. get(key) — return value for a key&#10;3. delete(key) — remove key&#10;&#10;Out of Scope: TTL, cache eviction" style="text;html=1;strokeColor=#000000;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="70" width="360" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfrs" value="Non-Functional Requirements&#10;1. HA — 99.9% (~8.6 hrs/yr); choose AP over CP&#10;2. Eventual consistency; option read-your-own-writes&#10;3. Durable — survive crashes (WAL + replication)&#10;4. p99 &lt; 10ms reads&#10;5. 100M services; ~1k w/s, ~10k r/s avg; peak 10x -&gt; ~100k r/s&#10;6. 1B keys x 1KB = ~1TB total" style="text;html=1;strokeColor=#000000;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="400" y="70" width="430" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="entities" value="Core Entities&#10;- Key&#10;- Value (opaque JSON blob)&#10;- Metadata: vector clock (causal version)" style="text;html=1;strokeColor=#000000;fillColor=#ffe6cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="850" y="70" width="340" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api" value="API Design (vector clock = causal context)&#10;&#10;PUT /keys/{key}    body: { value, context? }&#10;   add if absent else overwrite; client echoes context (vector clock) from prior GET&#10;   resp: 200 { context }&#10;&#10;GET /keys/{key}    resp: 200 { value, context }   |  404 if missing&#10;   on unresolved concurrent writes -> 200 { siblings:[{value,context}...] } for client merge&#10;&#10;DELETE /keys/{key}  body: { context }   resp: 204 | 404   (delete = tombstone write)" style="text;html=1;strokeColor=#000000;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=12;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="220" width="810" height="170" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================== ARCHITECTURE ===================== -->
+        <mxCell id="archtitle" value="High-Level Architecture — Request Flow" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="410" width="500" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Clients -->
+        <mxCell id="clients" value="Clients&#10;(100M services)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="470" width="120" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Load balancer -->
+        <mxCell id="lb" value="Load Balancer&#10;/ smart client&#10;(routes to any node)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="210" y="470" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Coordinator -->
+        <mxCell id="coord" value="Coordinator Node&#10;(node that owns key,&#10;or forwards to owner)&#10;&#10;- hash(key) -&gt; ring pos&#10;- looks up preference list&#10;- drives R/W quorum" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="420" y="450" width="170" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- arrows client -> lb -> coord -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="clients" target="lb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="put/get/delete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="lb" target="coord">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- The ring (preference list N=3) -->
+        <mxCell id="ringbox" value="Consistent-Hash Ring  (virtual nodes for even spread)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9673a6;dashed=1;verticalAlign=top;spacingTop=6;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="660" y="430" width="470" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="ring" value="hash ring" style="ellipse;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9673a6;dashed=1;fontSize=11;verticalAlign=top;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="710" y="470" width="370" height="260" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="rep0" value="Replica A&#10;(coordinator)&#10;WAL + memtable&#10;-&gt; SSTable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="840" y="455" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="rep1" value="Replica B&#10;WAL + memtable&#10;-&gt; SSTable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="965" y="610" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="rep2" value="Replica C&#10;WAL + memtable&#10;-&gt; SSTable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="715" y="610" width="120" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="preflabel" value="Preference list (N=3):&#10;walk clockwise from hash(key).&#10;First reachable = coordinator." style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="880" y="560" width="190" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- coord to replicas -->
+        <mxCell id="e3" value="W=1 ack,&#10;async repl to N-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=9;dashed=1;" edge="1" parent="1" source="coord" target="rep0">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=none;rounded=0;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="rep0" target="rep1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=none;rounded=0;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="rep0" target="rep2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Gossip -->
+        <mxCell id="gossip" value="Gossip protocol&#10;(membership + ring topology&#10;+ preference lists, on every node)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="610" width="190" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=oval;endArrow=oval;dashed=1;" edge="1" parent="1" source="gossip" target="coord">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================== MECHANISMS / DEEP-DIVE NOTES ===================== -->
+        <mxCell id="quorum" value="Consistency knob: R / W / N&#10;- N = 3 replicas&#10;- AP choice: R=1, W=1  (R+W &lt;= N -&gt; eventual)&#10;- partition: accept write on any reachable node (stay available)&#10;- CP alt (not chosen): R+W &gt; N (e.g. R=2,W=2) -&gt; reject on partition" style="text;html=1;strokeColor=#000000;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="780" width="380" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="durability" value="Durability &amp; propagation (W=1 holes plugged)&#10;- WAL flushed to disk BEFORE ack -&gt; survives crash/restart&#10;- residual: one durable copy until async repl catches up&#10;     (disk loss in window still loses it -&gt; bump W=2 if bar higher)&#10;- Hinted handoff: down replica's write parked on substitute&#10;     node + hint, delivered when it recovers&#10;- Anti-entropy: Merkle trees compare replicas, sync divergent keys&#10;- Read-repair: stale replica fixed on read path" style="text;html=1;strokeColor=#000000;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="420" y="780" width="410" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="conflict" value="Conflict resolution&#10;- vector clock per version (causal ordering)&#10;- comparable -&gt; keep latest&#10;- concurrent/incomparable -&gt; keep siblings,&#10;   return all on GET for client merge (or LWW)" style="text;html=1;strokeColor=#000000;fillColor=#ffe6cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="850" y="780" width="340" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="scale" value="Scale / rebalancing&#10;- Virtual nodes: 1 physical -&gt; many ring points&#10;- node death: range spread over MANY nodes (not 1 neighbour)&#10;- add node: ~1/N data moves, evenly&#10;- key skew solved; single hot KEY is NOT (see right)" style="text;html=1;strokeColor=#000000;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="920" width="380" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="hotkey" value="Hot key (vnodes do NOT fix this)&#10;DETECT: count-min sketch / heavy-hitter sampling at&#10;   coordinator -&gt; per-key QPS metric + alert on &gt;X% of node&#10;READ-hot: front with cache (client/edge); or boost replica&#10;   count for that key; salting only if must (forces write-fanout)&#10;WRITE-hot opaque blob: no free fix — serialization hotspot;&#10;   coalesce/batch writes, or change model / use CRDT if mergeable" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="420" y="960" width="410" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ops" value="Operability (the L4-&gt;L5 gap)&#10;- metrics: per-node QPS, p99 latency, replica lag,&#10;   hinted-handoff backlog, Merkle repair rate&#10;- staleness signal = repl lag / handoff backlog over threshold&#10;- alert on hot keys, partition, node down&#10;- cost: ~ (1TB x repl 3) + overhead; size fleet to peak 100k r/s" style="text;html=1;strokeColor=#000000;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="850" y="920" width="340" height="190" as="geometry"/>
+        </mxCell>
+
+        <!-- legend -->
+        <mxCell id="legend" value="Legend:  solid arrow = request path   |   dashed arrow = async replication / gossip" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="660" y="752" width="470" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================== METRICS: HOW COMPUTED ===================== -->
+        <mxCell id="metricstitle" value="Operability Metrics — How They Are Computed (the senior answer = name the SHAPE + trade)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1130" width="900" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m_shapes" value="3 cheap metric shapes (never store per-event / per-key exact state)&#10;&#10;COUNTER -&gt; read as a rate:&#10;   running total, scraped every ~10s, rate = dCount/dTime&#10;   used for: QPS&#10;&#10;HISTOGRAM / SKETCH -&gt; for distributions:&#10;   bounded buckets or t-digest, percentile interpolated&#10;   used for: p99 latency, hot-key counts&#10;&#10;GAUGE -&gt; instantaneous depth:&#10;   used for: hinted-handoff backlog, replica lag" style="text;html=1;strokeColor=#000000;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1170" width="390" height="230" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m_perf" value="QPS &amp; p99 latency  (per node / coordinator)&#10;- QPS: in-mem counter per request; agent scrapes cumulative&#10;   total, computes rate. Never store every request.&#10;- p99: pre-defined latency BUCKETS (&lt;1,&lt;2,&lt;5,&lt;10ms...), each&#10;   a counter; p99 interpolated from bucket edges at query time.&#10;   Alt: t-digest / HdrHistogram = better tail accuracy, same&#10;   tiny memory, slightly more CPU.&#10;Trade: bucket width bounds percentile error." style="text;html=1;strokeColor=#000000;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="430" y="1170" width="400" height="230" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m_lag" value="Replica lag  (THE staleness signal)&#10;- Sequence-based (preferred): each write gets monotonic&#10;   per-coordinator seq; lag = max(seq) - replica's applied seq&#10;   = #writes behind (clock-skew free).&#10;- Timestamp-based: now - last-applied write ts (skew-prone).&#10;- Free signal: #keys found divergent per Merkle anti-entropy pass.&#10;Why: with R=1/W=1 a read can hit a behind replica; lag says how far." style="text;html=1;strokeColor=#000000;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="850" y="1170" width="430" height="230" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m_hint" value="Hinted-handoff backlog&#10;- just queue DEPTH (+ oldest-hint age) per node, as a gauge&#10;- rising = peer down a while -&gt; durability risk climbing&#10;   (writes on fewer copies than intended)&#10;- won't drain = peer gone -&gt; trigger replica rebuild" style="text;html=1;strokeColor=#000000;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1410" width="390" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m_hot" value="Hot-key detection&#10;- count-min sketch at coordinator: fixed 2D counter array,&#10;   k hashes; estimate = MIN across rows (cancels collisions)&#10;- fixed memory regardless of 1B keys; over-estimates only&#10;   -&gt; never MISS a hot key&#10;- + Space-Saving top-K to surface WHICH keys; alert at &gt;X% node QPS" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="430" y="1410" width="400" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="m_merkle" value="Merkle repair rate&#10;- per anti-entropy pass: count keys reconciled / bytes moved&#10;- spike = replicas diverging faster than they heal&#10;   (node flapping, or writes outrunning anti-entropy)&#10;- early warning that the eventual-consistency window is widening" style="text;html=1;strokeColor=#000000;fillColor=#ffe6cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="850" y="1410" width="430" height="140" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

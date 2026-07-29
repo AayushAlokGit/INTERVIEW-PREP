@@ -1,0 +1,151 @@
+<mxfile host="65bd71144e">
+    <diagram name="System Design" id="system-design">
+        <mxGraphModel dx="613" dy="210" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="2200" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Design a Webhook Delivery System" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="frs_box" value="FUNCTIONAL REQUIREMENTS&#xa;&#xa;1. Customers can subscribe to event types they want to be notified about (events produced by our system)&#xa;2. Customers can register their own URL to receive notifications on an event" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="80" width="520" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="nfrs_box" value="NON-FUNCTIONAL REQUIREMENTS&#xa;&#xa;1. At-least-once delivery of event notifications&#xa;2. Low latency: event -&gt; delivery &lt; 1s&#xa;3. High availability: 99.99% (~52 min downtime/yr)&#xa;4. Scale: 10k events/s avg, 100k/s peak&#xa;5. Fan-out = 5 subscribers/event -&gt; 50k deliveries/s avg, 500k/s peak" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="220" width="520" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="entities_box" value="CORE ENTITIES&#xa;&#xa;1. Event (id, type, status, details ...)&#xa;2. EventSubscriber (id, clientId, eventType, eventStatus)&#xa;3. Client (id, redirectUrl)&#xa;4. DeliveryAttempt (id, status, retryCount, attemptLogs, clientId, eventId, lastAttemptAt)" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="390" width="520" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="api_box" value="API DESIGN  (identity from auth headers; events ingested via internal queue, no public API)&#xa;&#xa;POST /clients&#xa;  Req: {clientName, redirectUrl}   Header: Idempotency-Key&#xa;  Res: 2xx, Client(id, ...)&#xa;&#xa;PUT /clients/:id/subscribe&#xa;  Req: {eventDetails: [{eventType, eventStatus}]}&#xa;  Res: EventSubscription(id, clientId, eventType, eventStatus)&#xa;&#xa;GET /events/:id/deliveryAttempts?clientId={}&#xa;  Res: DeliveryAttempt(id, clientId, eventId, status, attemptLogs, retryCount)&#xa;  (bounded by fan-out, no pagination)" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="550" width="520" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_title" value="HIGH-LEVEL DESIGN (as described)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="80" width="500" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_internal" value="Internal Services&#xa;(event producers)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="140" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_kafka" value="Kafka&#xa;(event queue, durable,&#xa;at-least-once,&#xa;partitioned)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="900" y="130" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_workers" value="Workers&#xa;(stateless consumers,&#xa;horizontally scaled)&#xa;- pull event&#xa;- fetch subscribers + URLs&#xa;- POST payload&#xa;- write DeliveryAttempt&#xa;- gen idempotency key" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="880" y="300" width="200" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_sqldb" value="SQL DB&#xa;(clients/redirect URLs,&#xa;subscribers,&#xa;delivery attempts)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="620" y="320" width="170" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_clients" value="Customer Endpoints&#xa;(external HTTP URLs,&#xa;&lt;=5 per event)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                    <mxGeometry x="1160" y="350" width="180" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_int_kafka" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="hld_internal" target="hld_kafka" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_int_kafka_lbl" value="write events" style="text;html=1;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="828" y="150" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_kafka_workers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="hld_kafka" target="hld_workers" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_kafka_workers_lbl" value="pull event" style="text;html=1;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="985" y="235" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_workers_sql" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;startArrow=classic;startFill=1;" parent="1" source="hld_workers" target="hld_sqldb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_workers_sql_lbl" value="fetch subs/URLs,&#xa;write attempts" style="text;html=1;fontSize=10;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="300" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_workers_clients" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="hld_workers" target="hld_clients" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_workers_clients_lbl" value="HTTP POST payload&#xa;(+ idempotency key)" style="text;html=1;fontSize=10;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1090" y="320" width="70" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="opt_divider" value="" style="line;strokeWidth=2;strokeColor=#999999;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="900" width="1540" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="opt_title" value="OPTIMAL HLD (Reference) — what a senior strong-hire would design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#cc0000;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="915" width="900" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_internal" value="Internal Services&#xa;(event producers)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="980" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_eventstopic" value="Kafka: events topic&#xa;(durable, partitioned)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="230" y="975" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_fanout" value="Fan-out / Dispatcher&#xa;Workers&#xa;- read event&#xa;- look up subscriptions&#xa;- create 1 DeliveryTask&#xa;  per (event, subscriber)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+                    <mxGeometry x="430" y="955" width="200" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_delqueue" value="Delivery Queue (Kafka)&#xa;partitioned by customerId&#xa;-&gt; per-tenant isolation&#xa;(noisy neighbor contained)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="690" y="965" width="210" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_delworkers" value="Delivery Workers&#xa;- POST w/ timeout&#xa;- write DeliveryAttempt&#xa;- per-endpoint CIRCUIT&#xa;  BREAKER (skip dead)&#xa;- on fail: schedule retry&#xa;- exhausted: -&gt; DLQ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+                    <mxGeometry x="960" y="950" width="210" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_endpoints" value="Customer Endpoints&#xa;(external HTTP URLs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+                    <mxGeometry x="1240" y="980" width="170" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_configdb" value="Subscription/Config Store&#xa;(SQL: clients, URLs, subs,&#xa;retry policy per client)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="430" y="1170" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_attemptdb" value="DeliveryAttempt Store&#xa;(Cassandra / sharded SQL:&#xa;high write volume, status,&#xa;nextRetryTime, logs)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="690" y="1170" width="210" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_scheduler" value="Retry Scheduler&#xa;(Redis ZSET keyed by&#xa;nextRetryTime;&#xa;ZRANGEBYSCORE due)&#xa;-&gt; re-inject due retries" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+                    <mxGeometry x="960" y="1170" width="210" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_dlq" value="DLQ&#xa;(exhausted retries,&#xa;manual inspection,&#xa;customer alert)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="1240" y="1160" width="170" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_readapi" value="Read API + Mgmt Plane&#xa;POST /clients, /subscribe&#xa;GET delivery status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="1170" width="190" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_monitoring" value="Monitoring/Alerting&#xa;consumer lag, per-endpoint&#xa;failure rate, breaker state,&#xa;DLQ depth, freshness SLA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="1300" width="220" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_internal" target="o_eventstopic">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_eventstopic" target="o_fanout">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_fanout" target="o_delqueue">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_delqueue" target="o_delworkers">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe5" value="POST + idempotency key" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=9;" edge="1" parent="1" source="o_delworkers" target="o_endpoints">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe6" value="lookup subs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=9;" edge="1" parent="1" source="o_fanout" target="o_configdb">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe7" value="write attempt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.4;exitY=1;entryX=0.5;entryY=0;fontSize=9;" edge="1" parent="1" source="o_delworkers" target="o_attemptdb">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe8" value="schedule retry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.6;exitY=1;entryX=0.5;entryY=0;fontSize=9;" edge="1" parent="1" source="o_delworkers" target="o_scheduler">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe9" value="re-inject due" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;entryX=1;entryY=1;fontSize=9;" edge="1" parent="1" source="o_scheduler" target="o_delqueue">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe10" value="exhausted" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=0;fontSize=9;" edge="1" parent="1" source="o_delworkers" target="o_dlq">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="oe11" value="read status" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=9;" edge="1" parent="1" source="o_readapi" target="o_attemptdb">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_tradeoffs" value="KEY TRADE-OFFS&#xa;&#xa;- Kafka (delivery queue) vs RabbitMQ/SQS: pick Kafka for high throughput + replay/durable log; give up native per-message delay (needs the retry scheduler).&#xa;- Partition delivery queue by customerId vs by event: by-customer gives per-tenant fairness/isolation (one dead endpoint can&#39;t starve others); give up perfect global load balance (hot tenant = hot partition, mitigate w/ sub-sharding).&#xa;- Retry via Redis ZSET scheduler vs busy re-queue: ZRANGEBYSCORE gives O(log n) &#39;what&#39;s due now&#39; with no spin; give up an extra stateful component.&#xa;- DeliveryAttempt in Cassandra vs SQL: Cassandra for 50k/s write volume + time-series; give up rich ad-hoc joins.&#xa;- At-least-once + idempotency key vs exactly-once: accept rare dup delivery (client dedupes) to avoid distributed-txn complexity.&#xa;- Circuit breaker vs retry-everything: stop hammering a known-dead endpoint, alert customer; give up a few deliveries during the open window." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="1440" width="740" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_deepdives" value="DEEP DIVES (specific to this system)&#xa;&#xa;1. Head-of-line blocking: a synchronous worker handling 5 POSTs stalls the whole partition on one slow endpoint. Fix: decouple fan-out from delivery; one DeliveryTask per (event,subscriber); short HTTP timeouts.&#xa;&#xa;2. Delayed retry on Kafka (no native delay): not-yet-due retries live in Redis ZSET / indexed DB by nextRetryTime; a scheduler re-injects only due ones. Exp backoff 10s-&gt;1m-&gt;5m-&gt;30m, jittered.&#xa;&#xa;3. Noisy neighbor / hot partition (THE scale-break): one big customer w/ a dead endpoint floods retries and starves others. Fix: partition by customerId, per-tenant rate caps, sub-shard hot tenants, circuit-break the dead endpoint.&#xa;&#xa;4. Poisoned endpoint: per-endpoint circuit breaker (open after N consecutive failures), stop trying for a cool-down, alert the customer, resume on probe success.&#xa;&#xa;5. Ordering: at-least-once + parallel workers = out-of-order. If a customer needs order (order.created before order.updated), key the delivery partition by entity id and deliver sequentially per key.&#xa;&#xa;6. Operability: monitor consumer lag, per-endpoint failure rate, breaker state, DLQ depth, end-to-end freshness vs &lt;1s SLA. Alert when freshness breaches." style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="35" y="1770" width="750" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_ordering" value="ORDERING DEEP DIVE (Kafka)&#xa;&#xa;Core rule: Kafka orders ONLY within a partition. partition = hash(key) % numPartitions. Same key -&gt; same partition -&gt; produce-order; different keys may interleave. Never need global order (= 1 partition = no parallelism). Need PER-ENTITY order.&#xa;&#xa;Partition key choice (smallest scope that needs order):&#xa;  - eventType: hot partition, no benefit. BAD.&#xa;  - customerId: per-customer order; busy customer = hot partition.&#xa;  - resourceId (orderId): order.created -&gt; updated -&gt; cancelled stay ordered. USUALLY RIGHT.&#xa;  - customerId:resourceId: finest grain, best parallelism, still correct.&#xa;&#xa;Sharp edges:&#xa;1. Order dies at delivery: a pool of workers POSTing concurrently from one partition can reorder. Fix: deliver SEQUENTIALLY per key (next event for key K only after prev acked). Serialization is the cost of order.&#xa;2. Retries break order: created fails -&gt; retried 5 min; updated succeeds now -&gt; customer sees update first. At-least-once + retries fights ordering. Fix (hard guarantee): BLOCK THE KEY - hold all later events for K until K's head is delivered or dead-lettered. HOL blocking scoped to one resource.&#xa;3. Producer config: set enable.idempotence=true (keeps order with in-flight&gt;1) or max.in.flight=1; else producer retries reorder within a partition.&#xa;4. Repartitioning resets it: changing numPartitions remaps keys. Over-provision partitions up front; don't resize live.&#xa;&#xa;Pragmatic answer (Stripe-style): don't promise global order. Best-effort: key by resourceId, idempotent producer, stamp each webhook with monotonic sequence + timestamp; customer reorders/dedupes. Hard guarantee: key by resourceId + sequential per-key delivery + block-on-failure.&#xa;&#xa;Trade-off to say aloud: ordering vs throughput pull against each other. Finer key = more parallelism; strict per-key delivery = correct but serialized, and a stuck event stalls its key." style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="810" y="1440" width="760" height="660" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

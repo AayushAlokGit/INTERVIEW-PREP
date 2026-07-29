@@ -1,0 +1,122 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1600" dy="1000" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1620" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Design a Distributed Metrics &amp; Monitoring System" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="16" width="700" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend" value="HOW TO READ THIS DIAGRAM&#10;──▶ solid = data / write path  (steps ①→⑥)&#10;- -▶ dashed = read / query path  (steps ⓐ→ⓒ)&#10;- -▶ purple = monitoring &quot;observes&quot;&#10;- -▶ grey = out of scope&#10;Flow:  agents emit ① → Kafka buffers ② → writers consume ③ →&#10;Hot TSDB ④ → rollup ⑤ → cold ⑥.   Query: dashboard ⓐ → query svc&#10;fans out to hot+cold via the label index.   Alerts: evaluator re-runs&#10;each rule's query on a timer; forDuration FSM debounces transient spikes." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="60" width="560" height="170" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="frs" value="Functional Requirements&#10;1. Ingest metrics from client machines&#10;2. Store metrics as time-series data&#10;3. Queries over metric time-series data&#10;4. Dashboards for metric time-series&#10;5. Alerts on metrics crossing thresholds&#10;Out of scope: tracing, log aggregation, alert delivery" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="60" width="450" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfrs" value="Non-Functional Requirements&#10;1. HA for metric ingestion   2. Eventual consistency (write path)&#10;3. Durability   4. Query p99 &lt; 200ms (on recent / rollup)&#10;5. At-least-once alert delivery   6. Retention 7d hot → cold&#10;&#10;Scale: 100k hosts × 1k series = 100M active series&#10;Ingest ~10^7 points/s · ~14 TB/day raw · TS compresses ~10x" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="60" width="470" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="entities" value="Core Entities&#10;MetricSeries(seriesId = hash(name+labels), name, labels{})&#10;MetricPoint(seriesId, timestamp, value)&#10;AlertRule(id, query, comparator, threshold, forDuration, evalInterval)&#10;AlertState(ruleId, status: pending|firing, since)&#10;Dashboard(id, ownerId, panels[]→queries) · Target(id, addr, labels{})" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="225" width="600" height="135" as="geometry"/>
+        </mxCell>
+        <mxCell id="apis" value="API Contract (identity from JWT)&#10;POST /v1/metrics  {batch:[{labels{},ts,value}]} → 202 {accepted,rejected}   idempotent on (seriesId,ts)&#10;POST /v1/query  {metric,matchers{},start,end,step,aggregation,groupBy[]} → {series:[{labels{},points:[{ts,value}]}]}&#10;POST /v1/alert-rules {name,query,comparator,threshold,forDuration,evalInterval} → {ruleId}&#10;GET  /v1/alert-rules?cursor=&amp;limit= → {rules[],nextCursor}   ·   POST/GET /v1/dashboards" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="640" y="225" width="900" height="135" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="archtitle" value="Architecture — write path ①→⑥ (top), storage (right), read path ⓐ→ⓒ + alerting (bottom)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#6a00a0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="380" width="1000" height="26" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="g_ingest" value="① INGEST / WRITE PATH" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fontStyle=1;fontColor=#2a5d8f;" vertex="1" parent="1">
+          <mxGeometry x="20" y="420" width="1230" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_storage" value="STORAGE &amp; RETENTION TIERS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8ec;strokeColor=#d79b00;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fontStyle=1;fontColor=#9a6a00;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="420" width="610" height="470" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_read" value="ⓐ READ / QUERY PATH" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f2fbf2;strokeColor=#82b366;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fontStyle=1;fontColor=#3f7a3f;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="930" width="880" height="270" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_alert" value="③ ALERTING" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdf1f1;strokeColor=#b85450;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fontStyle=1;fontColor=#9c3b38;" vertex="1" parent="1">
+          <mxGeometry x="430" y="930" width="560" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="g_ops" value="OPERABILITY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f7f2fb;strokeColor=#9673a6;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fontStyle=1;fontColor=#6a3f8f;" vertex="1" parent="1">
+          <mxGeometry x="20" y="620" width="300" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="agents" value="Metric Agents / Exporters&#10;(on every host)&#10;expose/emit current values" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="45" y="460" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="gateway" value="Ingest Gateway + LB&#10;push API endpoint&#10;(or Scraper pulls targets)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="345" y="460" width="190" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="kafka" value="Kafka&#10;durable buffer · absorbs bursts&#10;partitioned by seriesId&#10;(ordering + replay)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="655" y="455" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="writers" value="Ingestion Writers&#10;dedupe (seriesId,ts) · batch&#10;compress (Gorilla) · index labels&#10;horizontally scalable" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="975" y="455" width="210" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="hottsdb" value="Hot TSDB&#10;recent ~7d · on SSD&#10;sharded by hash(seriesId)&#10;serves fast recent queries" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="460" width="210" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="cardidx" value="Inverted Label Index&#10;labels {service,region,...} → seriesIds&#10;resolves query matchers&#10;tracks CARDINALITY (hot-key risk)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="465" width="250" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="rollup" value="Downsampling / Rollup job&#10;raw 10s → 1m → 1h aggregates&#10;(shrinks old data ~100x)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="640" width="210" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="cold" value="Cold Object Store&#10;downsampled + aged data&#10;cheap &amp; durable (S3 / blob)&#10;months–years retention" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="755" width="210" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dashboards" value="Dashboards&#10;(Grafana-like)&#10;+ ad-hoc explorer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="975" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="querysvc" value="Query Service / Frontend&#10;parse query · resolve matchers via index&#10;FAN OUT across shards (hot) + cold&#10;merge · aggregate (p99/sum/rate) · cache" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="965" width="270" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="qcache" value="Query Result Cache&#10;(repeated dashboard queries)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1670" y="975" width="200" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ruleeval" value="Alert Rule Evaluator&#10;every evalInterval: run rule's query,&#10;compare vs threshold&#10;forDuration FSM: pending→firing&#10;(debounces transient spikes)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="965" width="250" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="notif" value="Notification Service&#10;(out of scope)&#10;page / email / Slack" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="460" y="975" width="180" height="85" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="selfmon" value="Self-Monitoring&#10;watch: ingest/consumer lag,&#10;cardinality spikes,&#10;query p99, write errors&#10;→ &quot;how do we know it's broken?&quot;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="655" width="260" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="notes" value="DEEP DIVES &amp; KEY DESIGN DECISIONS (the senior conversation — why, not just what)&#10;&#10;① CARDINALITY is the killer (the hot-key analog):  active series = hosts × metrics × label-combos.  A high-cardinality label (userId, requestId, raw URL) silently multiplies series into the&#10;     millions and blows up memory + the inverted index.  Mitigate: cap/strip such labels at ingest, enforce per-metric series budgets, and ALERT on cardinality spikes.&#10;&#10;② IDEMPOTENT INGEST under at-least-once:  agents retry on timeout, so the same batch can arrive twice.  seriesId = hash(name+labels) makes the key deterministic; writers dedupe on&#10;     (seriesId, timestamp) so a duplicate point is a no-op.  (Same lesson as idempotency keys in the payment system — one layer down.)&#10;&#10;③ BACKPRESSURE &amp; DURABILITY:  Kafka decouples spiky ingest (10^7 pts/s) from writer throughput, gives replay if a writer dies, and lets writers scale out.  Sustained overload → sample/shed load&#10;     and alert on consumer lag rather than dropping silently.&#10;&#10;④ p99 &lt; 200ms is ONLY achievable on recent / pre-aggregated data:  an arbitrary 6-month raw scan cannot be 200ms.  That's WHY we keep rollups + a query cache, and fan out by time-range&#10;     and shard.  Be explicit that the SLA applies to recent/rollup queries — naming this trade-off is the senior move.&#10;&#10;⑤ SHARDING &amp; HOT SHARDS:  partition Hot TSDB by hash(seriesId) for even spread; a single viral series can still create a hot shard → detect &amp; split/replicate it.&#10;&#10;⑥ PULL vs PUSH:  pull (scrape) gives free target health/discovery and back-pressure control; push suits NAT'd / serverless / short-lived jobs.  Most real systems support both.&#10;&#10;⑦ RETENTION TIERS:  7d raw hot on SSD → downsampled cold in object store (months–years).  The query layer transparently spans both so users don't care where data lives." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1240" width="1880" height="340" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ie1" value="① emit ~10^7 pts/s" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="agents" target="gateway"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ie2" value="② append (batched)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="gateway" target="kafka"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ie3" value="③ consume" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="kafka" target="writers"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ie4" value="④ write points (idempotent)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="writers" target="hottsdb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ie5" value="④b register series labels" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="writers" target="cardidx"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ie6" value="⑤ raw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="hottsdb" target="rollup"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ie7" value="⑥ rollups → cold" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="rollup" target="cold"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="qe1" value="ⓐ query" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="dashboards" target="querysvc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="qe2" value="ⓑ read recent" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="querysvc" target="hottsdb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="qe3" value="ⓒ read historical" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="querysvc" target="cold"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="qe4" value="resolve matchers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="querysvc" target="cardidx"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="qe5" value="cache" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=block;dashed=1;" edge="1" parent="1" source="querysvc" target="qcache"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="ae1" value="run rule query (every evalInterval)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="ruleeval" target="querysvc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ae2" value="fire (at-least-once)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#999999;" edge="1" parent="1" source="ruleeval" target="notif"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="me1" value="consumer lag" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="selfmon" target="kafka"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="me2" value="query p99" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="selfmon" target="querysvc"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

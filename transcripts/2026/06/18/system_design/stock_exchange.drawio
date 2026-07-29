@@ -1,0 +1,269 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="3500" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Design a Stock Exchange (Order Matching System)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="700" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="frs" value="FUNCTIONAL REQUIREMENTS&#10;&#10;1. Place &amp; cancel orders (limit + market)&#10;2. Match buy &lt;-&gt; sell orders, execute trades&#10;3. Traders view their order status&#10;4. Traders view market data (current price, order book depth)&#10;&#10;Out of scope: historical price data, analysis tools" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="430" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfrs" value="NON-FUNCTIONAL REQUIREMENTS&#10;&#10;1. HA for accepting orders: 99.99% (~52 min/yr)&#10;2. Low latency matching: p99 &lt; 200ms&#10;3. Strong consistency for orders (no double-sell)&#10;4. No double-charging (idempotent orders)&#10;5. Near real-time market price updates&#10;&#10;Scale: 100M DAU x 5-10 orders/day = 1B orders/day&#10;  Avg ~10k orders/s | Peak ~50k orders/s (5x)" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="80" width="470" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="entities" value="CORE ENTITIES&#10;&#10;User { id, name, ... }&#10;&#10;Order { id, userId, side(buy/sell), stockSymbol,&#10;        orderType(market/limit), limitPrice,&#10;        quantity, fulfilledQuantity, status, createdAt }&#10;&#10;Trade { id, buyOrderId, sellOrderId, quantity,&#10;        price (execution price), createdAt }&#10;&#10;StockSymbol { symbol, ... }" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="300" width="600" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="api" value="API DESIGN   (identity from JWT auth token)&#10;&#10;POST /orders   [Idempotency-Key header]&#10;  req:  { orderType, limitPrice, quantity, stockSymbol }&#10;  resp: { id, status, fulfilledQuantity, stockSymbol, orderType }&#10;&#10;DELETE /orders/{id}        -> cancel a resting order&#10;&#10;GET /orders?cursor=&amp;limit=   (cursor pagination)&#10;  resp: [ { id, status, fulfilledQuantity, stockSymbol, orderType } ]&#10;&#10;GET /orders/{id}  -> { id, status, ... }&#10;&#10;WS  /stockSymbols (subscribe by symbol)&#10;  push: { symbol, currentPrice, book depth }   [upgraded from REST]" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="660" y="300" width="600" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="hldhdr" value="HIGH-LEVEL DESIGN (Write Path)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="590" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="client" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="660" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="apigw" value="API Gateway&#10;(auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="210" y="660" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ordersvc" value="Order Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="390" y="660" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="kafka" value="Kafka&#10;(partitioned by stockSymbol&#10;-&gt; per-symbol ordering)" style="shape=process;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="570" y="650" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="consumers" value="Consumers&#10;(pull, write order records)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="800" y="655" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="cassandra" value="Cassandra&#10;(partition: stockSymbol+timestamp,&#10;sort key: createdAt; WAL)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;boundedLbl=1;backgroundOutline=1;size=14;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="640" width="170" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="matchsvc" value="Matching Service&#10;(match buy &lt;-&gt; sell per symbol,&#10;record trades)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="570" y="820" width="190" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="client" target="apigw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1l" value="POST /orders" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="e1">
+          <mxGeometry x="-0.1" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="apigw" target="ordersvc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="ordersvc" target="kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3l" value="produce (by stockSymbol)" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="e3">
+          <mxGeometry x="-0.1" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="kafka" target="consumers">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4l" value="pull" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="e4">
+          <mxGeometry x="-0.1" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="consumers" target="cassandra">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5l" value="write order" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="e5">
+          <mxGeometry x="-0.1" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ddhdr" value="DEEP DIVE — Matching Engine &amp; Order Book" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="960" width="560" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis" value="Redis Cluster (in-memory order book)&#10;{stockSymbol}_buy  -&gt; ZSET sorted by price&#10;{stockSymbol}_sell -&gt; ZSET sorted by price&#10;book kept WHOLE per symbol (no time-bucket split)&#10;atomic claim via Lua script" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;boundedLbl=1;backgroundOutline=1;size=14;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1010" width="320" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="me" value="Matching Engine&#10;(per stock symbol = unit of sharding)&#10;match buy &lt;-&gt; sell, price-time priority" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1020" width="260" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="consumers2" value="Kafka Consumer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1180" width="160" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="cass2" value="Cassandra&#10;(orders + trades)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;boundedLbl=1;backgroundOutline=1;size=14;" vertex="1" parent="1">
+          <mxGeometry x="980" y="1015" width="160" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="de1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="consumers2" target="redis">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de1l" value="also write order to book" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="de1">
+          <mxGeometry x="-0.2" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=block;endArrow=block;" edge="1" parent="1" source="me" target="redis">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de2l" value="atomic claim (Lua)" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="de2">
+          <mxGeometry x="-0.1" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="redis" target="cass2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de3l" value="write Trade + update order status" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="de3">
+          <mxGeometry x="-0.1" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ddnotes" value="FAILOVER / RECOVERY&#10;- Engine sharded per symbol; one engine owns a symbol's whole book&#10;- In-memory matching fast enough for hot symbol (~15k/s AAPL)&#10;- Crash recovery: periodic order-book SNAPSHOT + replay Kafka&#10;  partition from last snapshot offset (bounds recovery to seconds)&#10;- Dedup on replay: skip orders already 'fulfilled' in DB&#10;- Redis down: persist to disk; reject new orders temporarily" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1170" width="580" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="optdiv" value="" style="line;strokeWidth=2;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1380" width="1640" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="opthdr" value="OPTIMAL HLD (Reference) — what a senior strong-hire would draw" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#1a5e1a;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1400" width="900" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o_client" value="Client&#10;(WS + REST)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1480" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_gw" value="API Gateway&#10;(auth, rate limit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1480" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_os" value="Order Service&#10;(validate +&#10;idempotency dedup)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1475" width="140" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_inlog" value="Input Event Log (Kafka)&#10;ordered, partition per symbol&#10;= the SEQUENCER" style="shape=process;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="550" y="1470" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_engine" value="Matching Engine&#10;single-writer per symbol&#10;in-memory order book&#10;deterministic replay" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="780" y="1470" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_standby" value="Hot Standby Engine&#10;(consumes same log /&#10;snapshot, ready to fail over)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="780" y="1600" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_snap" value="Snapshot Store&#10;(periodic book snapshot,&#10;bounds replay)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;boundedLbl=1;backgroundOutline=1;size=12;" vertex="1" parent="1">
+          <mxGeometry x="790" y="1740" width="160" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_outlog" value="Output Event Log (Kafka)&#10;trade / execution events&#10;(single source of truth)" style="shape=process;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="1470" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_cass" value="Cassandra&#10;orders + trades&#10;(audit / query projection)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;boundedLbl=1;backgroundOutline=1;size=12;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1420" width="170" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_md" value="Market Data Service&#10;(maintains top-of-book / depth&#10;from execution stream)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1560" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_fanout" value="Pub/Sub Fanout +&#10;WS Gateway fleet&#10;(push to subscribed clients)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1690" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_query" value="Query Service&#10;GET /orders, /orders/{id}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1740" width="160" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="oe1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_client" target="o_gw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe1l" value="POST /orders" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="oe1"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_gw" target="o_os"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_os" target="o_inlog"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_inlog" target="o_engine"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe4l" value="consume in order" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="oe4"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_engine" target="o_outlog"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe5l" value="emit trades" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="oe5"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe6" style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=block;endArrow=block;" edge="1" parent="1" source="o_engine" target="o_snap"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe6l" value="snapshot / restore" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="oe6"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="o_inlog" target="o_standby"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe7l" value="replay (failover)" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="oe7"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_outlog" target="o_cass"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe8l" value="persist" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="oe8"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_outlog" target="o_md"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_md" target="o_fanout"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe11" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_fanout" target="o_client"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe11l" value="WS push price/book" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="oe11"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe12" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="o_query" target="o_cass"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe12l" value="read order status" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="oe12"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="o_tradeoffs" value="KEY TRADE-OFFS&#10;&#10;- Matching engine = single-writer in-memory log replay  vs  Redis+Lua concurrent claim:&#10;  chosen for deterministic price-time priority &amp; trivial exactly-once; give up multi-writer throughput per symbol (fine — in-memory does &gt;1M matches/s).&#10;- Ordered Kafka partition AS the sequencer  vs  DB locks / distributed txn:&#10;  the log gives ordering + durability + replay for free; give up random-access mutation.&#10;- Cassandra as downstream projection of the event log  vs  Cassandra as system of record:&#10;  avoids the AP-store-for-strong-consistency contradiction; engine output is the source of truth.&#10;- Shard by SYMBOL across engines  vs  shard the book itself:&#10;  a single book can't split and keep cheap global price-time order; accept one hot symbol = one engine (it's fast enough).&#10;- Dedicated Pub/Sub + WS fanout fleet  vs  clients polling REST:&#10;  push scales to 100M watchers; give up REST simplicity, must manage connection state &amp; backpressure." style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1880" width="800" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_deepdives" value="DEEP DIVES (specific to this system)&#10;&#10;1. Core hard problem: matching with strict price-time priority + exactly-once execution.&#10;   Solve as deterministic single-writer consuming the ordered partition; matching = pure function of the log.&#10;2. Scale-break: AAPL ~30% volume (~15k/s) at open. Book can't shard. Keep whole on one engine&#10;   (in-memory handles it); scale the EXCHANGE by sharding symbols across engines.&#10;3. Failover: hot standby replays log from last SNAPSHOT offset -> recovery in seconds, not full-day replay.&#10;   Exactly-once on replay falls out because the engine is deterministic + output log is idempotent by trade id.&#10;4. Dual-write trap: do NOT write order to two stores from the consumer. Engine emits one event stream;&#10;   Cassandra + market-data + balances are all downstream projections of it (no divergence).&#10;5. Hot key / fanout: market-data fanout to 100M clients via tiered Pub/Sub + WS gateway fleet; watch backpressure.&#10;6. Operability: monitor consumer lag per partition, matching p99, book staleness, snapshot age; alert on lag &gt; SLA.&#10;   Cost: per-symbol engine fleet + standby = the dominant cost line; co-locate cold symbols." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="870" y="1880" width="790" height="280" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="zdiv" value="" style="line;strokeWidth=2;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2220" width="1640" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="zhdr" value="MATCHING ENGINE — Zoom In (per symbol, single-threaded, in-memory)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#7a3b00;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2240" width="1000" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="z_in" value="Incoming order&#10;(next off the log)&#10;&#10;BUY 100 @ limit 101" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2360" width="170" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="z_booklbl" value="In-memory Order Book (this symbol)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2300" width="280" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="z_asks" value="ASKS  (sells) — price ASC&#10;&#10;102  | qty 3   (FIFO: o7)&#10;101  | qty 2   (FIFO: o4,o9)&#10;100  | qty 5   (FIFO: o2,o5)  &lt;= BEST ASK" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2330" width="280" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="z_spread" value="--- spread = bestAsk(100) - bestBid(99.5) ---" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2445" width="280" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="z_bids" value="BIDS  (buys) — price DESC&#10;&#10;99.5 | qty 4   (FIFO: o1,o3)  &lt;= BEST BID&#10;99   | qty 6   (FIFO: o6)&#10;98   | qty 2   (FIFO: o8)" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2470" width="280" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="z_struct" value="Structure: per side  price -&gt; FIFO queue;&#10;orderId -&gt; location index for O(1) cancel.&#10;Time priority = log offset order." style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2600" width="280" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="z_loop" value="MATCH LOOP  (limit BUY qty Q @ price P)&#10;&#10;while Q &gt; 0 and bestAsk exists and bestAsk.price &lt;= P:&#10;    fill = min(Q, bestAsk.remaining)&#10;    execute trade @ bestAsk.price      // maker's price&#10;    Q -= fill ; bestAsk.remaining -= fill&#10;    if bestAsk filled: remove from book&#10;    emit TradeEvent(buyId, sellId, price, fill)&#10;&#10;if Q &gt; 0:&#10;    rest remaining Q on BID side @ P     // limit rests&#10;    // market order: do NOT rest leftover -&gt; cancel/reject" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="600" y="2330" width="470" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="z_det" value="DETERMINISTIC: new book = f(current book, next order).&#10;Replay same log -&gt; identical book &amp; trades.&#10;=&gt; hot standby works; trade IDs derived from&#10;   (offset + seq) -&gt; exactly-once on replay." style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="600" y="2600" width="470" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="z_out" value="OUTPUTS -&gt; Output Event Log&#10;&#10;TradeEvent { buyId, sellId, price, qty, ts }&#10;   -&gt; Cassandra (audit) + Market Data (LTP)&#10;&#10;OrderStatusUpdate { orderId, status,&#10;   filledQty } -&gt; order-status projection&#10;&#10;BookDelta { side, price, newAggQty }&#10;   -&gt; Market Data (top-of-book / depth)" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="2330" width="420" height="250" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ze1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="z_in" target="z_asks">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ze1l" value="match vs best ask" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ze1">
+          <mxGeometry x="-0.1" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ze2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="z_loop" target="z_out">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="cdiv" value="" style="line;strokeWidth=2;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2740" width="1640" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="chdr" value="ORDER CANCEL PATH — just another command on the same ordered log" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#7a3b00;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2760" width="1000" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_client" value="Client&#10;DELETE /orders/{id}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="30" y="2850" width="140" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_gw" value="API Gateway&#10;(auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="210" y="2850" width="110" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_os" value="Order Service&#10;resolve orderId -&gt; symbol,&#10;verify owner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="360" y="2845" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_log" value="Input Event Log (Kafka)&#10;append CancelCommand{orderId}&#10;to SAME partition as symbol&#10;(serialized with incoming orders)" style="shape=process;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="570" y="2840" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_engine" value="Matching Engine&#10;orderId -&gt; location (O(1));&#10;remove REMAINING qty&#10;from price-level FIFO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="2840" width="190" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_out" value="-&gt; Output Event Log&#10;OrderStatusUpdate{ CANCELLED, filledQty }&#10;BookDelta{ side, price, newAggQty }" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="2845" width="360" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ce1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="c_client" target="c_gw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ce2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="c_gw" target="c_os"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ce3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="c_os" target="c_log"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ce4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="c_log" target="c_engine"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ce4l" value="consume in order" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ce4"><mxGeometry x="-0.1" relative="1" as="geometry"/></mxCell>
+        <mxCell id="ce5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="c_engine" target="c_out"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="c_race" value="CANCEL vs MATCH race — resolved by the single ordered log (no locks):&#10;&#10;- Order still fully resting   -&gt; removed cleanly; status CANCELLED&#10;- Order partially filled      -&gt; cancel removes only REMAINING qty; filled part stands; CANCELLED (filledQty &gt; 0)&#10;- Order already fully filled  -&gt; cancel is a no-op / rejected ('too late'); status stays FILLED&#10;&#10;A TRADE is never cancelled here — only the un-matched remainder of an order.&#10;Cancel is ASYNC: API returns 202 Accepted; final outcome arrives on the WS / order-status stream.&#10;Routing: orderId alone doesn't give the partition -- encode symbol in id, or resolve orderId-&gt;symbol first." style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="30" y="2980" width="1370" height="200" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

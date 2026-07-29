@@ -1,0 +1,272 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="4200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="2" value="API Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=22;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="3" value="SECTION 1 — YOUR DESIGN (as described in the round)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#7F7F7F;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="800" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="10" value="FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="95" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="11" value="1. Sits between public internet and internal service mesh&#10;2. Routes requests to the appropriate service&#10;3. Authentication of the request&#10;4. Rate limiting of incoming requests&#10;5. Versioning of API endpoints" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DEEBF7;strokeColor=#2E75B6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="130" width="640" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="20" value="NON-FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="740" y="95" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" value="1. Low-latency rate limiting: p99 &lt; 10 ms&#10;2. Low-latency authentication: p99 &lt; 10 ms&#10;3. Availability 99.999% — gateway is the core dependency and&#10;    sets the upper bound on whole-system availability.&#10;    When the gateway is down, requests are rejected.&#10;4. Low-latency forwarding to the appropriate service" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="740" y="130" width="640" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="30" value="SCALE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="270" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="31" value="100M DAU  ×  50 requests/user/day  =  5B requests/day&#10;5B ÷ 10^5 s/day  ≈  50K RPS average&#10;Peak multiplier 5×  →  250K RPS peak" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#E2EFDA;strokeColor=#70AD47;" vertex="1" parent="1">
+          <mxGeometry x="40" y="305" width="640" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="40" value="CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="740" y="270" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="41" value="1. RateLimitingPolicy&#10;2. Route mapping — key: API version + endpoint path&#10;    value: service details, incl. IP address of the service&#10;3. Client — identified from the JWT in the auth header" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FBE5D6;strokeColor=#C55A11;" vertex="1" parent="1">
+          <mxGeometry x="740" y="305" width="640" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="50" value="CONTROL-PLANE API" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="405" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="51" value="POST — body carries the new API endpoints added to the service manifest.&#10;(path, response shape, authorisation and propagation not specified)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#F2F2F2;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="640" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="60" value="HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="540" width="400" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="61" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DEEBF7;strokeColor=#2E75B6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="720" width="140" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="62" value="API Gateway&#10;&#10;• local JWT verification&#10;   → extract client details&#10;• rate-limit check&#10;• route lookup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="330" y="680" width="240" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="63" value="External Rate Limiting System&#10;(declared out of scope)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2F2F2;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="550" width="240" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="64" value="Service Explorer&#10;(service discovery)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#70AD47;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="720" width="240" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="65" value="Backend Service&#10;(target of the request)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE5D6;strokeColor=#C55A11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="680" width="240" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="66" value="Dev / Deployment&#10;(new service version)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="920" width="240" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="61" target="62">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="71" value="request" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="70">
+          <mxGeometry x="-0.1" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="72" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" edge="1" parent="1" source="62" target="63">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="73" value="within rate limit?" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="72">
+          <mxGeometry x="0.2" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="74" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;" edge="1" parent="1" source="62" target="64">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="75" value="get IP of target service" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="74">
+          <mxGeometry x="0.2" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="76" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="62" target="65">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1070" y="755"/>
+              <mxPoint x="1070" y="725"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="77" value="forward request" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="76">
+          <mxGeometry x="0.4" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="78" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="66" target="64">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="79" value="on deploy: update service details" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="78">
+          <mxGeometry x="0.2" relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="100" value="" style="line;strokeWidth=3;html=1;strokeColor=#7F7F7F;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1080" width="2300" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="101" value="SECTION 2 — OPTIMAL REFERENCE (what a senior strong-hire would design)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;fontColor=#C00000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1100" width="1200" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="102" value="Guiding principle for the whole design: THE REQUEST PATH TOUCHES NOTHING OVER THE NETWORK EXCEPT THE UPSTREAM SERVICE.&#10;Auth, rate limiting, routing and metering are all made local. Every shared dependency is moved off the hot path onto a background/push channel.&#10;A gateway at 99.999% cannot depend synchronously on anything weaker than 99.999%." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FCE4E4;strokeColor=#C00000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1150" width="1560" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="110" value="2.1 — OPTIMAL CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#C00000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1270" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="111" value="Route&#10;──────────────&#10;routeId          (uuid)&#10;host             (api.acme.com)&#10;pathPattern      (/v2/payments/*)&#10;methods          [POST, GET]&#10;version          (v2)&#10;serviceName      (payments-svc)   ← NOT an IP&#10;timeoutMs, retryPolicy, authRequired&#10;stripPrefix, corsPolicy&#10;&#10;Lookup key = (host, method, version, path)&#10;Match is longest-prefix → TRIE, not a hash." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FBE5D6;strokeColor=#C55A11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1305" width="380" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="112" value="ApiClient / Principal&#10;──────────────&#10;clientId         (partner or app id)&#10;type             (first-party | partner)&#10;orgId, tier      (free | pro | enterprise)&#10;scopes           [payments:write, ...]&#10;keyId            (for JWT kid resolution)&#10;status           (active | suspended)&#10;&#10;Cardinality: ~10^4 partners, ~10^8 end users.&#10;Partner-level fits in node memory;&#10;user-level does NOT — this is why the&#10;rate-limit key choice matters." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DEEBF7;strokeColor=#2E75B6;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1305" width="380" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="113" value="RateLimitPolicy&#10;──────────────&#10;policyId&#10;scope            (clientId | clientId+route | ip)&#10;limit            (10,000)&#10;window           (60s)&#10;algorithm        (token bucket)&#10;burst&#10;failMode         (OPEN | CLOSED)  ← per endpoint&#10;&#10;~10^4 policies × ~200 bytes ≈ 2 MB&#10;→ fits in memory on every node." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="860" y="1305" width="380" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="114" value="UsageRecord   (the missed entity)&#10;──────────────&#10;requestId        (idempotency key)&#10;clientId, routeId, timestamp&#10;statusCode, latencyMs, bytesIn/Out&#10;&#10;Partners are METERED and billed.&#10;Emitted async, fire-and-forget to a local&#10;buffer → never blocks the response.&#10;&#10;JwtSigningKey: kid → publicKey, notAfter&#10;(from JWKS, cached, background refresh)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#E2EFDA;strokeColor=#70AD47;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="1305" width="380" height="250" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="120" value="2.2 — OPTIMAL API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#C00000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1590" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="121" value="DATA PLANE — what clients see (the gateway is transparent)&#10;──────────────────────────────────────────────────────────&#10;ANY  https://api.acme.com/v2/{service}/{...}&#10;  Headers in : Authorization: Bearer &lt;JWT&gt;, X-Request-Id (idempotency)&#10;  Headers out: X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,&#10;               Retry-After (on 429), X-Request-Id (echoed for tracing)&#10;&#10;  401 invalid/expired token · 403 scope missing · 429 rate limited&#10;  503 upstream unavailable  · 504 upstream timeout&#10;&#10;  Error body: { error: { code, message, requestId } }" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DEEBF7;strokeColor=#2E75B6;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1625" width="780" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="122" value="CONTROL PLANE — what backend teams call (the part that was missing)&#10;──────────────────────────────────────────────────────────────────&#10;PUT /admin/v1/routes/{routeId}          ← PUT: idempotent upsert, safe to retry&#10;  authz: mTLS + service identity; team must own {serviceName}&#10;  body : { serviceName, host, pathPattern, methods[], version,&#10;           timeoutMs, retryPolicy, authRequired, requiredScopes[] }&#10;  resp : 200 { routeId, version, etag, appliedAt }&#10;  409 on etag mismatch (concurrent edit)&#10;&#10;GET    /admin/v1/routes?cursor=&amp;limit=100   → { routes[], nextCursor }&#10;DELETE /admin/v1/routes/{routeId}&#10;POST   /admin/v1/routes/{routeId}/rollback  → previous version&#10;PUT    /admin/v1/policies/{policyId}        → rate-limit policy&#10;GET    /admin/v1/config/version             → what each node has loaded&#10;&#10;Cursor pagination (config changes while you page).&#10;Every write is versioned and rollback-able." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FCE4E4;strokeColor=#C00000;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="860" y="1625" width="790" height="230" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="130" value="2.3 — OPTIMAL HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#C00000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1900" width="500" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="131" value="REQUEST PATH  (hot — zero synchronous external dependencies)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=13;fontStyle=2;fontColor=#2E75B6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1935" width="700" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="140" value="Clients&#10;mobile / web / partners" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DEEBF7;strokeColor=#2E75B6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2080" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="141" value="Anycast DNS&#10;+ L4 Load Balancer&#10;(TLS termination,&#10;DDoS / SYN protection)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDEDED;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="280" y="2070" width="190" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="142" value="GATEWAY NODE  (stateless, ~hundreds)&#10;&#10;1  JWT verify — LOCAL, public key from in-memory JWKS cache&#10;2  Authorise — scopes claim vs route.requiredScopes&#10;3  Rate limit — LOCAL token bucket + lease (see deep dive)&#10;4  Route match — in-memory TRIE, longest prefix&#10;5  Proxy — connection pool, timeout, retry, circuit breaker&#10;6  Emit UsageRecord → local ring buffer (async, non-blocking)&#10;&#10;IN-MEMORY STATE: route trie · policy table · JWKS · buckets" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="540" y="2020" width="560" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="143" value="Service Discovery&#10;/ Service Mesh&#10;&#10;serviceName → healthy&#10;endpoint set&#10;(watched + cached,&#10;NOT called per request)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#70AD47;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="2020" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="144" value="Backend Services&#10;(few hundred, many teams)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE5D6;strokeColor=#C55A11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1500" y="2070" width="220" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="150" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="140" target="141">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="151" value="HTTPS" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="150">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="152" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="141" target="142">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="153" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="142" target="143">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="154" value="watch (background)" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="153">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="155" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.85;entryX=0;entryY=0.5;" edge="1" parent="1" source="142" target="144">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1440" y="2199"/>
+              <mxPoint x="1440" y="2125"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="156" value="proxy request" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="155">
+          <mxGeometry x="0.4" relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="160" value="CONTROL PATH  (cold — config is PUSHED to nodes, never pulled per request)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=13;fontStyle=2;fontColor=#C00000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2290" width="800" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="161" value="Backend Team&#10;/ CI-CD deploy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2350" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="162" value="Control-Plane API&#10;(admin, mTLS-authz,&#10;validates + versions&#10;every change)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4E4;strokeColor=#C00000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="290" y="2340" width="200" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="163" value="Config Store&#10;(etcd / Consul —&#10;strongly consistent,&#10;versioned, watchable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDEDED;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="560" y="2340" width="200" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="164" value="Gateway nodes&#10;WATCH the config store;&#10;on change, swap the route&#10;trie atomically in memory.&#10;Last-good snapshot kept on&#10;local disk → a node can boot&#10;and serve even if the config&#10;store is completely down." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="830" y="2320" width="270" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="165" value="Usage / Metering Pipeline&#10;&#10;node ring buffer → batch flush&#10;→ Kafka → billing + analytics.&#10;Lossy-tolerant, never in the&#10;request path. Partners billed&#10;from these records." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#70AD47;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="2320" width="270" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="166" value="Identity Provider&#10;+ JWKS endpoint&#10;&#10;issues short-lived JWTs&#10;(~5 min) to clients.&#10;Gateway fetches public keys&#10;in the BACKGROUND only." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DEEBF7;strokeColor=#2E75B6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1530" y="2320" width="270" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="170" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="161" target="162">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="171" value="PUT /admin/v1/routes/{id}" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="170">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="172" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="162" target="163">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="173" value="versioned write" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="172">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="174" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="163" target="164">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="175" value="watch / push" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="174">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="176" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="164" target="165">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="177" value="async usage" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="176">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="178" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="165" target="166">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="180" value="2.4 — KEY TRADE-OFFS  (each choice vs its NAMED alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#C00000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2530" width="700" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="181" value="LOCAL JWT VERIFICATION      vs   opaque token + auth-service call&#10;  Buy : no round-trip in a 10 ms budget; auth service is not an availability ceiling; survives its outage.&#10;  Pay : cannot revoke before expiry. Mitigate — 5-minute TTL, or push a revocation bloom filter to nodes.&#10;         Permissions are frozen at issue time, so a scope change lags by one token lifetime.&#10;&#10;IN-MEMORY ROUTE TRIE (pushed) vs   per-request service-discovery lookup&#10;  Buy : zero network hops to route; discovery outage cannot stop traffic; last-good snapshot on disk.&#10;  Pay : eventual consistency — a route change takes ~1 s to reach every node. Fine: deploys are not synchronous.&#10;&#10;LOCAL BUCKET + LEASE         vs   central Redis counter   vs   pure local N-way split&#10;  Buy : no hot-path dependency; bounded, stated error instead of unbounded fragmentation.&#10;  Pay : the limit is approximate — overshoot bounded by (nodes × lease). Exact global limits need Redis and its risk.&#10;&#10;ASYNC METERING via buffer    vs   synchronous write of every usage record&#10;  Buy : billing never adds latency and never fails a request.&#10;  Pay : a node crash loses its unflushed buffer — undercounting. Accept for billing; do NOT accept for hard quotas.&#10;&#10;STATELESS NODES              vs   sticky sessions per client&#10;  Buy : any node serves any request; trivial horizontal scaling; instant failover.&#10;  Pay : no per-client local state can be assumed — which is exactly why rate limiting needs the lease design." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#F2F2F2;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2565" width="1610" height="330" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="190" value="2.5 — DEEP DIVES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#C00000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2930" width="500" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="191" value="DISTRIBUTED RATE LIMITING — the actual hard problem&#10;──────────────────────────────────────────────&#10;Requirement: 10,000 req/min per partner, hundreds of stateless nodes.&#10;&#10;NAIVE       central Redis INCR per request.&#10;BREAKS      250K RPS of INCR; a round-trip inside a 10 ms p99;&#10;            Redis becomes a 99.99% ceiling on a 99.999% gateway;&#10;            AND one heavy partner = ONE KEY = one shard hot.&#10;&#10;PURE LOCAL  each node allows 10,000 / N.&#10;BREAKS      fragmentation. 200 nodes → 50 each. A partner whose&#10;            traffic lands on 20 nodes is throttled at 1,000 while&#10;            19 nodes sit idle — rejected at 10% of their contract.&#10;&#10;OPTIMAL — LEASED TOKEN BUCKET (local enforce, periodic settle)&#10;  • Node holds a lease: &quot;I may serve 200 requests for partner P.&quot;&#10;  • Enforced entirely in memory → sub-microsecond, zero hops.&#10;  • Every ~100 ms the node settles usage with the quota service&#10;    and renews. Idle nodes surrender unused lease back to the pool.&#10;  • Worst-case overshoot = nodes_holding_a_lease × lease_size,&#10;    a NUMBER you state: 200 × 200 = 40,000 over a 60 s window&#10;    → tighten by shrinking the lease; latency cost is unchanged.&#10;  • Quota service unreachable → keep serving on the last lease,&#10;    then fall back to failMode on the policy (OPEN for search,&#10;    CLOSED for login/payments). Never a hard stop." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2965" width="520" height="520" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="192" value="HOT KEYS / HOT PARTITIONS&#10;──────────────────────────────────────────────&#10;• One viral partner concentrates on a single counter key.&#10;  Fix: shard the key — partner:{id}:{0..15}, quota split&#10;  across shards, node hashes to a shard. Detect via&#10;  per-key RPS percentiles, promote a partner to sharded&#10;  mode automatically above a threshold.&#10;• One hot ROUTE (a launch) overwhelms one backend:&#10;  per-route concurrency caps + circuit breaker at the&#10;  gateway, so the gateway sheds load instead of the&#10;  service falling over.&#10;&#10;CONFIG PROPAGATION AT SCALE&#10;──────────────────────────────────────────────&#10;• Hundreds of nodes cannot poll a config store at 250K RPS&#10;  scale — they WATCH it and receive pushes.&#10;• Atomic swap of the route trie: build the new trie off to&#10;  the side, flip one pointer. No request sees a half-applied&#10;  config.&#10;• Every node exposes its loaded config version; a deploy is&#10;  only &quot;done&quot; when the fleet's min version reaches the target.&#10;• Bad route push = total outage → staged rollout (1% → 10% →&#10;  100%) with automatic rollback on error-rate regression.&#10;&#10;OPERABILITY — how you KNOW it is wrong&#10;──────────────────────────────────────────────&#10;• RED metrics per route AND per client: rate, errors, duration.&#10;• Gateway-added latency as its own SLI (target p99 &lt; 2 ms&#10;  excluding upstream) — this is the number the round never set.&#10;• Config staleness: max(now − node.configAppliedAt) alarms &gt; 5 s.&#10;• 429 rate per partner — a spike means a policy error or an abuser.&#10;• JWKS refresh failures — silent until every token starts failing.&#10;• Health: LB drains a node on failed readiness; nodes are cattle.&#10;&#10;COST&#10;──────────────────────────────────────────────&#10;250K RPS ÷ ~10K RPS per node ≈ 25 nodes at peak; run ~60&#10;across 3 AZs for N+1 per-AZ failure tolerance and headroom." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E2EFDA;strokeColor=#70AD47;" vertex="1" parent="1">
+          <mxGeometry x="600" y="2965" width="620" height="520" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="193" value="WHAT THIS ROUND MISSED — the checklist&#10;──────────────────────────────────────────────&#10;1  Out-of-scope list. A gateway must explicitly&#10;   REFUSE business logic, response aggregation,&#10;   data transformation and per-service caching,&#10;   or it becomes a distributed monolith owned&#10;   by no one. Say so out loud.&#10;&#10;2  Latency budget for the gateway itself&#10;   (p99 &lt; 2 ms added, excluding upstream).&#10;&#10;3  Partner metering — stated in the prompt,&#10;   never appeared in the design.&#10;&#10;4  Authorisation on the control plane. An&#10;   unauthenticated route-update endpoint is a&#10;   total compromise: repoint /v2/payments/* at&#10;   an attacker-owned host.&#10;&#10;5  Storing an IP in the route table. Services&#10;   deploy several times daily and autoscale —&#10;   store serviceName, resolve at call time.&#10;&#10;6  Method in the routing key. GET and POST on&#10;   the same path can route differently.&#10;&#10;7  Applying your own principle everywhere.&#10;   &quot;No synchronous dependency in the hot path&quot;&#10;   was derived for auth and then violated twice&#10;   in the same diagram." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FCE4E4;strokeColor=#C00000;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="2965" width="390" height="520" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

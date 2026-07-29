@@ -1,0 +1,86 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Design a Chat / Messaging System (WhatsApp-like)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="800" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="3" value="Functional Requirements" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="520" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="4" value="1. Users can send 1:1 and group messages (max 500 users per group)&#10;2. Reliable message delivery — real-time if online, delayed if offline&#10;3. Support read receipts&#10;4. Support online / offline presence&#10;5. Store users' chat history" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="110" width="520" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="5" value="Non-Functional Requirements" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="80" width="520" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="6" value="Availability: 99.99% (chat service)&#10;Latency: p99 &lt; 200ms message delivery when both online&#10;Durability: required for messages&#10;Consistency: eventual consistency acceptable&#10;&#10;Scale:&#10;  - 500M DAU, ~10 msgs sent + 10 read per user per day&#10;  - Writes: ~50k/s avg, ~500k/s peak&#10;  - Deliveries: ~240k/s avg (4.8x fanout from groups), ~2.4M/s peak&#10;  - Concurrent online users: ~10M&#10;&#10;Storage:&#10;  - ~100B per text message&#10;  - ~500 GB/day, ~200 TB/year (text only)&#10;  - Media offloaded to blob storage" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="110" width="520" height="280" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="10" value="High-Level Architecture" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="430" width="1380" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_registry" value="Redis Connection Registry&#10;userId -&gt; nodeId&#10;TTL + heartbeat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="520" y="480" width="260" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_sender" value="Sender Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="660" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_chat_a" value="Chat Node A&#10;(WebSocket)&#10;Sender connected here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="260" y="650" width="200" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_kafka" value="Kafka&#10;Durability + replay&#10;Partitions: hash(userId) and groupId&#10;Each Chat Node = own consumer group&#10;(fan-out reads — N× throughput)&#10;Retention: 3-7 days" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="540" y="660" width="300" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_chat_b" value="Chat Node B&#10;(WebSocket)&#10;Recipient connected here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="260" y="900" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_recv" value="Recipient Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="910" width="140" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_db" value="Message DB&#10;(durable history;&#10;long-tail offline&#10;delivery fallback)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="940" y="890" width="200" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" value="WebSocket" style="endArrow=classic;startArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_sender" target="c_chat_a"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" value="WebSocket" style="endArrow=classic;startArrow=classic;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="c_chat_b" target="c_recv"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e3" value="add/remove + heartbeat" style="endArrow=classic;startArrow=classic;html=1;exitX=0.7;exitY=0;entryX=0.3;entryY=1;" edge="1" parent="1" source="c_chat_a" target="c_registry"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" value="add/remove + heartbeat" style="endArrow=classic;startArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0;entryX=0;entryY=1;" edge="1" parent="1" source="c_chat_b" target="c_registry">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="580"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e7" value="produce&#10;(to user / group partition)" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.3;" edge="1" parent="1" source="c_chat_a" target="c_kafka"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" value="consume relevant&#10;partitions" style="endArrow=classic;html=1;exitX=0;exitY=0.7;entryX=1;entryY=0.3;" edge="1" parent="1" source="c_kafka" target="c_chat_b"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e9" value="persist messages" style="endArrow=classic;html=1;exitX=1;exitY=0.7;entryX=0.5;entryY=0;" edge="1" parent="1" source="c_kafka" target="c_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" value="long-offline catch-up&#10;(query by recipient_id)" style="endArrow=classic;html=1;dashed=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="c_db" target="c_chat_b"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="dd_title" value="Deep Dives" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1080" width="1380" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd_flow" value="End-to-end flows&#10;&#10;1:1 message (Alice on Node A -&gt; Bob on Node B):&#10;  1. Alice sends over WebSocket to Node A.&#10;  2. Node A produces message to Kafka, partition = hash(bobId) % N.&#10;  3. Kafka persists; Message DB consumer also persists for history.&#10;  4. Node B (own consumer group) consumes the partition, filters for connected users, finds Bob.&#10;  5. Node B pushes to Bob over his WebSocket.&#10;&#10;Group message (Alice -&gt; Group G, 500 members, mixed online/offline):&#10;  1. Alice sends over WebSocket to Node A.&#10;  2. Node A produces ONCE to Kafka partition for groupId G.&#10;  3. Every chat node that hosts at least one G-member is consuming that partition&#10;     (subscribed lazily when its first G-member connected).&#10;  4. Each such node filters G's message to its connected members and pushes via WebSocket.&#10;  5. Offline members get it on next connect via Kafka replay or DB fallback." style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1110" width="680" height="380" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd_decisions" value="Key decisions &amp; trade-offs&#10;&#10;Kafka replaces Redis pub/sub:&#10;  + durability, replay, at-least-once on disconnect&#10;  − 5-50ms latency vs sub-ms pub/sub (within 200ms SLA)&#10;&#10;Each chat node = own consumer group:&#10;  + simple fan-out; every node sees every message in its partitions&#10;  − Kafka read throughput scales with N nodes&#10;&#10;Publish group message to groupId partition (not 500 user channels):&#10;  + 1 produce per message regardless of group size&#10;  − every node with any G-member consumes the partition&#10;&#10;Offline delivery: Kafka for 3-7 day window; DB by recipient_id for long-tail.&#10;&#10;Registry: TTL + heartbeat (e.g. 30s TTL / 10s heartbeat) for liveness." style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1110" width="680" height="380" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd_gaps" value="Spotted but not solved / not covered&#10;&#10;Hot group problem (e.g. 1000 msgs/sec group):&#10;  every consuming node receives all of it. Possible fixes (not chosen):&#10;    - shard hot groups across sub-partitions (lose ordering across shards)&#10;    - batched/aggregated delivery to clients&#10;    - dedicated hot-tier infra&#10;&#10;Not covered in this round:&#10;  - API design&#10;  - Data model / entities&#10;  - Read receipts mechanism&#10;  - Presence broadcast (notifying contacts on status change)&#10;  - Message DB sharding strategy (200 TB/year, 500k writes/s)&#10;  - Message ordering across nodes / clock skew&#10;  - Mobile push (APNs/FCM) for truly offline users&#10;  - Multi-region replication" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1510" width="1380" height="320" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

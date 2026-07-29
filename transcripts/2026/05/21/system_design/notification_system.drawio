@@ -1,0 +1,198 @@
+<mxfile host="65bd71144e">
+    <diagram name="System Design" id="system-design">
+        <mxGraphModel dx="4190" dy="1037" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Design a Notification System" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="FRs -&amp;gt;&lt;br&gt;1.Multiple channel support - Push , SMS and email&lt;div&gt;2. Track notifiation status&lt;/div&gt;&lt;div&gt;3. Support different categories of notifications with different priority&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Transaction - Medium priority (respect user preferences)&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Critical - Highes priority&lt;br&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;marketing - low priority (respect preferences) - batch notifications&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;4. Support user preferences for channel and categories of notifications (SMS/Push/Email)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;5. Support scheduled notifcations&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry y="90" width="450" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Scale -&amp;gt; 50M DAU&lt;br&gt;NFRs -&amp;gt;&lt;br&gt;1. Highly available notification acceptance (99.99% ~ 57 mins of downtime/year)&lt;br&gt;2. For critical notifications &amp;lt; 500ms delivery delta allowed from scheduled time , for&amp;nbsp;&lt;div&gt;lower priority delivery delta relaxed to 5s.&lt;br&gt;3. Assuming 10 notifications/user/day -&amp;gt; 500M notiifcations/day ~ 5k notifications/s on avg , in peak 10x ~50k notifs/s&lt;br&gt;4. Notification must be delivered at least once.&amp;nbsp;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="490" y="80" width="340" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Core Entities -&amp;gt;&lt;br&gt;1. Notification&lt;div&gt;2. User&lt;/div&gt;&lt;div&gt;3. UserPreferences&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="858.01" y="50" width="431.99" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&lt;font&gt;APIs -&amp;gt;&lt;br&gt;NOTE: UserId part of JWT auth headers&lt;br&gt;&lt;br&gt;1. POST /notifications -&amp;gt; Notification id. Creates a new notification&lt;/font&gt;&lt;/span&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;{&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;`notificationMessage,&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;category,&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;recepients[]&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;channel&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;scheduledTime?(optional)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;}&lt;br&gt;Headers: idempotency-key (to prevent retries of same request creating multiple&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&lt;font&gt;notifications)&lt;br&gt;&lt;/font&gt;&lt;br&gt;&lt;font&gt;2. GET /notifications/:id -&amp;gt; Recepientstatus[] , channel , category , recpienets etc&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font&gt;3. PUT /user/:id/preferences -&amp;gt; Update a users preferences&lt;/font&gt;&lt;br&gt;&lt;font&gt;{&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;allowedChannel:[]&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;allowedCategories{}&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&lt;font&gt;}&lt;br&gt;&lt;/font&gt;&lt;br&gt;&lt;/font&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="1100" y="90" width="405" height="270" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="10" target="12">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="createNotification()" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="16">
+                    <mxGeometry x="-0.1541" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="10" value="API Gateway&lt;div&gt;- auth&lt;/div&gt;&lt;div&gt;-rate limiting can be added in future&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="165" y="683.75" width="120" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="Client services" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-90" y="890" width="120" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="12" target="21">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="42" target="22">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="810" y="980" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="12" value="Notiifcation Service" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="710" width="150" height="67.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="73" target="63">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="67" style="edgeStyle=none;html=1;" edge="1" parent="1" source="13" target="66">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="68" value="poll for notifications with near scheduledTime" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="67">
+                    <mxGeometry x="0.1859" y="2" relative="1" as="geometry">
+                        <mxPoint y="1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="13" value="Dynamo DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+                    <mxGeometry x="1590" y="640" width="115" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="Notification&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;id (partitionKey)&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;channel&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;category&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;recepient&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;scheduledTime&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;status&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;BatchMemberNotification&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;id&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;notficationId (partitionKey)&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;recepientId&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;status&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;UserPreferences&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;id&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;userId&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;categories[]&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;channels[]&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;User&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;id&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;name&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;email&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;mobile&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="1720" y="640" width="110" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" style="edgeStyle=none;html=1;entryX=0.011;entryY=0.45;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="11" target="10">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=52.5;entryPerimeter=0;" edge="1" parent="1" source="12" target="13">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="56" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="21" target="50">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="Transactional Q&lt;br&gt;SMS channel&lt;br&gt;EmailChannel&lt;br&gt;Push Channel" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="730" y="1080" width="130" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="55" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="20" target="48">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="Critical Q&amp;nbsp;&lt;div&gt;SMS channel&lt;br&gt;Push CHannel&lt;br&gt;Email Channel&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="470" y="1085" width="130" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="" style="ellipse;whiteSpace=wrap;html=1;opacity=50;" vertex="1" parent="1">
+                    <mxGeometry x="370" y="1240" width="870" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="22" target="52">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="Batch/Marketing Q&lt;br&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;SMS channel&lt;/span&gt;&lt;br style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgb(226, 226, 226) rgb(251, 251, 251);&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;EmailChannel&lt;/span&gt;&lt;br style=&quot;color: rgb(63, 63, 63); scrollbar-color: rgb(226, 226, 226) rgb(251, 251, 251);&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Push Channel&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="1000" y="1080" width="130" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="SMS channel workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="470" y="1270" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.622;entryY=0.023;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="12" target="20">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="Channel Workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="750" y="1270" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="Channel workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="1030" y="1270" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" style="edgeStyle=none;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="37" target="13">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="39" value="Update notification status" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="38">
+                    <mxGeometry x="-0.1017" y="3" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="43" value="DLQ" style="rounded=0;whiteSpace=wrap;html=1;opacity=40;" vertex="1" parent="1">
+                    <mxGeometry x="690" y="1050" width="120" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="12" target="63">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="783" y="970" as="sourcePoint"/>
+                        <mxPoint x="1065" y="1080" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="45" value="DLQ" style="rounded=0;whiteSpace=wrap;html=1;opacity=40;" vertex="1" parent="1">
+                    <mxGeometry x="420" y="1050" width="120" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="DLQ" style="rounded=0;whiteSpace=wrap;html=1;opacity=40;" vertex="1" parent="1">
+                    <mxGeometry x="950" y="1050" width="120" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="SMS channel workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="1280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="49" value="Channel workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="490" y="1290" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="50" value="Channel Workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="760" y="1280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" value="Channel Workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="770" y="1290" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="52" value="Channel workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="1040" y="1280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="Channel workers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="1050" y="1290" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="58" value="3P Email providers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="780" y="1550" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="59" style="edgeStyle=none;html=1;entryX=0.4;entryY=-0.072;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="51" target="58">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" value="3P SMS providers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="1550" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" style="edgeStyle=none;html=1;entryX=0.622;entryY=0.106;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="49" target="60">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="64" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="63" target="42">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="63" value="Batch notif processor&lt;br&gt;(Creates notification events for one batch notificatio and wrties to Q)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="990" y="850" width="120" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="66" target="21">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="71" style="edgeStyle=none;html=1;" edge="1" parent="1" source="66" target="20">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="710" y="1020" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="66" value="Backgroun poller for scheduled notifications" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="970" y="440" width="170" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="69" style="edgeStyle=none;html=1;entryX=0.35;entryY=-0.015;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="66" target="63">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="74" style="edgeStyle=none;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="73" target="12">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="73" value="User preference Redis cache" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="1350" y="800" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="75" value="Key -&amp;gt; UserId&lt;div&gt;Value -&amp;gt; {channels[], categories[]}&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="1280" y="890" width="230" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="77" style="edgeStyle=none;html=1;entryX=1.027;entryY=0.375;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="13" target="73">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="79" value="CDC events on UserPreference updates" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="77">
+                    <mxGeometry x="0.0138" y="-2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

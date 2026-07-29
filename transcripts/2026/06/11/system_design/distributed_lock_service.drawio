@@ -1,0 +1,118 @@
+<mxfile host="65bd71144e">
+    <diagram name="System Design" id="system-design">
+        <mxGraphModel dx="545" dy="186" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="2200" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Design a Distributed Lock Service" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="frs" value="FUNCTIONAL REQUIREMENTS&#xa;&#xa;1. Clients acquire locks on named resources (client-supplied keys)&#xa;2. Mutual exclusion: one holder per lock at a time&#xa;3. TTL on locks (auto-release on crash)&#xa;4. Fencing tokens (monotonic) for locks&#xa;5. (implied) acquire / release / renew operations" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="80" width="430" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="entities" value="CORE ENTITIES&#xa;&#xa;1. Client&#xa;2. Lock { key, fencingToken, clientId, expiry }" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="250" width="430" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="api" value="API DESIGN  (identity from auth token)&lt;br&gt;&lt;br&gt;POST /locks   (Idempotency-Key header)&lt;br&gt;  Req: { key, expiry }&lt;br&gt;  Resp 200: { fencingToken }   |   409 if already held&lt;br&gt;&lt;br&gt;PUT /locks/{key}   (renew)&lt;br&gt;  Req: { fencingToken, expiry }&lt;br&gt;  Resp: 2xx&lt;br&gt;&lt;br&gt;DELETE /locks/{key}   (release)&lt;br&gt;  Req: { fencingToken }&lt;br&gt;  Resp: status (lock released)&lt;br&gt;&lt;br&gt;// When a client tries to acquire an already held lock it will block its execution&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;and wait for lock to be acquired.&lt;br&gt;&lt;/font&gt;Blocking: client-side retry w/ wait_timeout + max retries&lt;br&gt;(or server long-poll)&lt;/div&gt;" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="250" width="470" height="270" as="geometry"/>
+                </mxCell>
+                <mxCell id="nfrs" value="NON-FUNCTIONAL REQUIREMENTS&#xa;&#xa;- Consistency over availability (CP) under partition&#xa;- Mutual exclusion atomic (no 2 concurrent holders)&#xa;- Availability target 99.99% (minority partition unavailable by design)&#xa;- Latency: p99 acquire &lt; 100ms&#xa;- Scale: ~1M acquire/release ops/s avg, 10M peak&#xa;- ~1M locks held (1GB) up to 10M (10GB) @ 1KB/key" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="80" width="470" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_h" value="HIGH-LEVEL DESIGN (as described)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="560" width="400" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_clients" value="Distributed Clients" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="620" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_r1" value="Redis Node 1&#xa;(Lua atomic SET+TTL)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="600" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_r2" value="Redis Node 2&#xa;(Lua atomic SET+TTL)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="680" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_r3" value="Redis Node N&#xa;(Lua atomic SET+TTL)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="760" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="hld_ring" value="Consistent hashing&#xa;(key → node)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=2;" parent="1" vertex="1">
+                    <mxGeometry x="210" y="620" width="140" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_c_r1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" parent="1" source="hld_clients" target="hld_r1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_c_r2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" parent="1" source="hld_clients" target="hld_r2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_c_r3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" parent="1" source="hld_clients" target="hld_r3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="opt_div" value="" style="line;strokeWidth=2;strokeColor=#999999;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="860" width="1500" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="opt_h" value="OPTIMAL HLD (REFERENCE) — what a senior strong-hire would draw" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#1a7f37;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="880" width="900" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_clients" value="Distributed Clients&#xa;(acquire / renew / release + watch)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="940" width="220" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_lb" value="Load Balancer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="85" y="1050" width="170" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_coord" value="Lock-Service Tier (stateless)&#xa;routes key → correct Raft group&#xa;(range / consistent-hash shard map)&#xa;+ fans out watch notifications" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1160" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_grpA" value="Raft Group A  (key range R1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="930" width="320" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_aL" value="Leader A&#xa;(serializes writes,&#xa;owns fencing counter)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="975" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_aF1" value="Follower A1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="1070" width="240" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_aF2" value="Follower A2  (5-node group: majority = 3)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="1135" width="240" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_aRepl" value="replicate log&#xa;commit on majority" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontStyle=2;" parent="1" vertex="1">
+                    <mxGeometry x="730" y="1040" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_grpB" value="Raft Group B  (key range R2)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="820" y="930" width="320" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_bL" value="Leader B&#xa;(serializes writes,&#xa;owns fencing counter)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="860" y="975" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_bF1" value="Follower B1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="860" y="1070" width="240" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_bF2" value="Follower B2  (... N groups for 1M writes/s)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="860" y="1135" width="240" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="o_clients" target="o_lb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="o_lb" target="o_coord" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_e3" value="route by key; write to leader" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;entryX=0;entryY=0.5;fontSize=10;" parent="1" source="o_coord" target="o_aL" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.7;entryX=0;entryY=0.5;fontSize=10;" parent="1" source="o_coord" target="o_bL" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" parent="1" source="o_aL" target="o_aF1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" parent="1" source="o_bL" target="o_bF1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_tradeoffs" value="KEY TRADE-OFFS&#xa;&#xa;- Raft/quorum store (etcd, ZooKeeper) vs Redis: majority-commit before ack → mutual exclusion survives failover. Redis async replication can lose an acked lock → double-grant. Cost: higher write latency.&#xa;- CP vs AP: refuse on minority partition to never double-grant. Cost: minority unavailable.&#xa;- Many Raft groups (sharded keyspace) vs one group: scales writes past one leader&#39;s ~10-30k/s. Cost: rebalancing, hot-shard risk, no cheap cross-key txn.&#xa;- Watch/notify vs spin-retry: idle waiters → ~1 write per ownership change. Cost: push/session mgmt, missed-notification handling.&#xa;- Fencing token enforced AT the resource vs trust the lock: only resource-side monotonic check stops a paused holder writing." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="1280" width="700" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="o_deep" value="DEEP DIVES&#xa;&#xa;- Core hard problem: single agreed holder under node failure → consensus (Raft), ack only after majority log-commit.&#xa;- Scale-break: 1M writes/s ≪ one Raft leader (~10-30k/s) → 50-100 range-partitioned Raft groups (etcd/TiKV range model).&#xa;- Hot lock (e.g. leader:cluster-A, 200k acquire/s on ONE key): can&#39;t shard a single key, can&#39;t replicate a writable lock. Fix = watches + client backoff + lease-based election; isolate hot key in its own group/hardware; batch log appends.&#xa;- Consistency: linearizable acquire via quorum; reads via leader-lease or quorum read.&#xa;- Fencing: monotonic token in the Raft log; downstream resource rejects stale tokens.&#xa;- Operability: per-key write-rate metrics + alerts to detect hot shards; fleet cost of N 5-node groups; blast radius = one key-range unavailable when its leader is down (OK under CP); watch/session expiry + missed-notification reconciliation." style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1080" y="1290" width="720" height="280" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

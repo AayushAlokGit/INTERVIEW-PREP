@@ -1,0 +1,84 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="2400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Design Google Calendar (Calendaring &amp; Scheduling System)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="800" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="frs" value="FUNCTIONAL REQUIREMENTS&#10;1. Create dated events + reminder config&#10;2. Invite others to events&#10;3. View personal calendar (day/week/month) with schedule&#10;4. View others' calendars to check availability (free/busy)&#10;5. Recurring events (daily/weekly/monthly)" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="380" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfrs" value="NON-FUNCTIONAL REQUIREMENTS&#10;- HA: 99.99% (~52 min/yr downtime)&#10;- Low latency: p99 &lt; 200ms calendar render&#10;- Consistent availability view (free/busy)&#10;- Scale: 1B users, 300M DAU&#10;- Reads ~104k/s avg, ~520k/s peak&#10;- Writes ~3.5k/s avg, ~17k/s peak&#10;- ~30:1 read-heavy" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="420" y="80" width="400" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="entities" value="CORE ENTITIES&#10;1. CalendarEvent (id, calendarId, nextOccurrenceDate, attendees,&#10;     organiser, name, description, recurrenceSchedule, reminderSchedule)&#10;2. User (id, name, email, ...)&#10;3. Calendar (id, userId)&#10;4. EventInvite (id, fromUserId, toUserId, status, eventId)&#10;&#10;Note: reminders likely per-user, not per-event (to revisit)" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="260" width="800" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api_his" value="API (as described by candidate)&#10;&#10;POST /events   (Header: Idempotency-Key)&#10;  req: { eventName, eventAttendees, recurrenceSchedule, reminderSchedule }&#10;  resp: event details + invite status for attendees&#10;&#10;GET /calendars?timeSlice={3days|7days|30days}&amp;userId={}&#10;  resp: event details in the calendar&#10;  (userId in URL to view another user's calendar - accepted trade-off)&#10;&#10;[Round ended here - RSVP, free/busy, response fields, pagination not defined]" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="430" width="800" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="opt_head" value="OPTIMAL HLD (REFERENCE) — what a senior strong-hire would build for THIS problem" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="20" y="680" width="1000" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_clients" value="Clients&#10;(web / mobile)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="760" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_gw" value="API Gateway&#10;(JWT auth, rate limit, routing)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="220" y="755" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_write" value="Event Write Service&#10;(validate, fan-out invites)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="450" y="700" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_read" value="Calendar Read Service&#10;(expand RRULE + overrides)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="450" y="800" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_fb" value="Free/Busy Service&#10;(materialized busy intervals)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="450" y="900" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_sched" value="Reminder Scheduler&#10;(due-time index, bucketed/min)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1000" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_db" value="Event DB&#10;(Spanner/Postgres)&#10;sharded by userId,&#10;idx by start_time;&#10;RRULE row + override rows" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="690" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_replicas" value="Read Replicas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="970" y="700" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_cache" value="Redis Cache&#10;(hot calendars / time-windows)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="810" width="180" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_queue" value="Notification Queue&#10;(at-least-once)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="710" y="1000" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_workers" value="Notification Workers&#10;(push / email, idempotent)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="950" y="1000" width="170" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_clients" target="c_gw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" value="writes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_gw" target="c_write"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" value="reads" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_gw" target="c_read"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" value="/freebusy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_gw" target="c_fb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_write" target="c_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" value="enqueue reminder" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_write" target="c_sched"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" value="cache" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_read" target="c_cache"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" value="miss" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_read" target="c_replicas"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" value="async replication" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="c_db" target="c_replicas"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_sched" target="c_queue"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_queue" target="c_workers"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" value="busy blocks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c_fb" target="c_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="opt_tradeoffs" value="KEY TRADE-OFFS (vs named alternatives)&#10;&#10;- RRULE single-row vs materialized instances: cheap write/storage&#10;   but expansion cost per read. Senior: HYBRID (materialize near-term,&#10;   rule for far future).&#10;- Spanner/Postgres vs Cassandra: want transactional event+invites&#10;   write + range-by-time index; 17k w/s peak doesn't need Cassandra.&#10;   Give up: pricier writes, sharding effort.&#10;- Fan-out invite on WRITE vs on read: write amplification vs read-time&#10;   join. Read-heavy (30:1) -> fan-out on write.&#10;- Reminders: DB due-index poll vs delay-queue vs timer-wheel&#10;   (poll = simplest, easiest to monitor)." style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="700" width="420" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_deep" value="DEEP DIVES (specific to calendar)&#10;&#10;1. Recurrence + exceptions: one RRULE row, bounded expansion per query&#10;   window. Single-instance edit/cancel = override row keyed by&#10;   (recurringEventId, originalStart). 'This-and-following' = split:&#10;   set UNTIL on original + new event from split point.&#10;2. SCALE-BREAK: 'find a slot for 10 people' / giant shared calendar.&#10;   Per-user expand + fan-in won't hold; shared calendar = HOT KEY.&#10;   Fix: materialize per-user busy intervals, shard, union at query.&#10;3. Reminders at scale: bucketed due-index + queue + idempotent dispatch&#10;   (dedup (userId,eventId,fireTime)); monitor REMINDER LAG vs SLA.&#10;4. Consistency: calendars allow overlap, but resource (room) booking&#10;   needs conditional write on (resourceId,timeRange) + optimistic&#10;   concurrency (version) on edits.&#10;5. Operability: cache hit ratio, expansion-cost caps/pagination,&#10;   hot-calendar detection, reminder-lag alerting, fleet cost @520k r/s." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="930" width="440" height="270" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,336 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1400" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="4600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="2" value="Design a Usage-Based Metering &amp; Billing System" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="700" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="3" value="AAYUSH'S DESIGN (as described)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#7F7F7F;" vertex="1" parent="1">
+          <mxGeometry x="40" y="56" width="700" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="10" value="1. FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="94" width="400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="11" value="&lt;div style=&quot;text-align:left&quot;&gt;1. Ingest usage events of different types (API call, compute-seconds, GB stored, etc.)&lt;br/&gt;2. Aggregate usage per customer, per type, per billing period&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;(monthly, anniversary-aligned — boundaries spread across every day of the month)&lt;br/&gt;3. Apply pricing plans to produce an invoice per billing period — no over- or under-pricing&lt;br/&gt;4. Show current spend in UI&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#F5F9FF;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="122" width="780" height="106" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="20" value="2. NON-FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="256" width="400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" value="&lt;div style=&quot;text-align:left&quot;&gt;1. Highly available ingestion — 99.99% (~52 min downtime/year)&lt;br/&gt;2. No undercounting or overcounting of consumption events&lt;br/&gt;3. Event → spend-UI freshness &amp;lt; 3 min&lt;br/&gt;4. Durability of consumption events&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Scale (as derived):&lt;/b&gt;&lt;br/&gt;• 50k customers × 10k events/day = 500M events/day&lt;br/&gt;• ~5k events/s average, peak 10× = ~50k events/s&lt;br/&gt;• 1 KB/event&lt;br/&gt;• Raw events retained for one billing period only (storage cost)&lt;br/&gt;• Storage stated as 150 TB/period (pre-correction figure — not restated after fix)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#F5F9FF;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="284" width="780" height="196" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="30" value="3. CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="508" width="400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="31" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;ConsumptionEvent&lt;/b&gt; (type, id, customerId, time, quantity)&lt;br/&gt;&lt;b&gt;Customer&lt;/b&gt; (id)&lt;br/&gt;&lt;b&gt;BillingPeriod&lt;/b&gt; (type, customerId, billingStartDate, currentBillingCycleCount)&lt;br/&gt;&lt;b&gt;Invoice&lt;/b&gt; (id, amount, type, customerId, billingCycleCount)&lt;br/&gt;&lt;b&gt;ConsumptionType&lt;/b&gt; enum (API | Compute | Storage | ...)&lt;br/&gt;&lt;b&gt;PricingPlan&lt;/b&gt; (type, rate)&lt;br/&gt;&lt;b&gt;Cumulative-price table&lt;/b&gt; — tracks cumulative price for a billing cycle,&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;updated on ingest of each event for a (customer, type)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#F5F9FF;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="536" width="780" height="156" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="40" value="4. API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="720" width="400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="41" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;i&gt;customerId extracted from auth header.&lt;/i&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;POST /consumptionEvent/{type}&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;Header: Idempotency-Key (prevents excessive counting)&lt;br/&gt;&amp;nbsp;&amp;nbsp;Request: { consumptionQuantity, timestamp }&lt;br/&gt;&amp;nbsp;&amp;nbsp;Response: 2xx — consumption event accepted&lt;br/&gt;&lt;br/&gt;&lt;b&gt;GET /consumptionEvent/{type}/currentSpend&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;Response: { priceSpend, currency }&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Batch ingestion endpoint&lt;/b&gt; (named, shape not specified)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#F5F9FF;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="748" width="780" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="50" value="5. HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="976" width="400" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="51" value="Customers&#10;(clients)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1050" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="52" value="API Gateway" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="1050" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="53" value="Ingestion Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="1050" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="54" value="DynamoDB&#10;(write-optimised)&#10;events + current spend" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="1030" width="180" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="55" value="Cron&#10;(runs at end of each&#10;customer's billing cycle)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="1210" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=11;" edge="1" parent="1" source="51" target="52">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="57" value="POST event / GET spend" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="56">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=11;" edge="1" parent="1" source="52" target="53">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.35;entryX=0;entryY=0.35;fontSize=11;" edge="1" parent="1" source="53" target="54">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="60" value="write event +&#10;update current spend" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="59">
+          <mxGeometry x="-0.05" y="-14" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.75;entryX=1;entryY=0.75;fontSize=11;dashed=1;" edge="1" parent="1" source="54" target="53">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="62" value="read current spend" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="61">
+          <mxGeometry x="0" y="14" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=1;fontSize=11;" edge="1" parent="1" source="55" target="54">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="64" value="read consumption →&#10;generate invoice" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="63">
+          <mxGeometry x="0.1" y="-12" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="65" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;i&gt;Self-identified weaknesses of this design:&lt;/i&gt;&lt;br/&gt;• High load of incoming events — ensuring no event is lost or double-counted&lt;br/&gt;• No storage management — the database can grow unbounded&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1320" width="620" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="70" value="6. DEEP DIVE — revised ingest path" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1430" width="500" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="71" value="Customers&#10;(clients)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1500" width="130" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="72" value="API Gateway" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1500" width="130" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="73" value="Ingestion Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1500" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="74" value="Redis&#10;(dedupe)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="640" y="1485" width="130" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="75" value="Kafka&#10;(durability,&#10;at-least-once)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="830" y="1485" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="76" value="Consumer&#10;(idempotent)&#10;1-min window aggregation" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="1490" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="77" value="DynamoDB&#10;per-minute consumed&#10;QUANTITY (not price)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="1480" width="180" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="78" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="71" target="72">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="79" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="72" target="73">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="80" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="73" target="74">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="81" value="dedupe" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="80">
+          <mxGeometry x="0" y="-11" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="74" target="75">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="83" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="75" target="76">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="84" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="76" target="77">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="85" value="write 1-min&#10;quantities" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="84">
+          <mxGeometry x="0" y="-14" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="86" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Key change:&lt;/b&gt; store consumed &lt;b&gt;quantity per minute&lt;/b&gt;, not a running price.&lt;br/&gt;Current spend = SUM(quantities over billing cycle so far) × pricing plan, computed at &lt;b&gt;read time&lt;/b&gt;.&lt;br/&gt;Invoice = same summation at billing-cycle end.&lt;br/&gt;&lt;i&gt;&quot;Complexity moved to read time and invoicing time.&quot;&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1630" width="820" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="99" value="" style="line;strokeWidth=3;html=1;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1800" width="2400" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="100" value="OPTIMAL REFERENCE — what a senior strong-hire would design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1830" width="1000" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="110" value="A. OPTIMAL CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1890" width="400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="111" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;UsageEvent&lt;/b&gt; (eventId [client-generated UUID = idempotency key], customerId, meterId,&lt;br/&gt;&amp;nbsp;&amp;nbsp;quantity, eventTime [when it happened], ingestTime [when we saw it], sourceService, dedupeScope)&lt;br/&gt;&amp;nbsp;&amp;nbsp;→ immutable, append-only. eventTime ≠ ingestTime is what makes late events tractable.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Meter&lt;/b&gt; (meterId, name, unit, aggregationType [SUM | MAX | LAST_VALUE | UNIQUE_COUNT])&lt;br/&gt;&amp;nbsp;&amp;nbsp;→ GB-stored is a gauge (MAX/LAST), API calls are a counter (SUM). Aayush's model assumed everything is SUM.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;UsageAggregate&lt;/b&gt; (customerId#shard, meterId, bucketGranularity [MIN|HOUR|DAY], bucketStart,&lt;br/&gt;&amp;nbsp;&amp;nbsp;quantity, eventCount, lastUpdated)&lt;br/&gt;&amp;nbsp;&amp;nbsp;→ THE central entity. Quantity only, never price. Hierarchical granularity for cheap reads.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;PricingPlan&lt;/b&gt; (planId, &lt;b&gt;version&lt;/b&gt;, effectiveFrom, effectiveTo, currency)&lt;br/&gt;&lt;b&gt;PricingTier&lt;/b&gt; (planId, version, meterId, fromQty, toQty, unitPrice, flatFee)&lt;br/&gt;&amp;nbsp;&amp;nbsp;→ Tiered, and VERSIONED. Without a version an old invoice cannot be reproduced.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Subscription&lt;/b&gt; (customerId, planId, planVersion, anniversaryDay, timezone)&lt;br/&gt;&lt;br/&gt;&lt;b&gt;BillingPeriod&lt;/b&gt; (customerId, periodStart, periodEnd, &lt;b&gt;state: OPEN → CLOSING → FINALIZED&lt;/b&gt;,&lt;br/&gt;&amp;nbsp;&amp;nbsp;gracePeriodEnds, finalizedAt)&lt;br/&gt;&amp;nbsp;&amp;nbsp;→ A state machine, not a date pair. This is what makes late events answerable.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Invoice&lt;/b&gt; (invoiceId, customerId, periodStart, periodEnd, planVersion, lineItems[],&lt;br/&gt;&amp;nbsp;&amp;nbsp;subtotal, adjustments[], total, currency, status, aggregateSnapshotRef)&lt;br/&gt;&lt;b&gt;InvoiceLineItem&lt;/b&gt; (meterId, quantity, tierBreakdown[], amount)&lt;br/&gt;&lt;b&gt;Adjustment&lt;/b&gt; (invoiceId, reason [LATE_EVENT | CREDIT | CORRECTION], amount, sourcePeriod)&lt;br/&gt;&amp;nbsp;&amp;nbsp;→ Invoices are immutable + reproducible; corrections are new rows, never edits.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FDF3F3;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1918" width="1180" height="450" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="120" value="B. OPTIMAL API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1890" width="400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="121" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;i&gt;customerId from auth context. All list endpoints cursor-paginated.&lt;/i&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;POST /v1/usage/events:batch&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;(batch is the PRIMARY contract at 50k/s)&lt;/i&gt;&lt;br/&gt;&amp;nbsp;Header: Idempotency-Key (batch-level)&lt;br/&gt;&amp;nbsp;Req:&amp;nbsp;{ events: [ { eventId, meterId, quantity, eventTime } ] }&amp;nbsp;&amp;nbsp;max 1000&lt;br/&gt;&amp;nbsp;Res 202: { accepted: 998, rejected: [ { eventId, code: DUPLICATE|BAD_METER&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;|PERIOD_FINALIZED, message } ], receiptId }&lt;br/&gt;&amp;nbsp;→ per-event partial failure; a 1000-event batch must not fail atomically&lt;br/&gt;&lt;br/&gt;&lt;b&gt;GET /v1/usage/current?meterId=&amp;amp;granularity=&lt;/b&gt;&lt;br/&gt;&amp;nbsp;Res: { customerId, periodStart, periodEnd, &lt;b&gt;asOf&lt;/b&gt;, &lt;b&gt;isEstimate: true&lt;/b&gt;, currency,&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;meters: [ { meterId, quantity, unit, amount } ], subtotal, total }&lt;br/&gt;&amp;nbsp;→ asOf + isEstimate are mandatory: the number is &amp;lt;3 min stale BY DESIGN&lt;br/&gt;&lt;br/&gt;&lt;b&gt;GET /v1/invoices?status=&amp;amp;cursor=&amp;amp;limit=&lt;/b&gt;&lt;br/&gt;&amp;nbsp;Res: { invoices: [ {invoiceId, periodStart, periodEnd, total, currency,&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;status: DRAFT|FINALIZED|PAID} ], nextCursor }&lt;br/&gt;&amp;nbsp;→ cursor, not offset: invoices are appended continuously&lt;br/&gt;&lt;br/&gt;&lt;b&gt;GET /v1/invoices/{invoiceId}&lt;/b&gt;&lt;br/&gt;&amp;nbsp;Res: { ...invoice, planVersion, lineItems: [ { meterId, quantity,&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;tierBreakdown: [ {fromQty, toQty, unitPrice, amount} ], amount } ],&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;adjustments: [...] }&lt;br/&gt;&amp;nbsp;→ tierBreakdown is the dispute-resolution field&lt;br/&gt;&lt;br/&gt;&lt;b&gt;GET /v1/usage/events?meterId=&amp;amp;from=&amp;amp;to=&amp;amp;cursor=&lt;/b&gt;&amp;nbsp;&amp;nbsp;audit / drill-down&lt;br/&gt;&lt;b&gt;GET /v1/plans/{planId}/versions/{version}&lt;/b&gt;&amp;nbsp;&amp;nbsp;reproducibility&lt;br/&gt;&lt;b&gt;POST /v1/invoices/{id}:finalize&lt;/b&gt;&amp;nbsp;&amp;nbsp;internal, idempotent&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Errors:&lt;/b&gt; 409 on idempotency-key reuse with different body;&lt;br/&gt;&amp;nbsp;422 PERIOD_FINALIZED → routed to adjustments, not dropped.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FDF3F3;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1918" width="900" height="450" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="200" value="C. OPTIMAL HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2410" width="500" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="201" value="WRITE / INGEST PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#7F7F7F;" vertex="1" parent="1">
+          <mxGeometry x="60" y="2450" width="300" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="210" value="Product Services&#10;(20 emitters)&#10;client-side batching" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="2490" width="150" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="211" value="Load Balancer&#10;+ API Gateway&#10;authn / quota" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2490" width="150" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="212" value="Ingest Service&#10;(stateless, autoscaled)&#10;validate + assign&#10;partition key" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="480" y="2485" width="160" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="213" value="Kafka&#10;topic: usage-events&#10;key = customerId#shard&#10;RF=3, acks=all, 7d retention" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="2470" width="180" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="214" value="Stream Aggregator&#10;(Flink / Kafka Streams)&#10;1-min tumbling windows&#10;keyed by (cust#shard, meter)&#10;EXACTLY-ONCE sink" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="940" y="2470" width="190" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="215" value="Aggregate Store&#10;(DynamoDB / Cassandra)&#10;PK: customerId#shard&#10;SK: meterId#gran#bucketStart&#10;MIN / HOUR / DAY rows" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="2460" width="200" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="216" value="Raw Event Lake&#10;(S3, Parquet)&#10;customer/date partitions&#10;audit + replay + reconcile" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="940" y="2660" width="190" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="217" value="DLQ&#10;(bad meter, unknown&#10;customer, finalized period)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="2660" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="218" value="Rollup Job&#10;MIN → HOUR → DAY&#10;(compaction, hourly)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="2470" width="170" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="230" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="210" target="211">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="231" value="batch POST" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="230">
+          <mxGeometry x="0" y="-11" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="232" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="211" target="212">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="233" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="212" target="213">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="234" value="produce" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="233">
+          <mxGeometry x="0" y="-11" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="235" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="213" target="214">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="236" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="214" target="215">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="237" value="upsert MIN bucket&#10;(idempotent, keyed on&#10;window + eventId set)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="236">
+          <mxGeometry x="0" y="-24" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="238" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="214" target="216">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="239" value="archive raw" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="238">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset" x="42"/></mxGeometry>
+        </mxCell>
+        <mxCell id="240" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" edge="1" parent="1" source="213" target="217">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="241" value="poison / rejected" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="240">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset" x="54"/></mxGeometry>
+        </mxCell>
+        <mxCell id="242" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.25;dashed=1;" edge="1" parent="1" source="218" target="215">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="250" value="READ / BILLING PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#7F7F7F;" vertex="1" parent="1">
+          <mxGeometry x="60" y="2840" width="300" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="251" value="Customer UI" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="2880" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="252" value="Spend Query Service&#10;sum DAY + HOUR + MIN&#10;rows, then apply tiers" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2875" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="253" value="Spend Cache&#10;(Redis, TTL 60s)&#10;per customer+meter" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="510" y="2865" width="160" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="254" value="Pricing Service&#10;tiered evaluation on&#10;versioned plan" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="270" y="3020" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="255" value="Period Scheduler&#10;anniversary-aligned&#10;OPEN→CLOSING→FINALIZED&#10;(sharded, idempotent)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="740" y="3010" width="190" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="256" value="Invoice Service&#10;(idempotent per&#10;customer+period)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="990" y="3015" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="257" value="Billing DB&#10;(Postgres)&#10;invoices, plans,&#10;subscriptions, adjustments" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="3000" width="190" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="258" value="Reconciliation Job&#10;(daily)&#10;S3 raw counts vs&#10;aggregate sums → alert" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1480" y="2870" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="270" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="251" target="252">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="271" value="GET /usage/current" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="270">
+          <mxGeometry x="0" y="-11" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="272" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="252" target="253">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="273" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.85;" edge="1" parent="1" source="253" target="215">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1100" y="2890"/><mxPoint x="1100" y="2579"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="274" value="~115 rows on miss&#10;(30 DAY + 24 HOUR + 60 MIN)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="273">
+          <mxGeometry x="0.2" y="0" relative="1" as="geometry"><mxPoint as="offset" x="60" y="-14"/></mxGeometry>
+        </mxCell>
+        <mxCell id="275" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="252" target="254">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="276" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="255" target="256">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="277" value="period due" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="276">
+          <mxGeometry x="0" y="-11" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="278" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="256" target="257">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="279" value="write invoice&#10;+ snapshot" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="278">
+          <mxGeometry x="0" y="-14" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="280" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;dashed=1;" edge="1" parent="1" source="256" target="215">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="281" value="read DAY rollups" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="280">
+          <mxGeometry x="0.3" y="0" relative="1" as="geometry"><mxPoint as="offset" x="56"/></mxGeometry>
+        </mxCell>
+        <mxCell id="282" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;dashed=1;" edge="1" parent="1" source="258" target="215">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="283" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.85;entryX=1;entryY=0.5;dashed=1;" edge="1" parent="1" source="258" target="216">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1440" y="2955"/><mxPoint x="1440" y="2720"/></Array></mxGeometry>
+        </mxCell>
+
+        <mxCell id="300" value="D. KEY TRADE-OFFS (choice vs named alternative — and what is given up)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3180" width="800" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="301" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Kafka&lt;/b&gt; over &lt;i&gt;SQS / Kinesis&lt;/i&gt; — need replay from an arbitrary offset for reconciliation and backfill, plus key-ordered partitions.&lt;br/&gt;&amp;nbsp;&amp;nbsp;&lt;b&gt;Giving up:&lt;/b&gt; operational weight (or MSK cost); partition count becomes a capacity-planning decision.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Flink / Kafka Streams&lt;/b&gt; over &lt;i&gt;a hand-rolled consumer with a Redis dedupe set&lt;/i&gt; — gives transactional exactly-once into the sink.&lt;br/&gt;&amp;nbsp;&amp;nbsp;A Redis dedupe set is NOT durable: eviction or failover admits duplicates → overcharging, which violates a stated NFR.&lt;br/&gt;&amp;nbsp;&amp;nbsp;&lt;b&gt;Giving up:&lt;/b&gt; a stateful framework to operate, checkpoint storage, and slower recovery on restart.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;DynamoDB/Cassandra&lt;/b&gt; for aggregates over &lt;i&gt;Postgres&lt;/i&gt; — predictable single-digit-ms upserts at 50k/s on a known composite key.&lt;br/&gt;&amp;nbsp;&amp;nbsp;&lt;b&gt;Giving up:&lt;/b&gt; ad-hoc queries and joins; no cross-partition transactions; must design every access pattern up front.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Postgres&lt;/b&gt; for invoices/plans over &lt;i&gt;the same NoSQL store&lt;/i&gt; — low volume (50k rows/month), needs multi-row transactions, joins, and strict&lt;br/&gt;&amp;nbsp;&amp;nbsp;correctness for money. &lt;b&gt;Giving up:&lt;/b&gt; a second datastore to operate. Worth it — this is the polyglot-persistence call.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;S3 Parquet&lt;/b&gt; for raw events over &lt;i&gt;keeping raw in DynamoDB&lt;/i&gt; — ~15 TB/period; Dynamo at that size and write rate is an order of magnitude&lt;br/&gt;&amp;nbsp;&amp;nbsp;more expensive. &lt;b&gt;Giving up:&lt;/b&gt; low-latency single-event lookup; audit drill-down becomes an Athena query, seconds not milliseconds.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Store quantity, price at read time&lt;/b&gt; over &lt;i&gt;a running price total&lt;/i&gt; — two independent reasons: (1) an increment is not idempotent under&lt;br/&gt;&amp;nbsp;&amp;nbsp;at-least-once, (2) tiered pricing means sum(price) ≠ price(sum), so a running price is arithmetically wrong, not just fragile.&lt;br/&gt;&amp;nbsp;&amp;nbsp;&lt;b&gt;Giving up:&lt;/b&gt; read cost — which is exactly why the rollup hierarchy has to exist.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Hierarchical rollups&lt;/b&gt; over &lt;i&gt;minute rows only&lt;/i&gt; — 43,200 min-rows/customer/meter/period × 20 meters ≈ 864k rows per spend query.&lt;br/&gt;&amp;nbsp;&amp;nbsp;Rollups cut it to ~115. &lt;b&gt;Giving up:&lt;/b&gt; a compaction job to operate, and a window where MIN and HOUR rows briefly disagree.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;60s cache with asOf/isEstimate&lt;/b&gt; over &lt;i&gt;a strongly-consistent read&lt;/i&gt; — the SLA already permits 3 min of staleness, so buy the read&lt;br/&gt;&amp;nbsp;&amp;nbsp;amplification back. &lt;b&gt;Giving up:&lt;/b&gt; nothing real, PROVIDED the API tells the caller the number is an estimate. Hence the field.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FDF3F3;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3208" width="1680" height="420" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="400" value="E. DEEP DIVES — the hard problems specific to THIS system" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3670" width="800" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="401" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;1. EXACTLY-ONCE UNDER AT-LEAST-ONCE (the money-correctness core)&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;Never do &quot;append event&quot; + &quot;increment total&quot; as two writes — a crash between them undercounts forever, and the client's retry is&lt;br/&gt;&amp;nbsp;&amp;nbsp;rejected as a duplicate so it never self-heals. Eliminate the second write instead of trying to make the pair atomic.&lt;br/&gt;&amp;nbsp;&amp;nbsp;Aggregation must be &lt;b&gt;idempotent&lt;/b&gt;, not merely at-least-once: the window's output is a function of the set of eventIds in it, so&lt;br/&gt;&amp;nbsp;&amp;nbsp;replaying the same window produces the same row. Use Flink checkpointing + a transactional sink, or version the bucket row&lt;br/&gt;&amp;nbsp;&amp;nbsp;with the Kafka offset watermark and reject stale writes with a conditional update.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;2. THE SCALE BREAK — read amplification (this is the one Aayush's final design hits)&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;1-min buckets = 1,440/day × 30 = &lt;b&gt;43,200 rows per customer per meter per period&lt;/b&gt;; × 20 meters ≈ &lt;b&gt;864,000 rows&lt;/b&gt; summed on&lt;br/&gt;&amp;nbsp;&amp;nbsp;every current-spend page load. That does not meet an interactive SLA for the top 1% of tenants.&lt;br/&gt;&amp;nbsp;&amp;nbsp;&lt;b&gt;Fix:&lt;/b&gt; MIN → HOUR → DAY rollups. A spend query reads ~30 DAY + ~24 HOUR + ~60 MIN ≈ &lt;b&gt;115 rows&lt;/b&gt;. 60s Redis cache on top.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;3. HOT TENANTS (top 1% = 50% of volume — this was stated in the prompt)&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;Partitioning by customerId alone puts one tenant's ~25k events/s on a single partition → guaranteed hot partition and&lt;br/&gt;&amp;nbsp;&amp;nbsp;throttling. &lt;b&gt;Fix:&lt;/b&gt; composite key &lt;b&gt;customerId#shard&lt;/b&gt;, shard ∈ [0,N), with N per-tenant and adaptive (1 for the long tail,&lt;br/&gt;&amp;nbsp;&amp;nbsp;64+ for the whales). Reads scatter-gather across N shards; N is stored on the Subscription so it can be raised online.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;4. LATE &amp;amp; OUT-OF-ORDER EVENTS (the hardest real billing problem)&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;eventTime ≠ ingestTime. An event timestamped inside a period can arrive after that period was invoiced.&lt;br/&gt;&amp;nbsp;&amp;nbsp;&lt;b&gt;Policy:&lt;/b&gt; period goes OPEN → CLOSING (24h grace, no invoice yet) → FINALIZED. Events arriving in CLOSING land normally.&lt;br/&gt;&amp;nbsp;&amp;nbsp;Events arriving after FINALIZED become an &lt;b&gt;Adjustment&lt;/b&gt; line on the NEXT invoice — never a silent edit of a sent invoice.&lt;br/&gt;&amp;nbsp;&amp;nbsp;Watermarks in the stream job bound how late is &quot;too late&quot;; anything beyond goes to the DLQ with a business alert.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;5. ANNIVERSARY-ALIGNED PERIOD CLOSING&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;Boundaries land on all 28+ days of the month, so finalization is a continuous background process, not a month-end batch.&lt;br/&gt;&amp;nbsp;&amp;nbsp;The scheduler must be sharded, idempotent (exactly one invoice per customer+period, enforced by a unique constraint),&lt;br/&gt;&amp;nbsp;&amp;nbsp;resumable after a crash, and timezone-aware. &quot;Runs twice&quot; must be a no-op, not a double bill.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;6. TIERED PRICING&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;Price is a step function of cumulative period quantity, so it can only be evaluated on the TOTAL — never incrementally.&lt;br/&gt;&amp;nbsp;&amp;nbsp;Plans are &lt;b&gt;versioned&lt;/b&gt; and invoices store planVersion + a tierBreakdown per line item, so any invoice is reproducible and&lt;br/&gt;&amp;nbsp;&amp;nbsp;defensible in a dispute months later.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;7. OPERABILITY — &quot;how do I know the bill is wrong BEFORE the customer tells me?&quot;&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;• Consumer lag alert vs the 3-min freshness SLA; auto-scale consumers on lag, and surface staleness via &lt;b&gt;asOf&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;• &lt;b&gt;Daily reconciliation:&lt;/b&gt; count raw events in S3 vs sum of aggregate rows, per customer per meter. Any drift pages.&lt;br/&gt;&amp;nbsp;&amp;nbsp;• &lt;b&gt;Invoice-delta alert:&lt;/b&gt; this bill is &amp;gt;10× the trailing average → hold in DRAFT for human review before it is sent&lt;br/&gt;&amp;nbsp;&amp;nbsp;• DLQ depth alert, with a documented replay path; zero-usage alert (a silent emitter is undercounting = lost revenue)&lt;br/&gt;&amp;nbsp;&amp;nbsp;• Full replay from S3 must be able to rebuild every aggregate from scratch — this is the ultimate correctness backstop&lt;br/&gt;&lt;br/&gt;&lt;b&gt;8. COST AT SCALE&lt;/b&gt;&lt;br/&gt;&amp;nbsp;&amp;nbsp;500M events/day × 1 KB = ~500 GB/day → ~15 TB/period raw (S3 ≈ $350/mo, vs multiple $10k/mo in DynamoDB).&lt;br/&gt;&amp;nbsp;&amp;nbsp;Aggregates are ~43k rows/customer/meter/period pre-rollup; post-rollup the retained set is orders of magnitude smaller.&lt;br/&gt;&amp;nbsp;&amp;nbsp;Raw retention 90 days (dispute window), aggregates 7 years (financial record).&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FDF3F3;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3698" width="1680" height="800" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

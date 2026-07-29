@@ -1,0 +1,148 @@
+<mxfile host="65bd71144e">
+    <diagram name="System Design" id="system-design">
+        <mxGraphModel dx="1431" dy="330" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1400" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Design a Distributed Message Queue (Kafka-like)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="FRs -&amp;gt;&lt;br&gt;1. Producers should be able to push messages to topics&lt;div&gt;2. Consumers should be able to pull messages from topics&lt;/div&gt;&lt;div&gt;3. Support topic management and configuration&lt;/div&gt;&lt;div&gt;4. Atleast once delivery guarantee&lt;/div&gt;&lt;div&gt;5. Ordering gurantee in one partition of topic.(Topic has many partitions)&lt;/div&gt;&lt;div&gt;6. Allow consumers to replay messages&amp;nbsp;&lt;/div&gt;&lt;div&gt;7. Only one consumer can connect to one partiton of topic, but there can be mltiple consumers for multiple paritions of one topic&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;NFRs -&amp;gt;&lt;/div&gt;&lt;div&gt;1. Highly available (99.99 - 52.5 mints downtime/year)&lt;/div&gt;&lt;div&gt;2. Durability of events . Messages should not be lost for 3 days. Configurable replication&lt;/div&gt;&lt;div&gt;3. Low latency between publishing and availability for consumption (p99 &amp;lt; 100ms)&lt;/div&gt;&lt;div&gt;4. Handle ingestion of 1M messages/s avg and 10M msg/s peak.1M producers and 1M consumers. Avg message size = 5Kb&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry y="90" width="690" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Core Entities -&amp;gt;&lt;br&gt;1. Message&lt;div&gt;2. Topic&lt;/div&gt;&lt;div&gt;3. Partition&lt;/div&gt;&lt;div&gt;4. Consumer Group&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;APIs -&amp;gt; (Identity from JWT auth token)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;1. Publish a message&lt;/b&gt;&lt;/div&gt;&lt;div&gt;POST /topics/:topicId/messages&lt;/div&gt;&lt;div&gt;Headers: Idempotency-Key: &amp;lt;uuid&amp;gt;&lt;/div&gt;&lt;div&gt;Body: { messageBody, partitionKey }&lt;/div&gt;&lt;div&gt;Response 200: { messageId, partition, offset, timestamp }&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;2. Consume messages (batch)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;GET /topics/:topicId/partitions/:partId/messages?offset={O}&amp;amp;limit={L}&lt;/div&gt;&lt;div&gt;Response 200: { messages: [...], nextOffset, highWatermark }&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;3. Create topic (control plane)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;POST /topics&lt;/div&gt;&lt;div&gt;Body: { topicName, partitionCount, replicationFactor, retentionMs }&lt;/div&gt;&lt;div&gt;Response 201: { topicId, partitions: [...] }&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;4. Commit consumer offset (for at-least-once)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;PUT /consumer-groups/:groupId/topics/:topicId/partitions/:partId/offset&lt;/div&gt;&lt;div&gt;Body: { offset }&lt;/div&gt;&lt;div&gt;Response 200: { committedOffset }&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;5. Join consumer group / fetch partition assignment&lt;/b&gt;&lt;/div&gt;&lt;div&gt;POST /consumer-groups/:groupId/members&lt;/div&gt;&lt;div&gt;Body: { consumerId, subscribedTopics: [...] }&lt;/div&gt;&lt;div&gt;Response 200: { assignedPartitions: [...], generationId }&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;6. Heartbeat (keepalive)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;POST /consumer-groups/:groupId/heartbeat&lt;/div&gt;&lt;div&gt;Body: { consumerId, generationId }&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="720" y="90" width="650" height="640" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="p1" value="Producer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="780" width="120" height="50" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="lb" value="Load Balancer&#10;(control plane bootstrap)" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="220" y="775" width="160" height="60" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="cp" value="Control Plane (ZooKeeper)&#10;• topic metadata&#10;• partition→leader map&#10;• consumer-group coordination&#10;• leader election (ISR-based)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+                    <mxGeometry x="440" y="745" width="240" height="120" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="cg" value="Consumer Group" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;dashed=1;verticalAlign=top;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="1080" y="780" width="220" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="c1" value="Consumer 1&#10;(reads P0)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="1100" y="820" width="180" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="c2" value="Consumer 2&#10;(reads P1, P2)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="1100" y="900" width="180" height="50" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="bcluster" value="Broker Cluster" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#444444;dashed=1;verticalAlign=top;fontSize=13;fontStyle=1;spacingTop=4;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="1020" width="900" height="340" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="b1" value="Broker 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;verticalAlign=top;spacingTop=4;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="70" y="1060" width="260" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="b1p0" value="P0 — LEADER&#10;WAL on disk (append-only)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="85" y="1095" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b1p1" value="P1 — follower&#10;WAL on disk" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="85" y="1160" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b1p2" value="P2 — follower&#10;WAL on disk" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="85" y="1225" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b1cache" value="OS Page Cache (zero-copy reads)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+                    <mxGeometry x="85" y="1290" width="230" height="35" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="b2" value="Broker 2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;verticalAlign=top;spacingTop=4;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="350" y="1060" width="260" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="b2p0" value="P0 — follower&#10;WAL on disk" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="365" y="1095" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b2p1" value="P1 — LEADER&#10;WAL on disk (append-only)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="365" y="1160" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b2p2" value="P2 — follower&#10;WAL on disk" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="365" y="1225" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b2cache" value="OS Page Cache" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+                    <mxGeometry x="365" y="1290" width="230" height="35" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="b3" value="Broker 3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;verticalAlign=top;spacingTop=4;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="630" y="1060" width="260" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="b3p0" value="P0 — follower&#10;WAL on disk" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="645" y="1095" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b3p1" value="P1 — follower&#10;WAL on disk" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="645" y="1160" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b3p2" value="P2 — LEADER&#10;WAL on disk (append-only)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+                    <mxGeometry x="645" y="1225" width="230" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="b3cache" value="OS Page Cache" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+                    <mxGeometry x="645" y="1290" width="230" height="35" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="offsets" value="__consumer_offsets&#10;(internal compacted topic — key: groupId+topic+partition → offset)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=2;dashed=1;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="1400" width="340" height="60" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="a1" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;curved=0;" edge="1" parent="1" source="p1" target="lb">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1label" value="1. metadata bootstrap" style="edgeLabel;html=1;fontSize=10;fillColor=#ffffff;" vertex="1" connectable="0" parent="a1">
+                    <mxGeometry x="-0.1" relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="a2" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;curved=0;" edge="1" parent="1" source="lb" target="cp">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="a3" style="endArrow=classic;html=1;curved=0;exitX=0.25;exitY=1;entryX=0.5;entryY=0;strokeColor=#006eaf;strokeWidth=2;" edge="1" parent="1" source="p1" target="b1p0">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a3label" value="2. publish (direct), acks=all" style="edgeLabel;html=1;fontSize=10;fillColor=#ffffff;fontColor=#006eaf;" vertex="1" connectable="0" parent="a3">
+                    <mxGeometry x="-0.2" relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="a4" style="endArrow=classic;dashed=1;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#9673a6;" edge="1" parent="1" source="b1p0" target="b2p0">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a4label" value="follower pulls (replication)" style="edgeLabel;html=1;fontSize=9;fontColor=#9673a6;fillColor=#ffffff;" vertex="1" connectable="0" parent="a4">
+                    <mxGeometry x="0.1" relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="a5" style="endArrow=classic;dashed=1;html=1;exitX=1;exitY=0;entryX=0;entryY=0;strokeColor=#9673a6;curved=1;" edge="1" parent="1" source="b1p0" target="b3p0">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="a6" style="endArrow=classic;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;curved=1;" edge="1" parent="1" source="c1" target="cp">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a6label" value="metadata + group coord + heartbeat" style="edgeLabel;html=1;fontSize=10;fillColor=#ffffff;" vertex="1" connectable="0" parent="a6">
+                    <mxGeometry x="0.1" relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="a7" style="endArrow=classic;html=1;exitX=0;exitY=1;entryX=1;entryY=0.5;curved=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="1" source="c1" target="b1p0">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a7label" value="consume (direct from leader)" style="edgeLabel;html=1;fontSize=10;fillColor=#ffffff;fontColor=#82b366;" vertex="1" connectable="0" parent="a7">
+                    <mxGeometry x="-0.1" relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="a8" style="endArrow=classic;html=1;exitX=0;exitY=1;entryX=1;entryY=0.5;curved=1;strokeColor=#d79b00;" edge="1" parent="1" source="c2" target="offsets">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a8label" value="commit offset" style="edgeLabel;html=1;fontSize=10;fillColor=#ffffff;fontColor=#d79b00;" vertex="1" connectable="0" parent="a8">
+                    <mxGeometry x="0.1" relative="1" as="geometry"/>
+                </mxCell>
+
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

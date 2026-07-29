@@ -1,0 +1,131 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1200" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="3400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Design an Object Storage System (S3-like)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="frs" value="FUNCTIONAL REQUIREMENTS&#10;&#10;1. Upload object (incl. multipart / resumable for large objects)&#10;2. Retrieve (GET) object by (bucket, key)&#10;3. Delete object&#10;4. List objects in a bucket (by key prefix)&#10;&#10;Object addressed by (bucket, key); buckets created by users;&#10;key is a client-chosen string (folder-style naming, no real dirs)&#10;&#10;Out of scope: TTL / lifecycle expiry" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="520" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="entities" value="CORE ENTITIES (as described)&#10;&#10;Object {&#10;   bucket, key, uploadedBy, createdAt,&#10;   chunks: [ Chunk ]&#10;}&#10;Bucket { name, createdBy }&#10;Chunk { address }&#10;ObjectUploadStatus { chunksUploaded, status }" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="290" width="520" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfrs" value="NON-FUNCTIONAL REQUIREMENTS&#10;&#10;- Durability: 11 nines (99.999999999%) -&gt; redundancy (replication / erasure coding) across failure domains&#10;- Availability: 99.99% (~52 min/yr downtime)&#10;- Consistency: eventual acceptable&#10;- Scale: ~1 trillion objects x 1 MB avg = 1 EB total&#10;- Read-heavy: 100:1 read:write&#10;- Write QPS ~ 1e5/s ; Read QPS ~ 1e7/s&#10;- Ingest throughput ~ 100 GB/s ; Read throughput ~ 10 TB/s" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="80" width="560" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="api" value="API DESIGN (taught reference)&#10;&#10;Simple ops:&#10;  PUT    /{bucket}/{key}        body=bytes; hdrs Content-Type/Length/MD5  -&gt; 200 {ETag, versionId}&#10;  GET    /{bucket}/{key}        opt hdr Range: bytes=0-1023  -&gt; 200/206 bytes + Content-Length/Type/ETag&#10;  DELETE /{bucket}/{key}        -&gt; 204 (writes delete-marker version)&#10;  GET    /{bucket}?prefix=..&amp;max-keys=1000&amp;continuation-token=..&#10;            -&gt; { objects:[{key,size,etag,lastModified}], nextContinuationToken, isTruncated }   (cursor pagination)&#10;&#10;Multipart (resumable):&#10;  1. POST /{bucket}/{key}?uploads                       -&gt; { uploadId }&#10;  2. PUT  /{bucket}/{key}?partNumber=N&amp;uploadId=..  body=part -&gt; { ETag }   (parts independent, retryable)&#10;  3. POST /{bucket}/{key}?uploadId=..  body=[{partNumber,etag}..] -&gt; { ETag, versionId }  (atomic commit)&#10;  abort: DELETE /{bucket}/{key}?uploadId=..   (GC cleans orphan parts)" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="510" width="1120" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="hld_title" value="HIGH-LEVEL ARCHITECTURE (taught reference)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="790" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="client" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="900" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="cdn" value="CDN (edge cache)&#10;absorbs ~10 TB/s reads" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="210" y="835" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="lb" value="Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="230" y="960" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="api" value="API / Storage Service&#10;(stateless; auth, orchestrates&#10;data + metadata)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="430" y="905" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="meta" value="Metadata Store&#10;(sharded, RANGE-partitioned&#10;by (bucket,key), sorted;&#10;dynamic split on hot/large)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="700" y="810" width="220" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="placement" value="Placement / Allocator&#10;(chooses data nodes&#10;across failure domains)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="700" y="930" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="data" value="Data / Chunk Nodes&#10;(immutable chunks;&#10;N replicas OR erasure-coded&#10;6+3 across AZs;&#10;per-chunk checksum)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="830" width="210" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="gc" value="GC + Repair/Scrub worker&#10;(reclaim orphan chunks,&#10;re-replicate on disk loss,&#10;bit-rot scrub)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="970" width="210" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cl_cdn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="client" target="cdn">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cl_cdn_l" value="GET (reads)" style="text;html=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="855" width="70" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cl_lb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="client" target="lb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cl_lb_l" value="PUT/DELETE (writes)" style="text;html=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="135" y="985" width="110" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cdn_api" value="miss fill" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="cdn" target="api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_lb_api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="lb" target="api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_api_meta" value="metadata r/w&#10;(commit LAST)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="api" target="meta">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_api_place" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="api" target="placement">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_api_data" value="chunk bytes&#10;(write 1st / read)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="api" target="data">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="960" y="965"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_data_data" value="replicate / EC across AZs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;startArrow=block;" edge="1" parent="1" source="data" target="data">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1280" y="885"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_gc_data" value="reclaim / scrub / re-replicate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="gc" target="data">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_gc_meta" value="find unreferenced" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="gc" target="meta">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_label" value="OPTIMAL REFERENCE (what a senior strong-hire would design)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#990000;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1100" width="700" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_entities" value="OPTIMAL CORE ENTITIES&#10;&#10;ObjectMetadata {&#10;   bucket, key, versionId, isDeleteMarker,&#10;   size, contentType, etag (md5 checksum),&#10;   createdAt, lastModified, storageClass,&#10;   chunks: [ {chunkId, location, size, checksum} ]&#10;}&#10;Bucket { name (globally unique), ownerId, region,&#10;   createdAt, versioningEnabled }&#10;MultipartUpload { uploadId, bucket, key, status,&#10;   parts:[{partNumber, etag, chunkIds}], initiatedAt }&#10;Chunk { chunkId, replicaLocations[], size, checksum }" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1140" width="540" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_tradeoffs" value="KEY TRADE-OFFS (choice vs named alternative)&#10;&#10;- Redundancy: Replication 3x (200% overhead, simple, fast repair)&#10;   vs Erasure coding 6+3 (~50% overhead, cheaper, costlier repair)&#10;   -&gt; EC for cold bulk, replication for hot/small.&#10;- Metadata shard: Range-partition by (bucket,key) (cheap LIST range&#10;   scan; needs split control plane) vs hash(bucket+key) (even load&#10;   but scatter-gather LIST).&#10;- Commit order: bytes-first / metadata-last (orphans GC'd, safe)&#10;   vs metadata-first (dangling pointer = data loss).&#10;- CDN + immutable versioned objects (cache forever, no invalidation)&#10;   vs mutable-in-place (cache staleness problem).&#10;- Consistency: eventual on list/overwrite accepted for availability." style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="600" y="1140" width="560" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_deepdives" value="DEEP DIVES (specific to this system)&#10;&#10;1. Durability (11 nines): per-chunk checksum + read-time verification; background scrub detects bit-rot; auto re-replication when a disk/node dies; redundancy spread across AZs. Write commits metadata LAST so a crash leaves GC-able orphans, never a dangling pointer.&#10;&#10;2. Metadata at 1e12 rows / 1e7 QPS: range partition sorted by (bucket,key); LIST prefix = bounded range scan with key-cursor pagination (no fleet scatter). Hot/oversized shard auto-SPLITS into sub-ranges (Bigtable/Dynamo style) -&gt; solves hot-bucket + the 100B-object bucket that won't fit one shard.&#10;&#10;3. 10 TB/s read path: CDN edge absorbs the bulk; only misses hit origin. Immutability makes CDN caching trivially safe (version = cache key). Hot chunks get extra replicas to spread bandwidth across more nodes.&#10;&#10;4. Hot/cold tiering: hot = SSD + replication (latency + bandwidth); cold = HDD + erasure coding (cost). Auto-migrate by access age/frequency.&#10;&#10;5. Multipart/resumable: parts are immutable, independent, retryable; complete = atomic metadata stitch (no bytes move); abort + GC reclaim orphan parts.&#10;&#10;6. Operability: monitor shard load to trigger splits, CDN hit-rate, repair-queue depth, durability auditor; cost = EC + tiering at 1 EB." style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1420" width="1140" height="360" as="geometry"/>
+        </mxCell>
+        <mxCell id="teach_label" value="TEACHING NOTES — concepts &amp; the WHY behind each decision" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1f5c1f;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1820" width="800" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="t_twoplane" value="1. THE TWO-PLANE MODEL (the spine)&#10;&#10;Object storage = two systems glued together:&#10;- METADATA plane: a DB mapping (bucket,key,versionId) -&gt; object info + chunk list.&#10;   Small (~1 KB/object), random-access, indexed, hit on EVERY request. Scales on QPS.&#10;- DATA plane: the actual blob bytes as chunks on dense disks.&#10;   Huge (~1 MB-5 GB/object), sequential bulk r/w, dumb. Scales on BYTES.&#10;&#10;WHY split: opposite characteristics. Blobs in the DB would blow it up to 1 EB;&#10;scanning blob storage to LIST would be impossibly slow. Separate -&gt; scale each&#10;independently (fast indexed DB for metadata, cheap dense disks for bytes)." style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1860" width="560" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="t_immutable" value="2. IMMUTABLE, VERSIONED BLOBS (the lever)&#10;&#10;Chunks are NEVER modified in place. Overwrite = write NEW chunks + insert a&#10;NEW metadata row with a fresh versionId; old row + old bytes stay until GC.&#10;&#10;WHY it pays off everywhere:&#10;- Versioning: old version still retrievable (?versionId=v1).&#10;- CDN: (bucket,key,versionId) bytes never change -&gt; cache FOREVER, no&#10;   invalidation problem. New write = new cache key; old ages out.&#10;- Replication/repair: a replicated/cached chunk can never go stale.&#10;- Integrity: a chunk's checksum is fixed for life.&#10;Immutability is what makes caching, replication, and integrity all simple." style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="600" y="1860" width="560" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="t_writepath" value="3. WRITE PATH (and why the ORDER matters)&#10;&#10;PUT /bucket/key:&#10;1. API node writes the bytes to the DATA plane FIRST — chunk replicated to N&#10;   data nodes in different failure domains (AZs); ack only when enough copies&#10;   are durable.&#10;2. THEN commit the ObjectMetadata row (the chunk pointers) — metadata LAST.&#10;&#10;WHY bytes-first / metadata-last = a DURABILITY decision:&#10;- Crash after bytes, before metadata -&gt; orphan chunks, no visible object,&#10;   no corruption. GC reclaims them later. SAFE.&#10;- Metadata-first then crash -&gt; pointer to bytes that don't exist = silent&#10;   data loss = violates 11 nines. The metadata commit IS the 'object exists' event." style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2110" width="560" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="t_readpath" value="4. READ PATH (and integrity)&#10;&#10;GET /bucket/key:&#10;1. Hit METADATA plane first: resolve (bucket,key)[+version] -&gt; chunk list.&#10;2. Fetch chunks from DATA plane; for a big object, read chunks in PARALLEL&#10;   across data nodes (read bandwidth scales with chunk count).&#10;3. Stream bytes back to client.&#10;&#10;Integrity at 11 nines: before returning a chunk, the data node RECOMPUTES its&#10;checksum vs the stored one. Mismatch = bit-rot -&gt; reject that copy, refetch&#10;from a healthy replica, trigger repair. Read-time verification is how silent&#10;corruption gets caught + healed instead of served." style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="600" y="2110" width="560" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="t_multipart" value="5. MULTIPART / RESUMABLE UPLOAD (3 steps)&#10;&#10;1. INITIATE: POST /bucket/key?uploads -&gt; { uploadId }. Server makes a&#10;   MultipartUpload record (status IN_PROGRESS). uploadId = resumability handle.&#10;2. UPLOAD PART: PUT ?partNumber=N&amp;uploadId=.. -&gt; { ETag }. Each part written&#10;   straight to the data plane as immutable chunks. Parts are INDEPENDENT:&#10;   upload in parallel, retry a single failed part, resume after a crash.&#10;3. COMPLETE: POST ?uploadId=.. body=[{partNumber,etag}..] -&gt; { ETag, versionId }.&#10;   Server validates parts, stitches final ObjectMetadata.chunks in order,&#10;   commits atomically, deletes the upload record. Object becomes GET-able only NOW.&#10;Abort: DELETE ?uploadId=.. ; GC reclaims parts of never-completed uploads.&#10;KEY: complete moves NO bytes — it's a pure metadata stitch (two-plane payoff)." style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2370" width="560" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="t_durability" value="6. DURABILITY MECHANISM (delivering 11 nines)&#10;&#10;One copy on one disk can't reach 11 nines (disks/nodes/racks/AZs fail). So:&#10;- Redundancy across INDEPENDENT failure domains (racks/AZs), two options:&#10;   * Replication (3x): 200% overhead, simple, fast reads + repair.&#10;   * Erasure coding (e.g. RS 6+3): split into 6 data + 3 parity shards over 9&#10;     nodes, survive any 3 losses, ~50% overhead. Cheaper, costlier reads/repair.&#10;   -&gt; EC for cold/bulk, replication for hot/small. At 1 EB the overhead gap&#10;      (3 EB vs ~1.5 EB raw) is decisive.&#10;- Per-chunk checksums + read-time verify + background SCRUB (proactively&#10;   re-reads chunks to catch bit-rot) + auto RE-REPLICATION when a disk dies." style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="600" y="2370" width="560" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="t_metashard" value="7. SCALING THE METADATA PLANE (the hard problem)&#10;&#10;1e12 rows @ 1e7 QPS -&gt; must shard. The shard key fights the LIST requirement:&#10;- hash(bucket+key): perfect load spread, BUT LIST = scatter-gather across all&#10;   shards + merge-sort. Slow.&#10;- group a bucket's keys ordered: LIST = cheap range scan, BUT one huge/hot&#10;   bucket overloads a single shard.&#10;&#10;RESOLUTION (DynamoDB/Bigtable/HBase): RANGE-partition sorted by (bucket,key) AND&#10;dynamically SPLIT a shard when it gets too big (bytes) or too hot (QPS), moving&#10;half to a new shard.&#10;- LIST prefix -&gt; small contiguous range on 1-few adjacent shards (key cursor).&#10;- 100B-object or viral bucket -&gt; range auto-splits across many shards.&#10;Price: a control plane that monitors load and orchestrates splits/moves." style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2640" width="560" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="t_readscale" value="8. THE 10 TB/s READ PATH + TIERING&#10;&#10;Reads = 100x writes -&gt; 1e7 GET/s x 1 MB ~ 10 TB/s. If every GET hits data&#10;nodes, you'd buy disks for BANDWIDTH not capacity, and popular objects melt&#10;the few nodes holding them (hot chunks).&#10;&#10;- CDN in front: serve popular objects from edge PoPs; only misses reach origin.&#10;   Immutability -&gt; cache forever, zero staleness. Absorbs most of the 10 TB/s.&#10;- HOT/COLD TIERING:&#10;   * Hot: SSD + replication -&gt; low latency AND more replicas spread read&#10;     bandwidth across more nodes.&#10;   * Cold: HDD + erasure coding -&gt; cost per byte at 1 EB.&#10;   Objects auto-migrate hot-&gt;cold by access age/frequency.&#10;GC: async worker deletes chunks no live metadata references (deleted versions,&#10;aborted uploads) -&gt; reclaims disk." style="text;html=1;strokeColor=#ffa500;fillColor=#ffe6cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="600" y="2640" width="560" height="260" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

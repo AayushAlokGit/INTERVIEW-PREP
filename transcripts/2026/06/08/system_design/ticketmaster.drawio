@@ -1,0 +1,209 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="2900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Design an Event Ticketing System (Ticketmaster)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="frs" value="FUNCTIONAL REQUIREMENTS&#10;&#10;1. Search for events and view events&#10;2. View seats for an event&#10;3. Book tickets for seats for an event&#10;&#10;Out of scope: payment internals, organizer event creation" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="420" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="nfrs" value="NON-FUNCTIONAL REQUIREMENTS&#10;&#10;1. Highly available event querying — 99.9% (~8.6 hrs/yr)&#10;2. Low latency event querying — p99 &lt; 200ms&#10;3. Strong consistency for booking — no double booking&#10;4. Handle hot-event burst — waiting room for booking&#10;5. Scale: 100M DAU x 5 queries/day&#10;     = 500M queries/day&#10;     avg ~5k QPS, peak ~50k QPS (must meet latency)&#10;     Hot event: 50k seats, ~1-2M users in first seconds" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="480" y="80" width="500" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="entities" value="CORE ENTITIES (evolved)&#10;&#10;User (id, name, ...)&#10;Event (id, name, description, venueId, eventDate, artists[])&#10;Venue (id, lat, long, name, description, address)&#10;VenueSeat (id, venueId, seatType, seatNumber)&#10;EventSeat (id, eventId, venueSeatId, status)&#10;     status: available -&gt; reserved (TTL 10m) -&gt; booked&#10;Booking (id, userId, createdAt, eventId, eventSeats[], amount)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="320" width="600" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="apis" value="API DESIGN  (identity via JWT auth)&#10;&#10;1. GET /events?query=&amp;cursor=&amp;limit=&amp;lat=&amp;long=&amp;radius=&#10;     Resp: Event(id, venueId, name, description, artists[])[]&#10;     Cursor pagination — survives dynamic event insertion&#10;&#10;2. GET /events/:id&#10;     Resp: Event(..., eventSeats:[{id, seatType, status}])&#10;&#10;3. PUT /events/:id/seats/reserve&#10;     Req: { eventSeats[] }   ->  status=reserved, TTL 10m (Redis)&#10;     Reverts to available on TTL expiry&#10;&#10;4. POST /events/:id/bookings&#10;     Req: { eventSeats[] }   (amount computed server-side)&#10;     Header: Idempotency-Key  (dedupe client retries)&#10;     Confirmed on payment webhook -> status=booked&#10;     Resp: Booking(id, userId, createdAt, eventId, eventSeats[])" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="680" y="320" width="600" height="320" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="hldhdr" value="HIGH-LEVEL DESIGN (as described)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="680" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="readlbl" value="READ / BROWSE PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="720" width="200" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c1" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="770" width="110" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="gw1" value="API Gateway&#10;(auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="220" y="770" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="qs" value="Query Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="410" y="770" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="rc" value="Redis Cache&#10;(popular queries,&#10;replicated for hot key)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="620" y="700" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="es" value="Elasticsearch&#10;(geo + inverted index)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="620" y="790" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg" value="PostgreSQL — Events&#10;(PostGIS spatial idx,&#10;eventDate idx, read replicas)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="880" y="790" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="cdc" value="CDC + Index Workers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="880" y="700" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c1" target="gw1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="gw1" target="qs"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="qs" target="rc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="qs" target="es"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="qs" target="pg"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="pg" target="cdc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" value="keep index in sync" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="cdc" target="es"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="writelbl" value="BOOKING / WRITE PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="940" width="200" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c2" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1000" width="110" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="gw2" value="API Gateway&#10;(auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="220" y="1000" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="bs" value="Booking Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="410" y="1000" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl" value="Redis — Seat Locks&#10;(reserve, TTL 10m,&#10;atomic acquire)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="620" y="940" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="pgb" value="PostgreSQL — Bookings&#10;+ EventSeat status&#10;(atomic txn: seat+booking)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="620" y="1040" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="pp" value="Payment Provider&#10;(idempotency key=bookingId)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="900" y="1000" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="kf" value="Kafka&#10;(webhook events, durable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="900" y="1130" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ww" value="Webhook Workers&#10;(confirm booking, update&#10;seat, delete lock)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="620" y="1130" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="rj" value="Reconciliation Job&#10;(expire stale pending bookings)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1130" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="w1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="c2" target="gw2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="gw2" target="bs"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w3" value="acquire lock (TTL)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="bs" target="rl"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w4" value="create booking (pending)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="bs" target="pgb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w5" value="trigger payment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="bs" target="pp"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w6" value="webhook -&gt; publish" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="pp" target="kf"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w7" value="consume" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="kf" target="ww"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w8" value="atomic: seat=booked + confirm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="ww" target="pgb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w9" value="delete lock" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="ww" target="rl"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="w10" value="clean stale" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="rj" target="pgb"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="optdiv" value="" style="line;strokeWidth=2;html=1;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1290" width="1640" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="opthdr" value="OPTIMAL HLD (Reference) — what a senior strong-hire would draw for THIS problem" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#1a1a1a;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1310" width="1200" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="oreadlbl" value="READ / BROWSE PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1350" width="200" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="oc1" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1390" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ocdn" value="CDN / Edge&#10;(static event pages)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1390" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ogw" value="API Gateway&#10;(auth, rate limit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="370" y="1390" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="oqs" value="Query Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="550" y="1390" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="orc" value="Redis Cache&#10;(event detail; replicated&#10;for hot-event key)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="730" y="1310" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="oes" value="Elasticsearch&#10;(geo + full-text search)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="730" y="1390" width="170" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="opg" value="PostgreSQL — Events (SoT)&#10;PostGIS + date idx, read replicas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1390" width="220" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="ocdc" value="CDC -&gt; Index Workers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1310" width="220" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe1" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="oc1" target="ocdn"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe2" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="ocdn" target="ogw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe3" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="ogw" target="oqs"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe4" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="oqs" target="orc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe5" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="oqs" target="oes"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe6" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="oqs" target="opg"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe7" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="opg" target="ocdc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe8" value="sync" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="ocdc" target="oes"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="owritelbl" value="BOOKING / WRITE PATH  (note: Waiting Room + conditional-UPDATE arbiter are the senior additions)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1480" width="700" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="oc2" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1540" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="owr" value="Waiting Room&#10;(virtual queue — Redis ZSET,&#10;token admission N users/sec)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="180" y="1535" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ogw2" value="API Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="420" y="1540" width="110" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="obs" value="Booking Service&#10;(live seat-map session)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="570" y="1540" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="orl" value="Redis — Seat Locks&#10;SET NX EX (value=userId)&#10;Lua multi-seat all-or-nothing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="750" y="1480" width="210" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="opgb" value="PostgreSQL — Bookings + EventSeat&#10;(ARBITER: conditional UPDATE&#10;WHERE status=reserved AND owner=A;&#10;per-event partition for hot event)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="750" y="1560" width="260" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="opp" value="Payment Provider&#10;(idempotency key=bookingId)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="1540" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="okf" value="Kafka (durable webhook events)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="1660" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="oww" value="Confirm Workers&#10;(compare-and-confirm vs arbiter,&#10;else refund; release lock)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="750" y="1670" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="orj" value="Reconciliation Job&#10;(expire stale pending)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="470" y="1670" width="190" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="omon" value="Monitoring / Alerting&#10;(oversell, lock-leak, reserve-success rate, queue-wait SLA)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="1670" width="250" height="55" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ow1" value="admit" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="oc2" target="owr"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow2" value="token" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="owr" target="ogw2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow3" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="ogw2" target="obs"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow4" value="acquire (NX EX)" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="obs" target="orl"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow5" value="create pending" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="obs" target="opgb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow6" value="trigger" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="obs" target="opp"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow7" value="webhook" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="opp" target="okf"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow8" value="consume" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="okf" target="oww"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow9" value="conditional confirm" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="oww" target="opgb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow10" value="release" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="oww" target="orl"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ow11" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;" edge="1" parent="1" source="orj" target="opgb"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="otrade" value="KEY TRADE-OFFS&#10;&#10;• PostgreSQL (events) vs NoSQL: pick PG for PostGIS spatial + B-tree date idx + ACID booking txn. Give up: harder horizontal write-scale -&gt; mitigate with read replicas + per-event partition.&#10;• Elasticsearch (search reads) vs query PG directly: scalable geo/full-text at 50k QPS. Give up: eventual consistency via CDC (acceptable — browse need not be strongly consistent).&#10;• Redis locks vs DB row locks for reservation: Redis = fast, TTL auto-release, no long-held DB txn. Give up: a 2nd source of truth -&gt; PG conditional UPDATE remains the true arbiter; Redis is the optimistic fast-path.&#10;• Redis SET NX EX + Lua vs Redlock: single-shard atomic acquire is enough at one-event scale; Redlock only if locks span shards. Give up: cross-shard safety not needed.&#10;• Waiting room (virtual queue) vs just failing excess requests: protects booking service + fair ordering + good UX. Give up: extra infra + queue-wait latency.&#10;• Kafka for webhooks vs sync processing: durability, replay, decouples payment spikes. Give up: added eventual-consistency + ops." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1780" width="780" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="odeep" value="DEEP DIVES (specific to this system)&#10;&#10;1. ATOMIC RESERVATION: SET seat:{id} {userId} NX EX 600. value=userId so release is a Lua compare-and-delete (never delete another user's lock after your TTL lapses). Multi-seat (e.g. 4 adjacent): one Lua script checks ALL seats free then sets ALL — all-or-nothing, no stranded half-locks.&#10;&#10;2. OVERSELL RACE (TTL expiry vs late payment): make PG the arbiter. Confirm = UPDATE eventseat SET status=booked WHERE id=? AND status=reserved AND reserved_by=A. 0 rows -&gt; A lost it -&gt; auto-refund. Refund is the rare exception, not the mechanism.&#10;&#10;3. SCALE-BREAK (1-2M users / 50k seats): naive = every reserve hammers booking svc + Redis. Fix = Waiting Room (Redis ZSET / token bucket) admits N users/sec into a live seat-map session; queue throttles CONCURRENCY, not seat choice (seats chosen live from current availability).&#10;&#10;4. HOT KEY (reads): all hit GET /events/:id for one event -&gt; replicate that cache entry across Redis replicas, client fan-out. HOT PARTITION (writes): all bookings for one event hit same PG rows/shard -&gt; per-event partition / in-memory seat-map authority.&#10;&#10;5. OPERABILITY: alert on oversell count, reservation-success rate, lock-expiry-vs-payment races, queue depth &amp; wait-time SLA, Redis-node failover (lost locks). Consistency: strong on booking (PG txn), eventual on browse (ES/cache)." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="860" y="1780" width="800" height="320" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

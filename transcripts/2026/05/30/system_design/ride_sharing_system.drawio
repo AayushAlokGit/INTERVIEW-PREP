@@ -1,0 +1,103 @@
+<mxfile host="65bd71144e">
+    <diagram name="System Design" id="system-design">
+        <mxGraphModel dx="1431" dy="324" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Design a Ride-Sharing System (Uber-like)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="20" width="800" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Functional Requirements" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="80" width="520" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="1. Users can request rides from src to dest&#xa;2. Drivers in a local radius receive ride request — accept or decline&#xa;3. Real-time location tracking of driver from matched to destination reached&#xa;4. Payment to driver at ride end when driver completes the trip&#xa;&#xa;Out of scope:&#xa;  - Rating drivers and users&#xa;  - Payment system design&#xa;  - Multiple ride types" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="110" width="520" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Non-Functional Requirements" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="80" width="520" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="Availability: 99.99% (ride matching service)&#xa;Latency: p99 &lt; 3s ride matching&#xa;Location updates: every 2s per driver&#xa;Consistency: strong on driver-rider matching&#xa;  (no double-match for a single request)&#xa;&#xa;Scale:&#xa;  - 100M DAU, ~1 ride/user/day, 10^5 s/day&#xa;  - Ride requests: ~1k/s avg, ~10k/s peak (events)&#xa;  - Concurrent online drivers: ~5M&#xa;  - Location writes: ~2.5M/s (5M drivers × 0.5/s)" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="110" width="520" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="High-Level Architecture" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="430" width="1380" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_rider" value="Rider Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="500" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_driver" value="Driver Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="860" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_lb" value="Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="260" y="500" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_rms" value="Ride Matching Service&#xa;(stateless, horiz. scaled)&#xa;&#xa;- Receives ride request&#xa;- Queries Redis for nearby drivers&#xa;- Notifies driver(s) of request&#xa;- Locks match on accept&#xa;- Subscribes to matched driver&#39;s&#xa;  Kafka partition; streams loc to rider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="460" width="280" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_redis" value="Redis Geo-Index&#xa;(per-city sharded)&#xa;&#xa;GEOADD on update,&#xa;GEOSEARCH on query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="840" y="480" width="240" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_kafka" value="Kafka&#xa;(driver location stream)&#xa;&#xa;Partitioned by driverId" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="800" width="280" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_consumer" value="Batching Consumer&lt;br&gt;updates Redis index)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="840" y="800" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" value="SSE&#xa;(ride req + driver loc stream)" style="endArrow=classic;startArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_rider" target="c_lb">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" style="endArrow=classic;startArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_lb" target="c_rms">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" value="GEOSEARCH&#xa;(nearby drivers)" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_rms" target="c_redis">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" value="notify ride request&#xa;/ accept (lock)" style="endArrow=classic;startArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0.3;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c_rms" target="c_driver">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="220" y="720"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e5" value="push location every 2s" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_driver" target="c_kafka">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e6" value="subscribe to matched&#xa;driver&#39;s partition" style="endArrow=classic;html=1;exitX=0.7;exitY=1;entryX=0.7;entryY=0;" edge="1" parent="1" source="c_rms" target="c_kafka">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e7" value="consume" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_kafka" target="c_consumer">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e9" value="update geo-index" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="c_consumer" target="c_redis">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="dd_title" value="Deep Dives" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="960" width="1380" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="dd_geo" value="1) Geo-query — how to find nearby drivers&#10;&#10;Naive scan: 5M drivers × 10k req/s = 50B comparisons/s. Dead.&#10;&#10;Approach chosen: Redis per-city geo-index.&#10;  - Bucket the world into city shards (geohash prefix or curated city map).&#10;  - Each city has its own Redis primary (or small cluster).&#10;  - Driver location update -&gt; Kafka -&gt; per-city consumer -&gt; Redis GEOADD.&#10;  - Ride request: ride-matching service identifies the city, calls&#10;    GEOSEARCH BYRADIUS on that city's Redis.&#10;  - GEOSEARCH internals: Redis stores points in a sorted set keyed by&#10;    geohash; range query scans bucket + neighbor buckets.&#10;&#10;Why this works at 2.5M writes/s:&#10;  - Global load splits by city; even hot cities are ~50-100k writes/s,&#10;    well within a Redis primary's headroom.&#10;  - Durability is not needed per update (superseded every 2s).&#10;    Kafka is the durable source; Redis is a recoverable index.&#10;&#10;Open edge: cross-city boundary — driver/rider near a city edge.&#10;  Fix: query both home city and adjacent city shards; merge results." style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="990" width="680" height="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="dd_lock" value="2) Match locking + recovery&#10;&#10;Pattern: conditional UPDATE on the ride row.&#10;  UPDATE rides&#10;  SET driver_id = ?, status = 'accepted', accepted_at = now()&#10;  WHERE id = ? AND status = 'offered'&#10;  RETURNING *&#10;Only one driver's update lands; losers get 0 rows and see &quot;ride taken.&quot;&#10;&#10;Why not SELECT FOR UPDATE in a transaction?&#10;  - FOR UPDATE only protects between BEGIN and COMMIT.&#10;  - After commit, the row assignment persists. No automatic release.&#10;&#10;Phone-dies-after-commit recovery:&#10;  - Driver heartbeats post-accept (every few seconds) or sends explicit&#10;    'en route' / 'arrived' state transitions.&#10;  - Watcher job: if no heartbeat or state progression within N seconds,&#10;    flip ride back to status = 'offered' and re-offer to next driver.&#10;&#10;Broadcast vs sequential offer:&#10;  - Broadcast to N nearest drivers in parallel — first to accept wins.&#10;    Higher conversion, but bad UX for losers (declined notifications).&#10;  - Sequential with 15s timeout per driver — better UX, slower match.&#10;  - Hybrid: small batch of 3-5 drivers in parallel." style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+                    <mxGeometry x="720" y="990" width="680" height="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="dd_proto" value="3) Protocol choice — WebSocket vs SSE&#10;&#10;Correction from round: SSE was chosen for &quot;bidirectional comms&quot; — wrong.&#10;SSE is server -&gt; client only.&#10;&#10;Correct mapping:&#10;  - Driver app: WebSocket (bidirectional — push ride offer, receive accept/decline,&#10;    send location pings, receive trip updates).&#10;  - Rider app: WebSocket OR SSE.&#10;      * WebSocket if the rider needs to send messages during trip (cancel,&#10;        message driver).&#10;      * SSE acceptable if rider only consumes (request via HTTP POST, then&#10;        stream driver location via SSE).&#10;  - Ride request itself: HTTP POST is fine; the persistent channel is for&#10;    streaming the match result and live location." style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="1410" width="1380" height="260" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="api_title" value="API Design (canonical — not authored in-round; auth: JWT bearer)" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="1690" width="1380" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="api_rider" value="RIDER APIs&#10;&#10;1. POST /v1/rides                                  (Idempotency-Key header)&#10;     body: { pickup: { lat, lng }, dropoff: { lat, lng }, ride_type }&#10;     -&gt; 202 { ride_id, status: 'searching' }&#10;     Async — match is delivered over WebSocket / SSE.&#10;&#10;2. GET /v1/rides/:ride_id&#10;     -&gt; { ride_id, status, driver: { id, name, car, eta_sec, loc: {lat,lng} } | null,&#10;          pickup, dropoff, fare_estimate, created_at }&#10;&#10;3. DELETE /v1/rides/:ride_id&#10;     -&gt; 204 (cancel before pickup; 409 if status in {in_trip, completed})&#10;&#10;4. GET /v1/rides/:ride_id/driver_location           (SSE stream)&#10;     -&gt; stream of { lat, lng, heading, ts }  every 2s during trip&#10;&#10;5. GET /v1/rides?status=&amp;limit=&amp;cursor=&#10;     -&gt; { rides: [...], next_cursor }   (history, paginated)&#10;&#10;Push channel (WS):  event 'ride_matched', 'driver_arrived', 'trip_started',&#10;                    'trip_completed', 'ride_cancelled'" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Courier New;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="1720" width="680" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="api_driver" value="DRIVER APIs&#10;&#10;1. POST /v1/drivers/me/status&#10;     body: { state: 'online' | 'offline' }&#10;     -&gt; 200 { state, since }&#10;&#10;2. POST /v1/drivers/me/location                    (high-volume; usually via WS)&#10;     body: { lat, lng, heading, speed, ts }&#10;     -&gt; 202 (fire-and-forget into Kafka)&#10;&#10;3. POST /v1/rides/:ride_id/accept                  (Idempotency-Key header)&#10;     -&gt; 200 { ride_id, rider: {...}, pickup }   on win&#10;     -&gt; 409 { error: 'already_taken' }          on loss&#10;&#10;4. POST /v1/rides/:ride_id/decline&#10;     -&gt; 204&#10;&#10;5. POST /v1/rides/:ride_id/transition&#10;     body: { to: 'arrived_pickup' | 'trip_started' | 'trip_completed' }&#10;     -&gt; 200 { ride_id, status, transitioned_at }&#10;&#10;6. POST /v1/rides/:ride_id/heartbeat                (post-accept liveness)&#10;     -&gt; 204&#10;&#10;Push channel (WS):  event 'ride_offered' { ride_id, pickup, fare, expires_at }" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Courier New;" vertex="1" parent="1">
+                    <mxGeometry x="720" y="1720" width="680" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="api_errors" value="Error model (consistent across endpoints)&#10;&#10;Headers required on write endpoints:&#10;  Authorization: Bearer &lt;jwt&gt;&#10;  Idempotency-Key: &lt;uuid&gt;          (on POST /rides, POST .../accept, etc.)&#10;  X-Request-Id: &lt;uuid&gt;             (tracing)&#10;&#10;Response envelope on error:&#10;  { error: { code, message, field?, ride_id? } }&#10;&#10;Status codes used:&#10;  202 — accepted (async match)&#10;  204 — no content (cancel, decline, heartbeat)&#10;  400 — validation (invalid_request)&#10;  401 — unauthorized&#10;  404 — ride/driver not found&#10;  409 — conflict (ride already taken, illegal state transition)&#10;  429 — rate limited (Retry-After header)" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Courier New;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="2120" width="1380" height="320" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

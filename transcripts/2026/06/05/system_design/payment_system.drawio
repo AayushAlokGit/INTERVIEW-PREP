@@ -1,0 +1,92 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Design a Payment / Billing System" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="frs" value="Functional Requirements&#10;1. Submit (initiate &amp; retry) payments to PSP&#10;2. Status tracking of payments (pull / query)&#10;3. Accurate ledger / log of payment events&#10;4. Notify merchant on completion (push / webhook)&#10;5. Raise refund request for an already-processed payment&#10;&#10;Out of scope: fraud detection, payment analytics" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="380" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfrs" value="Non-Functional Requirements&#10;1. Highly available for payment reception (99.99%)&#10;2. Eventually consistent payment status updates&#10;3. Low latency initiation (p99 &lt; 200ms)&#10;4. Ordering + durability of events per payment&#10;5. Scale: 10M DAU x 5 pmts/day = ~580/s avg, 10x peak&#10;6. Idempotency keys to prevent double-charging" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="280" width="380" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="entities" value="Core Entities&#10;Payment(id, merchantId, customerId, status, paymentDetails, amount, currency, idempotencyKey, createdAt)&#10;PaymentAttempt(id, paymentId, attemptLogs, pspId, status, amount, currency, createdAt)&#10;MerchantPlatform(id, webhookUrl, ...)&#10;PaymentEvent(...)&#10;RefundPayment(id, paymentId, refundReason, ...)" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="80" width="460" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="apis" value="API Contract  (identity from auth headers)&#10;POST /payments  [Idempotency-Key hdr]  -&gt; 202 {paymentId, status:pending}&#10;GET /payments/:id  -&gt; {paymentId, amount, currency, status, attemptHistory[]}&#10;GET /payments?cursor=&amp;limit=&amp;merchant=  -&gt; {Payment[], nextCursor: paymentTs+paymentId}&#10;POST /payments/:id/refunds  [Idempotency-Key hdr]  -&gt; {refundPaymentId}&#10;PUT /merchants/:id  {webhookUrl}  -&gt; 2xx&#10;Webhook OUT -&gt; merchant: {paymentId, paymentStatus}" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="250" width="460" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="hld_title" value="High-Level Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="470" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_merchant" value="Merchant Client" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="540" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_gateway" value="API Gateway&#10;(auth)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="220" y="540" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_paysvc" value="Payment Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="400" y="540" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_kafka" value="Kafka&#10;(partition by paymentId;&#10;WAL = ledger)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="600" y="535" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_workers" value="Consumers /&#10;Workers" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="840" y="540" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_psp" value="PSP&#10;(external)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="540" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_db" value="DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="410" y="690" width="110" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_dlq" value="DLQ" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="620" y="700" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_webhook" value="Webhook Service&#10;(PSP webhook ingest)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="840" y="695" width="150" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="POST /payments" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_merchant" target="b_gateway"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_gateway" target="b_paysvc"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" value="create payment (pending)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_paysvc" target="b_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" value="payment event" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_paysvc" target="b_kafka"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=1;exitY=0.4;entryX=0;entryY=0.4;" edge="1" parent="1" source="b_kafka" target="b_workers"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" value="retry event" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0;exitY=0.7;entryX=1;entryY=0.7;" edge="1" parent="1" source="b_workers" target="b_kafka"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" value="authorize / capture / refund&#10;(+ idempotency key -&gt; PSP dedupe)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_workers" target="b_psp"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" value="attempt / status update" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_workers" target="b_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" value="exhausted retries" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_kafka" target="b_dlq"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" value="PSP status webhook" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_psp" target="b_webhook"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" value="update status" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="b_webhook" target="b_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" value="notify (signed HMAC + event-id; retry+backoff)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="b_webhook" target="b_merchant"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="add_title" value="Completing the design — additions from feedback (purple = added)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#6a00a0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="800" width="640" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_monitor" value="Monitoring &amp; Alerting&#10;- consumer lag&#10;- DLQ depth&#10;- age-in-pending" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;dashed=1;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="840" width="200" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_recon" value="Reconciliation Service&#10;(sweep stuck 'pending';&#10;compare DB vs PSP truth)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="845" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_ledger" value="Ledger / PaymentEvent Store&#10;(append-only, immutable, system-of-record)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#e1d5e7;strokeColor=#9673a6;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="840" width="190" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_warehouse" value="Data Warehouse&#10;(analytics / audit queries)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="965" width="190" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_owdlq" value="Outbound Webhook DLQ&#10;(merchant delivery failed&#10;after retries)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="830" y="845" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ea1" value="reconcile stuck pending" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="b_recon" target="b_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea2" value="query status by idem key" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="b_recon" target="b_psp"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea3" value="persist PaymentEvent (append-only)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="b_kafka" target="b_ledger"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea4" value="ETL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="b_ledger" target="b_warehouse"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea5" value="delivery failed" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="b_webhook" target="b_owdlq"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea6" value="lag" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="b_monitor" target="b_kafka"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea7" value="age-in-pending" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="b_monitor" target="b_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

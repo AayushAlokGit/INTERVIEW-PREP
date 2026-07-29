@@ -1,0 +1,214 @@
+<mxfile host="65bd71144e">
+    <diagram name="System Design" id="system-design">
+        <mxGraphModel dx="866" dy="352" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2500" pageHeight="2150" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Design an E-Commerce Order Management System" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="frbox" value="Functional Requirements&#xa;&#xa;1. Browse items of a catalog&#xa;2. Add items to cart for purchase&#xa;3. Place order for items and make payment&#xa;4. Order status tracking through lifecycle&#xa;5. View orders placed&#xa;&#xa;Out of scope: Analytics, Ratings" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="80" width="360" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="nfrbox" value="Non-Functional Requirements&#xa;&#xa;1. Highly available browsing (99.99%)&#xa;2. Strong consistency for orders (no overselling)&#xa;3. No double charging for payments&#xa;4. Order status event -&gt; DB update &lt; 1 min&#xa;5. 100M DAU, 2 orders/day&#xa;   - Writes: 2k/s avg, 20k/s peak&#xa;   - Order reads: 100k/s peak (5 reads/order)&#xa;6. Order size 10kb -&gt; 2TB/day&#xa;7. 1M item catalog, 50 browses/user/day&#xa;   - Item reads: 50k/s avg, 500k/s peak" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="80" width="380" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="apibox" value="API Design  (identity from auth token)&#xa;&#xa;GET /items?query={}&amp;cursor={}&amp;limit={}&#xa;  -&gt; [Item(id, name, description, quantity)]  (cursor pagination)&#xa;&#xa;POST /carts          req: [Item]              -&gt; 201 {cartId}&#xa;PUT  /carts/:id      req: [{add/remove, itemId}] -&gt; 200 {cart}&#xa;&#xa;POST /orders         req: {[CartItems], Address}&#xa;  -&gt; 201 {orderId, status: PAYMENT_PENDING}&#xa;  Header: Idempotency-Key&#xa;&#xa;POST /orders/:id/payment  -&gt; 202 {paymentId} (initiates 3P charge)&#xa;GET  /orders/:id     -&gt; Order(id, status, items[], createdAt..)&#xa;GET  /orders?cursor={}&amp;limit={}  -&gt; Order(id, status, createdAt)[]&#xa;&#xa;Webhook: POST /payments/callback (3P -&gt; us, idempotent)&#xa;NOTE: order status updates are INTERNAL only (no client API)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="80" width="520" height="320" as="geometry"/>
+                </mxCell>
+                <mxCell id="entlabel" value="Core Entities" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="390" width="300" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_user" value="User&#xa;- id&#xa;- name&#xa;- email .." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="430" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_item" value="Item&#xa;- id&#xa;- name&#xa;- description .." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="190" y="430" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_inv" value="ItemInventory&#xa;- itemId&#xa;- count&#xa;- version (OCC)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="430" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_cart" value="Cart&#xa;- id&#xa;- userId (unique)&#xa;- items[]" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="430" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_resv" value="Reservation&#xa;- id&#xa;- orderId&#xa;- itemId, qty&#xa;- expiresAt&#xa;- status" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="700" y="430" width="150" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_order" value="Order&#xa;- id&#xa;- userId&#xa;- createdAt&#xa;- status: PAYMENT_PENDING | PAYMENT_DONE |&#xa;  DELIVERY_SCHEDULED | PICKED_UP |&#xa;  DELIVERED | CANCELLED&#xa;- amount" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="560" width="280" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_orderitem" value="OrderItem&#xa;- orderId&#xa;- itemId&#xa;- itemCount&#xa;- price" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="330" y="560" width="170" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_payment" value="Payment&#xa;- id&#xa;- orderId&#xa;- amount&#xa;- method&#xa;- idempotencyKey&#xa;- createdAt&#xa;- status&#xa;- recipient / sender" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="560" width="180" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_order_payment" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="e_order" target="e_payment" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_order_oi" style="endArrow=classic;html=1;exitX=1;exitY=0.3;entryX=0;entryY=0.3;" parent="1" source="e_order" target="e_orderitem" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="archlabel" value="Complete Reference Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="780" width="500" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="payidembox" value="Payment Idempotency - No Double Charge&#xa;&#xa;Status is a GUARD, not the key. Use BOTH, layered:&#xa;&#xa;1. Unique idempotency key on the Payment row [UNIQUE(idempotencyKey)] - a retried POST /orders/:id/payment collides with the existing row instead of creating a 2nd charge. This is the real dedup.&#xa;&#xa;2. Status as an ATOMIC CAS guard (not a plain read):&#xa;   UPDATE payment SET status='PROCESSING'&#xa;   WHERE id=:id AND status='PENDING';&#xa;   only one concurrent caller gets 1 row -&gt; charges; losers return the in-flight result. (avoids TOCTOU double-charge)&#xa;&#xa;3. Forward the same idempotency key to the 3P provider so the provider dedups our own retries.&#xa;&#xa;4. Webhook is at-least-once -&gt; dedupe on provider event id + apply same CAS, so a replayed callback is a no-op.&#xa;&#xa;Scope the key to ONE payment ATTEMPT (not orderId), so a legit retry-after-failure is a new charge, but a network retry of the same attempt is deduped." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1960" y="430" width="520" height="490" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow1box" value="FLOW 1 - Browse / Catalog (Read path)&#xa;&#xa;1. Client hits CDN for static catalog content; dynamic / cache-miss requests go to the API Gateway (auth, rate limit).&#xa;2. Gateway routes to the Catalog Service.&#xa;3. Catalog Service serves popular search queries from the Redis LFU cache; full-text search is answered by Elasticsearch.&#xa;4. Elasticsearch is kept in sync with PostgreSQL (Items = source of truth) via CDC events, so the DB stays off the hot read path.&#xa;5. Live stock (quantity) is read straight from Postgres on the item-detail call and is never cached (avoids stale stock)." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1360" y="430" width="540" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow2box" value="FLOW 2 - Place Order + Pay (Write path)&#xa;&#xa;1. Client builds a Cart (persisted for cross-device). POST /orders with an Idempotency-Key -&gt; Order Service writes an Order in PAYMENT_PENDING.&#xa;2. Order Service calls the Inventory Service to RESERVE stock: an atomic Lua decrement in Redis (sharded counters for hot items) creates a Reservation with a TTL; changes are async-written back to PostgreSQL (Inventory = source of truth).&#xa;3. POST /orders/:id/payment -&gt; Payment Service initiates the charge with the 3P provider (Payment row keyed by idempotencyKey -&gt; no double charge).&#xa;4. The provider notifies us via an idempotent, at-least-once webhook; Payment + Order are marked paid.&#xa;5. State changes are published via the Outbox to Kafka; the Order Workflow Engine drives the long-running lifecycle (PAYMENT_DONE -&gt; DELIVERY_SCHEDULED -&gt; PICKED_UP -&gt; DELIVERED) and releases the reservation on cancel / TTL expiry.&#xa;6. Reconciliation jobs keep Redis &lt;-&gt; DB consistent; Monitoring detects oversell and consumer lag." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1360" y="640" width="540" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_client" value="Client (Web / Mobile)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="900" y="840" width="220" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_cdn" value="CDN&#xa;(static catalog content)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="1010" width="220" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_gw" value="API Gateway&#xa;(auth, rate limiting, routing)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="890" y="1010" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_catalog" value="Catalog Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1240" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_cart" value="Cart Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="470" y="1240" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_order" value="Order Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="900" y="1240" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_inv" value="Inventory Service&#xa;(reserve / release)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="1330" y="1240" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_pay" value="Payment Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="1780" y="1240" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_bus" value="Event Bus (Kafka)&#xa;+ Outbox pattern" style="shape=process;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="2180" y="1240" width="280" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_wf" value="Order Workflow Engine&#xa;(Temporal / Durable Task)&#xa;long-running lifecycle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="2180" y="1470" width="280" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_mon" value="Monitoring &amp; Alerting&#xa;(oversell detection,&#xa;consumer lag, cost)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="2180" y="1700" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_cache" value="Query Cache&#xa;(Redis, LFU eviction)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry y="1500" width="190" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_es" value="Elasticsearch&#xa;(search index)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="1500" width="190" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_items" value="PostgreSQL&#xa;Items (source of truth)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="110" y="1730" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_cartdb" value="Cart DB&#xa;(KV / Postgres)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="470" y="1500" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_ordersdb" value="Orders DB&#xa;(Postgres, sharded by userId)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="890" y="1500" width="220" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_invredis" value="Redis (Inventory)&#xa;atomic Lua decrement&#xa;sharded counters (hot items)&#xa;reservation TTL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1320" y="1500" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_invdb" value="PostgreSQL&#xa;Inventory (source of truth)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1330" y="1740" width="220" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_paydb" value="Payment DB&#xa;(Postgres,&#xa;idempotencyKey unique)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1780" y="1500" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_provider" value="3P Payment Provider&#xa;(external)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1785" y="1740" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_recon" value="Reconciliation Jobs&#xa;(Redis &lt;-&gt; DB consistency)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1320" y="1960" width="240" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed1" value="static" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" parent="1" source="a_client" target="a_cdn" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed2" value="dynamic" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="a_client" target="a_gw" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed3" value="GET /items" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_gw" target="a_catalog" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed3b" value="miss" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;" parent="1" source="a_cdn" target="a_catalog" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed4" value="query cache (LFU)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" parent="1" source="a_catalog" target="a_cache" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed5" value="search" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.75;exitY=1;entryX=0.5;entryY=0;" parent="1" source="a_catalog" target="a_es" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed6" value="live quantity" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="a_cache" target="a_items" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed7" value="CDC (catalog updates)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.75;exitY=0;entryX=0.5;entryY=1;" parent="1" source="a_items" target="a_es" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed8" value="cart ops" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_gw" target="a_cart" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_cart" target="a_cartdb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed10" value="POST /orders (idempotent)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_gw" target="a_order" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_order" target="a_ordersdb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed12" value="reserve stock" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_order" target="a_inv" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed13" value="atomic Lua decr + TTL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_inv" target="a_invredis" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed14" value="async write-back" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;" parent="1" source="a_invredis" target="a_invdb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed15" value="POST /orders/:id/payment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_gw" target="a_pay" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" parent="1" source="a_pay" target="a_paydb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed17" value="charge" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" parent="1" source="a_pay" target="a_provider" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed18" value="webhook callback&#xa;(idempotent, at-least-once)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;exitX=0.75;exitY=0;entryX=0.5;entryY=1;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="2025" y="1740" as="sourcePoint"/>
+                        <mxPoint x="1970" y="1310" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ed19" value="order events (outbox)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.5;exitY=0;entryX=0;entryY=0.25;" parent="1" source="a_order" target="a_bus" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed20" value="payment events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=1;exitY=0.4;entryX=0;entryY=0.75;" parent="1" source="a_pay" target="a_bus" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed21" value="stock events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.5;exitY=0;entryX=0;entryY=0.5;" parent="1" source="a_inv" target="a_bus" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed22" value="consume" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="a_bus" target="a_wf" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed23" value="drive lifecycle / release on cancel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;exitX=0;exitY=0.5;entryX=0.5;entryY=1;" parent="1" source="a_wf" target="a_order" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed24" value="reconcile" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;" parent="1" source="a_invdb" target="a_recon" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed25" value="reconcile" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="a_recon" target="a_invredis" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="ed26" value="consumer lag" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" parent="1" source="a_mon" target="a_wf" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
