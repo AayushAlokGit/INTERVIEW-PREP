@@ -1,5 +1,5 @@
 # DSA Weaknesses
-Last updated: 2026-07-29 (derivation drill: Car Fleet, Making a Large Island, Max Sum Circular Subarray)
+Last updated: 2026-07-29 (derivation drill: Course Schedule III)
 
 <!-- Sessions = lifetime count (never decreases). Active = current severity 0-10;
      -1 whenever a round gave the chance to exhibit it and he didn't. Row retires at Active 0. -->
@@ -57,9 +57,9 @@ Last updated: 2026-07-29 (derivation drill: Car Fleet, Making a Large Island, Ma
 | Q2 | Name the repeated work | 5 | 0 | — |
 | Q3 | Fix the most constrained variable | 1 | 0 | — |
 | Q4 | Is the predicate monotone? | 1 | 1 | 2026-07-28 |
-| Q5 | Which scan direction/order makes it known? | 1 | 1 | 2026-07-28 |
+| Q5 | Which scan direction/order makes it known? | 2 | 1 | 2026-07-28 |
 | Q6 | Name the operation, match the structure | 0 | 1 | 2026-07-28 |
-| Q7 | Candidate set too small, or move set too small? | 1 | 1 | 2026-07-28 |
+| Q7 | Candidate set too small, or move set too small? | 1 | 2 | 2026-07-29 |
 | Q8 | What is the minimal state? | 0 | 0 | — |
 | Q9 | Which constraint have I not spent? | 0 | 1 | 2026-07-29 |
 
@@ -71,7 +71,7 @@ Last updated: 2026-07-29 (derivation drill: Car Fleet, Making a Large Island, Ma
      or wrong prediction. Miss = nothing, or an input the algorithm handles fine. -->
 | Category | Attempts | Hits | Weak | Miss | Last Miss |
 |---|---|---|---|---|---|
-| Edge of the input space | 4 | 1 | 1 | 2 | 2026-07-29 |
-| Unstated assumption | 4 | 1 | 1 | 2 | 2026-07-29 |
-| Internal state | 4 | 0 | 0 | 4 | 2026-07-29 |
-| Free swing | 1 | 0 | 0 | 1 | 2026-07-29 |
+| Edge of the input space | 5 | 1 | 1 | 3 | 2026-07-29 |
+| Unstated assumption | 5 | 1 | 1 | 3 | 2026-07-29 |
+| Internal state | 5 | 0 | 0 | 5 | 2026-07-29 |
+| Free swing | 2 | 0 | 0 | 2 | 2026-07-29 |
