@@ -62,3 +62,13 @@ Last updated: 2026-07-28 (Minimum Number of Operations to Make Array Continuous)
 | Q7 | Candidate set too small, or move set too small? | 0 | 1 | 2026-07-28 |
 | Q8 | What is the minimal state? | 0 | 0 | — |
 | Q9 | Which constraint have I not spent? | 0 | 0 | — |
+
+## Adversarial Inputs
+<!-- Updated by /derive-optimal-algorithm. One row per category, 3 attempts per session (one per problem).
+     Hit = concrete input + correct predicted-vs-actual output. Weak = right danger, no concrete input
+     or wrong prediction. Miss = nothing, or an input the algorithm handles fine. -->
+| Category | Attempts | Hits | Weak | Miss | Last Miss |
+|---|---|---|---|---|---|
+| Degenerate (empty / single / all-identical) | 0 | 0 | 0 | 0 | — |
+| Assumption-breaker (negatives, ties, boundary) | 0 | 0 | 0 | 0 | — |
+| Counter desync (increment/decrement not inverses) | 0 | 0 | 0 | 0 | — |
