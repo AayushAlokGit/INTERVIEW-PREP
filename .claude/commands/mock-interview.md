@@ -168,7 +168,7 @@ Then give a full structured debrief:
 
 **After the debrief — commit & push:**
 If any tracked files changed during the session (weaknesses files, command/skill edits), record them in git:
-1. From `C:/Users/aayus/Desktop/Interview Prep`, run `git add -A` then `git status` to see what's staged. (Transcripts under `transcripts/` are gitignored and won't be included — expected.)
+1. From `C:/Users/aayus/Desktop/Interview Prep`, run `git add -A` then `git status` to see what's staged. Transcripts under `transcripts/` **are** tracked and must be included — confirm this round's transcripts appear before committing.
 2. If there is something to commit, commit with a message summarizing the session, e.g. `git commit -m "Mock interview: <rounds completed>"`, ending with the standard co-author line, then `git push`.
 3. If push fails, do NOT retry blindly — tell Aayush exactly what failed and stop.
 4. If `git status` shows nothing tracked to commit, say so and skip — don't make an empty commit.

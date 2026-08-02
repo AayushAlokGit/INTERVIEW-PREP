@@ -204,7 +204,7 @@ Then tell him what changed: added, incremented, **decayed**, **retired**.
 
 ## Commit & push
 
-1. `git add dsa_weaknesses.md .claude/commands/*.md` from `C:/Users/aayus/Desktop/Interview Prep`. Transcripts are gitignored — expected, don't force-add.
+1. `git add dsa_weaknesses.md transcripts/ .claude/commands/*.md` from `C:/Users/aayus/Desktop/Interview Prep`. Transcripts **are** tracked in git — the round's transcript must be staged. Run `git status --short` after staging and confirm the new transcript appears; if it doesn't, say so rather than committing without it.
 2. `git commit -m "DSA round: <Problem Name> (<Rating>/5)"`, ending with the standard co-author line.
 3. `git push`. On failure do NOT retry blindly — report exactly what failed and stop.
 4. Nothing to commit → say so, skip rather than making an empty commit.

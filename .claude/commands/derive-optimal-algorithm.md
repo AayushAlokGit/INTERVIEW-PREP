@@ -37,7 +37,7 @@ Base path for everything below: `C:/Users/aayus/Desktop/Interview Prep`.
 3. Glob `transcripts/*/*/*/derive/*.md` and read recent ones to see what's been drilled.
 4. Read `dsa_derivation_playbook.md` — §1 for per-move failure rates and members, §2 for families.
 
-Never mention these files or quote move codes at him. `transcripts/` is gitignored so `Grep` won't see it — use `PowerShell` with `Get-ChildItem … | Select-String`.
+Never mention these files or quote move codes at him. `transcripts/` is tracked in git, so `Grep` and `Glob` search it normally.
 
 ## Problem selection
 
@@ -144,7 +144,7 @@ Increment `Ran` only when the question was genuinely load-bearing and he invoked
 
 ## Commit & push
 
-1. `git add dsa_weaknesses.md dsa_derivation_playbook.md .claude/commands/*.md`. Transcripts are gitignored — don't force-add.
+1. `git add dsa_weaknesses.md dsa_derivation_playbook.md transcripts/ .claude/commands/*.md`. Transcripts **are** tracked in git — the drill's transcript must be staged. Run `git status --short` after staging and confirm it appears.
 2. `git commit -m "Derivation drill: <problems> (<n>/N key moves)"`, ending with the standard co-author line.
 3. `git push`. On failure, report exactly what failed and stop. Nothing to commit → say so, skip the empty commit.
 
