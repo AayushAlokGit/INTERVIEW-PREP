@@ -1,0 +1,355 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1200" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3000" pageHeight="4600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="2" value="Product Recommendation System" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="800" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- ============ FRs ============ -->
+        <mxCell id="fr_hdr" value="FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="fr_box" value="1. Show related products for a product on the product page&#10;&#10;2. Homepage — show ranked list of recommended products for a signed-in user&#10;    (refreshed as they browse)&#10;&#10;3. Collect user activity events (views, clicks, add-to-cart, purchases, searches)&#10;    to generate recommendations&#10;&#10;NOTE: actual ranking is done by an ML model (abstracted); the model is fed&#10;user data and product data" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#DEEBF7;strokeColor=#2E75B6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="115" width="720" height="190" as="geometry"/>
+        </mxCell>
+
+        <!-- ============ NFRs ============ -->
+        <mxCell id="nfr_hdr" value="NON-FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="800" y="80" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfr_box" value="1. Low latency feed generation — p99 &lt; 200 ms&#10;2. Up to 3 min for recent events to affect the homepage&#10;3. Scale:&#10;    • 100M DAU, 10^5 s in a day&#10;    • 10 views/user/day → 10^9 events/day → ~10k events/s ingest (peak 10x)&#10;    • homepage 3x/user/day → ~3k homepage reads/s avg (peak 10x)&#10;    • ~10k read req/s for similar-products (product page)&#10;4. Highly available — 99.9%&#10;5. Eventual consistency acceptable for recommendations&#10;&#10;(Out of scope: never stated)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFF2CC;strokeColor=#BF9000;" vertex="1" parent="1">
+          <mxGeometry x="800" y="115" width="720" height="190" as="geometry"/>
+        </mxCell>
+
+        <!-- ============ Entities ============ -->
+        <mxCell id="ce_hdr" value="CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="345" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="ce_box" value="UserActivityEvent (userId, type, time, productId [optional], metadata..)&#10;&#10;UserHomepageFeed (userId, products: [productId], updatedAt)&#10;&#10;SimilarProducts (productId, similarProducts: [productId], updatedAt)&#10;&#10;Product (id, name, details..)&#10;&#10;Feeds store product IDs only; bodies hydrated at read time&#10;(trades read latency for storage)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E2EFDA;strokeColor=#548235;" vertex="1" parent="1">
+          <mxGeometry x="20" y="380" width="720" height="190" as="geometry"/>
+        </mxCell>
+
+        <!-- ============ API ============ -->
+        <mxCell id="api_hdr" value="API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="800" y="345" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="api_box" value="NOTE: identity extracted from JWT if needed&#10;&#10;GET /products/:id/relatedProducts        (public, no auth)&#10;    → Product(id, name, title, price)[]&#10;&#10;GET /recommendedProducts                  (identity from JWT; no :id in path)&#10;    → Product(id, name, title, price)[]&#10;&#10;POST /userActivityEvents&#10;    Request: { type, productId, time, ip }&#10;    Header:  Idempotency-Key   (de-dup on client retries)&#10;    → 2xx, event accepted&#10;&#10;Pagination: cursor-based (allows for dynamic insertions)&#10;Anonymous traffic: identified by request IP" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FCE4D6;strokeColor=#C55A11;" vertex="1" parent="1">
+          <mxGeometry x="800" y="380" width="720" height="270" as="geometry"/>
+        </mxCell>
+
+        <!-- ============ HLD (his) ============ -->
+        <mxCell id="hld_hdr" value="HIGH-LEVEL DESIGN — as described (incomplete: round ended mid-HLD)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="700" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="hld_sep" value="" style="line;strokeWidth=2;html=1;strokeColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="730" width="2400" height="10" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_client" value="Clients" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="810" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_api" value="POST /userActivityEvents&#10;(ingest API)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DEEBF7;strokeColor=#2E75B6;" vertex="1" parent="1">
+          <mxGeometry x="270" y="800" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_kafka" value="Kafka&#10;(partitioned by sessionId)&#10;&#10;[revision — replaced querying&#10;Cassandra directly]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#BF9000;" vertex="1" parent="1">
+          <mxGeometry x="560" y="790" width="230" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_cass" value="Cassandra — event store&#10;partition: sessionId + timeBucket&#10;sort key: eventTime&#10;(chosen for WAL-append write throughput)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#548235;" vertex="1" parent="1">
+          <mxGeometry x="270" y="990" width="270" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_cron" value="Cron — every 3 min&#10;schedules worker instances&#10;(only users with activity&#10;in last 3 min)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4D6;strokeColor=#C55A11;" vertex="1" parent="1">
+          <mxGeometry x="870" y="790" width="220" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_worker" value="Worker instances&#10;query events for the window,&#10;build homepage feed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4D6;strokeColor=#C55A11;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="790" width="220" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_ml" value="ML model&#10;(abstracted)&#10;fed user data + product data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="1480" y="790" width="220" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_sql" value="SQL store&#10;UserHomepageFeed&#10;index on userId&#10;(also: SimilarProducts, same flow)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#548235;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="1000" width="250" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_cdc" value="CDC&#10;(keeps Redis consistent when the&#10;SQL homepage record is updated)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#BF9000;" vertex="1" parent="1">
+          <mxGeometry x="1530" y="1020" width="240" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_redis" value="Redis cache&#10;cache-aside + request coalescing&#10;(keeps DB off the hot path at peak)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1870" y="1000" width="250" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_read" value="GET /recommendedProducts&#10;GET /products/:id/relatedProducts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DEEBF7;strokeColor=#2E75B6;" vertex="1" parent="1">
+          <mxGeometry x="2200" y="1010" width="230" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="he1" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_client" target="h_api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he1l" value="activity events" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he1">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he2" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_api" target="h_kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he2l" value="events" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he2">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he3" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="h_api" target="h_cass">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he3l" value="events (initial design)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he3">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he4" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_cron" target="h_worker">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he4l" value="schedules" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he4">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he5" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="h_worker" target="h_cass">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1280" y="955"/><mxPoint x="200" y="955"/><mxPoint x="200" y="1060"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="he5l" value="query events for last 3 min (scatter-gather — abandoned)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he5">
+          <mxGeometry x="0.2" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he6" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_worker" target="h_ml">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he6l" value="user + product data" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he6">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he7" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=1;entryY=0;" edge="1" parent="1" source="h_ml" target="h_sql">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he7l" value="ranked product list" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he7">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he8" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="h_worker" target="h_sql">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he8l" value="writes feed" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he8">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he9" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_sql" target="h_cdc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he9l" value="row change" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he9">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he10" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_cdc" target="h_redis">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he10l" value="keeps cache consistent" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he10">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he11" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="h_read" target="h_redis">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he11l" value="read (cache-aside)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he11">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he12" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;dashed=1;" edge="1" parent="1" source="h_redis" target="h_sql">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1995" y="1210"/><mxPoint x="1305" y="1210"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="he12l" value="miss → fetch feed" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="he12">
+          <mxGeometry x="0" relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_gap" value="NOT SPECIFIED WHEN THE ROUND ENDED:&#10;• what consumes the Kafka topics (worker? stream processor?) and what Cassandra is still for&#10;• how SimilarProducts is actually computed (co-view pair counting was never designed)&#10;• number of active users per 3-min window → model invocations/s → SQL write rate → Redis invalidation rate&#10;• product hydration path (feeds store IDs only; who resolves them?)&#10;• monitoring, cost, DLQ / backpressure, consumer lag, cold start, fallback on cache+DB failure" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#F2F2F2;strokeColor=#999999;dashed=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1270" width="1000" height="150" as="geometry"/>
+        </mxCell>
+
+        <!-- ============ OPTIMAL REFERENCE ============ -->
+        <mxCell id="opt_sep" value="" style="line;strokeWidth=3;html=1;strokeColor=#7030A0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1520" width="2900" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_hdr" value="OPTIMAL REFERENCE — what a senior strong-hire would design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;fontColor=#7030A0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1540" width="1200" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o_ce_hdr" value="1 · OPTIMAL CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#7030A0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1600" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_ce" value="ActivityEvent    (eventId [uuid, for dedup], userId | null, sessionId, deviceId, productId,&#10;                          type ∈ {view, click, add_to_cart, purchase, search}, ts, source, context{page, position})&#10;&#10;Session               (sessionId, userId | null, deviceId, startedAt, lastSeenAt, country)&#10;&#10;Product               (productId, title, imageUrl, price, currency, categoryId, brandId,&#10;                          inStock, isActive, embedding[])  ← owned by Catalog service, replicated read-only&#10;&#10;UserProfile        (userId, recentProductIds[50], categoryAffinity{}, embedding[], updatedAt)&#10;&#10;ItemSimilarity   (productId, [{ productId, score, reason }] top-100, computedAt, version)&#10;&#10;UserFeed             (userId, [{ productId, score, sourceCandidate }] top-500, modelVersion,&#10;                          generatedAt, expiresAt)&#10;&#10;CoViewCount     (productA, productB, count, windowStart)   ← intermediate, aggregation state" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1635" width="1120" height="290" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o_api_hdr" value="2 · OPTIMAL API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#7030A0;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1600" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_api" value="POST /v1/events                                    (batched, fire-and-forget from client)&#10;  Headers: Idempotency-Key: &lt;eventId&gt;&#10;  Body:    { events: [ { eventId, sessionId, deviceId, productId, type, ts, context } ] }&#10;  → 202 Accepted { accepted: n, rejected: [ {eventId, reason} ] }&#10;  Notes: userId derived from JWT server-side, NEVER from the body (spoofing).&#10;             Anonymous identity = sessionId cookie + deviceId. NOT the IP.&#10;&#10;GET /v1/products/{productId}/similar?limit=20&amp;cursor=&lt;opaque&gt;&amp;context=pdp&#10;  → 200 { items: [ { productId, title, imageUrl, price, currency, inStock, score } ],&#10;                nextCursor, generatedAt, modelVersion }&#10;  Cache-Control: public, max-age=300     ← CDN-cacheable, it is not personalized&#10;&#10;GET /v1/recommendations?limit=20&amp;cursor=&lt;opaque&gt;&amp;surface=homepage&#10;  Auth: JWT (identity from token; no userId in the path — no IDOR surface)&#10;  → 200 { items: [ { productId, title, imageUrl, price, currency, inStock, score } ],&#10;                nextCursor, generatedAt, isFallback, modelVersion }&#10;  Cursor = opaque { feedVersion, offset } so paging is stable across regeneration.&#10;  Cache-Control: private, no-store&#10;&#10;GET /v1/recommendations/health/staleness      (internal — feed age percentiles)&#10;&#10;Errors: 400 invalid, 401 no token, 429 + Retry-After, 503 + fallback payload." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FCE4D6;strokeColor=#C55A11;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1635" width="1180" height="400" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o_hld_hdr" value="3 · OPTIMAL HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#7030A0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2100" width="600" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lane_w" value="WRITE / INGEST PATH" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#BFBFBF;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2150" width="1160" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_client" value="Clients&#10;(web / app)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="45" y="2220" width="130" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_ingest" value="Event Ingest Svc&#10;validate · enrich&#10;dedup by eventId&#10;(stateless, autoscaled)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DEEBF7;strokeColor=#2E75B6;" vertex="1" parent="1">
+          <mxGeometry x="245" y="2205" width="190" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_kafka" value="Kafka  topic: activity-events&#10;key = sessionId  (co-view locality)&#10;~100k msg/s peak · 7d retention&#10;replication 3 · DLQ topic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#BF9000;" vertex="1" parent="1">
+          <mxGeometry x="510" y="2195" width="250" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_archive" value="S3 / Cassandra&#10;raw event archive&#10;(offline training, replay)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#548235;" vertex="1" parent="1">
+          <mxGeometry x="850" y="2185" width="220" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lane_c" value="COMPUTE — TWO PLANES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#BFBFBF;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="2150" width="1140" height="480" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_flink" value="NEARLINE  ·  Flink / Kafka Streams&#10;• sessionize by sessionId&#10;• emit co-view pairs (A,B) per session&#10;• maintain per-user recent-activity vector&#10;• mark user &quot;dirty&quot; on activity&#10;→ meets the 3-min freshness SLA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4D6;strokeColor=#C55A11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="2200" width="320" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_batch" value="OFFLINE  ·  Spark, every 1–6 h&#10;• item-item co-view / co-purchase matrix&#10;• normalise (lift, not raw counts)&#10;• product + user embeddings&#10;→ writes ItemSimilarity, refreshes ANN index" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4D6;strokeColor=#C55A11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="2420" width="320" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_candgen" value="Candidate Generation&#10;(only for DIRTY users)&#10;• ANN over user embedding (top 500)&#10;• ∪ ItemSimilarity of last-viewed items&#10;• ∪ trending in affinity categories&#10;→ ~1–2k candidates, no model yet" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="1660" y="2200" width="320" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_rank" value="Ranking Service&#10;ML model (abstracted)&#10;scores ~1–2k candidates,&#10;keeps top 500&#10;batched GPU inference" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="2040" y="2200" width="310" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_fstore" value="Feature Store&#10;online features for ranking&#10;(user vector, item stats)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#548235;" vertex="1" parent="1">
+          <mxGeometry x="1700" y="2430" width="240" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_ann" value="ANN / Vector Index&#10;(product embeddings)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#548235;" vertex="1" parent="1">
+          <mxGeometry x="2050" y="2430" width="240" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lane_s" value="STORAGE + READ / SERVING PATH" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#BFBFBF;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#808080;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2700" width="2360" height="290" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_feedkv" value="UserFeed store — KV (DynamoDB / Cassandra)&#10;pk = userId · top-500 IDs + scores&#10;~100M rows · ~200 GB · TTL 24 h&#10;(no joins, no transactions → SQL buys nothing)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#548235;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="2760" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_simkv" value="ItemSimilarity store — KV&#10;pk = productId · top-100 IDs + scores&#10;~50M products · ~40 GB&#10;fully cacheable (not personalized)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#548235;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="410" y="2760" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_redis" value="Redis Cluster&#10;feed + similarity cache&#10;write-through on generation&#10;request coalescing (single-flight)&#10;hot-key replication key#0..N" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="2755" width="290" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_recsvc" value="Recommendation Service&#10;1. cache → 2. KV store → 3. FALLBACK&#10;   (trending / popular-in-category)&#10;light re-rank with in-session events&#10;filters: out-of-stock, already-purchased, dedupe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DEEBF7;strokeColor=#2E75B6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="2755" width="330" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_hydrate" value="Product Hydration&#10;multi-get from Catalog cache&#10;(title, image, price, stock)&#10;— the reason feeds store IDs only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DEEBF7;strokeColor=#2E75B6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="2755" width="290" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_gw" value="API Gateway / CDN&#10;CDN caches /similar (public)&#10;never caches /recommendations&#10;p99 budget: 200 ms total" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1930" y="2755" width="270" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_reader" value="Clients&#10;(read)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="2260" y="2800" width="100" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="oe1" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_client" target="o_ingest">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe1l" value="POST /v1/events" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe1"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe2" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_ingest" target="o_kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe2l" value="produce (key=sessionId)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe2"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe3" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_kafka" target="o_archive">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe3l" value="sink connector" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe3"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe4" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_kafka" target="o_flink">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1210" y="2225"/><mxPoint x="1210" y="2280"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oe4l" value="consume" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe4"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe5" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o_archive" target="o_batch">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="960" y="2500"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oe5l" value="daily / hourly batch" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe5"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe6" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_flink" target="o_candgen">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe6l" value="dirty userIds + recent vector" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe6"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe7" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_candgen" target="o_rank">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe7l" value="~1–2k candidates" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe7"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe8" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o_candgen" target="o_fstore">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe8l" value="features" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe8"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe9" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o_rank" target="o_ann">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe9l" value="embeddings" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe9"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe10" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_batch" target="o_fstore">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe10l" value="ItemSimilarity + embeddings" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe10"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe11" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o_rank" target="o_feedkv">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="2195" y="2660"/><mxPoint x="200" y="2660"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oe11l" value="write top-500 UserFeed (write-through to cache)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe11"><mxGeometry x="0.3" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe12" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o_batch" target="o_simkv">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1430" y="2680"/><mxPoint x="560" y="2680"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oe12l" value="write ItemSimilarity" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe12"><mxGeometry x="0.4" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe13" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_feedkv" target="o_simkv">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe14" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_simkv" target="o_redis">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe14l" value="miss → load" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe14"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe15" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_redis" target="o_recsvc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe15l" value="feed IDs (~1 ms)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe15"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe16" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_recsvc" target="o_hydrate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe16l" value="20 IDs → multi-get" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe16"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe17" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_hydrate" target="o_gw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe17l" value="hydrated items" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe17"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+        <mxCell id="oe18" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_gw" target="o_reader">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe18l" value="GET /v1/recommendations" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe18"><mxGeometry x="0" relative="1" as="geometry"/></mxCell>
+
+        <!-- Trade-offs -->
+        <mxCell id="o_to_hdr" value="4 · KEY TRADE-OFFS (each vs a NAMED alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#7030A0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3050" width="800" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_to" value="Kafka as the pipeline backbone  vs  a cron querying the event DB&#10;    A database is not a stream. &quot;All events in the last 3 min&quot; has no partition key, so it degenerates to scatter-gather over&#10;    every partition. Kafka gives an ordered, offset-addressable, replayable log. Cost: an extra system, and at-least-once&#10;    delivery that the consumer must make idempotent.&#10;&#10;Key events by sessionId  vs  by userId&#10;    Co-view pairs are a within-session, cross-user signal. Keying by userId puts the two halves of a co-view pair on&#10;    different partitions. Cost: per-user aggregation now needs a shuffle or a second keyed stream.&#10;&#10;Regenerate only DIRTY users  vs  regenerate all 100M every 3 min&#10;    Full regeneration = 100M / 180 s ≈ 550k model invocations/s. Infeasible and mostly wasted — the vast majority of users&#10;    are not online. Dirty-only ≈ 180k users per window ≈ 1k/s (10k/s at peak). Cost: a user whose feed drivers changed&#10;    for other reasons (price drop, restock) goes stale — handled by TTL + nightly refresh.&#10;&#10;Two-stage candidate-generation → ranking  vs  ranking the whole catalog&#10;    You cannot score 50M products per request. Cheap recall (ANN + co-view + trending) narrows to ~1–2k, then the&#10;    expensive model ranks only those. Cost: anything recall misses can never be recommended.&#10;&#10;Precompute feeds  vs  compute on read&#10;    p99 200 ms cannot contain candidate generation + model inference. Precompute the top-500, re-rank the top-20&#10;    cheaply at read time with in-session events. Cost: 200 GB of feed storage for users who may never log in — TTL it.&#10;&#10;KV store for feeds  vs  SQL with an index on userId&#10;    Access is a single-key lookup of a blob. No joins, no transactions, no range scans. SQL adds a query planner,&#10;    connection limits and a scaling ceiling for nothing. Cost: no ad-hoc querying of feeds.&#10;&#10;Write-through on generation  vs  cache-aside with CDC invalidation&#10;    The feed generator is the ONLY writer, so it can populate the cache directly — no CDC pipeline, no invalidate-then-&#10;    read race. Cost: cache writes on the generation path. (Cache-aside + coalescing remains right for the long tail.)&#10;&#10;Session cookie + deviceId for anonymous  vs  IP address&#10;    CGNAT collapses thousands of unrelated users behind one IP, and mobile IPs change mid-session — so IP both&#10;    merges strangers' co-views and splits one person's session. Cost: cookie loss = lost identity; accept it." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFF2CC;strokeColor=#BF9000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3085" width="1160" height="640" as="geometry"/>
+        </mxCell>
+
+        <!-- Deep dives -->
+        <mxCell id="o_dd_hdr" value="5 · DEEP DIVES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#7030A0;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="3050" width="800" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd" value="THE CORE HARD PROBLEM — co-view at 100k events/s&#10;    Flink sessionizes by sessionId (session gap 30 min), emits pairs (A,B) for products co-viewed in a session.&#10;    A session of k views yields k² pairs — cap k (last 20 viewed) or pairs will blow up on crawler-like sessions.&#10;    Aggregate counts in a sliding window, then normalise: raw counts just re-rank the catalog by popularity.&#10;    Use lift / PMI — count(A,B) / (count(A)·count(B)) — so &quot;phone case&quot; doesn't recommend &quot;iPhone&quot; to everyone.&#10;&#10;WHERE IT BREAKS AT SCALE&#10;    Break 1 — full feed regeneration: 550k inferences/s. Fix: dirty-user-only + TTL, → ~1k/s, 10k/s at peak.&#10;    Break 2 — cron over Cassandra: scatter-gather over every partition per window. Fix: Kafka log, offset-addressed.&#10;    Break 3 — co-view pair explosion: cap session length, count-min sketch for the tail, exact counts for the head.&#10;    Break 4 — 10x peak on reads (30k homepage + 100k pdp /s): CDN the /similar endpoint (public, not personalized) —&#10;                     that removes most of the pdp load before it reaches the service.&#10;&#10;HOT KEYS / HOT PARTITIONS&#10;    A viral product's ItemSimilarity key is read by every visitor on that pdp. Redis: replicate as key#0..key#N and&#10;    pick at random; plus a short-TTL in-process local cache in the service. Kafka: a bot session can hot-spot one&#10;    partition — cap per-session throughput at ingest.&#10;&#10;CONSISTENCY &amp; IDEMPOTENCY&#10;    Kafka is at-least-once, so co-view counts double-count on replay. Dedup by eventId in the window, or write&#10;    absolute aggregates rather than increments. Feeds are eventually consistent by design — but pagination must be&#10;    stable, so the cursor pins feedVersion and a regeneration mid-scroll doesn't shuffle page 2.&#10;&#10;OPERABILITY — how you know it is stale or wrong&#10;    • Feed staleness histogram: now − generatedAt, p50/p99. Alert when p99 &gt; 3 min (that IS the SLA).&#10;    • Kafka consumer lag per partition — the leading indicator; staleness is the lagging one.&#10;    • Coverage: % of DAU with a fresh feed. Fallback rate: % of responses with isFallback=true.&#10;    • Empty/short-response rate, out-of-stock leakage rate, CTR as a guardrail against a bad model version.&#10;    • Model version pinned per feed row so a bad rollout is attributable and revertible.&#10;&#10;FAILURE MODES&#10;    Redis down → KV store (slower, survivable). KV down → trending/popular fallback, isFallback=true.&#10;    Flink down → feeds stale but served; alert on staleness, replay from Kafka offsets on recovery.&#10;    Ranking service down → serve the previous feed; it is a recommendation, not a payment.&#10;&#10;COLD START&#10;    New user: popular-in-category + geo trending, personalise after the first few events.&#10;    New product: content-based similarity from title/category/embedding until co-view data accrues." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="3085" width="1140" height="760" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
