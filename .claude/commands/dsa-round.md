@@ -65,6 +65,8 @@ When he submits, do not trace it, run it, state its output, or point at the bug 
 
 **You keep the clock; never ask him the time.** `Get-Date -Format "HH:mm:ss"` via PowerShell before presenting (state it once), again at the start of every one of your turns — that stamp is the moment he submitted, so elapsed time is exact — and a final time before feedback. Track silently. Optionally arm one background alarm at the approach deadline (Medium 720s, Medium-Hard 900s, Hard 1200s) via Bash `sleep <n>; echo CHECKPOINT` with `run_in_background: true`, so you can interrupt him when he goes quiet.
 
+**NEVER GUESS, ESTIMATE, OR INTERPOLATE A TIME.** Every timestamp you write — in a message to him, in the transcript header, in the phase-timings table — must come from a `Get-Date` call you ran **in that same turn**. Do not extrapolate from an earlier stamp. Do not assume a turn took "about two minutes": the gap between his messages is unbounded and routinely runs to tens of minutes, so an estimated stamp is not a small error, it silently corrupts every phase timing and the rating that follows. If you are about to write a time and have not run `Get-Date` this turn, run it first. If no real stamp exists for a moment, write "not stamped" — never invent a number.
+
 ## Feedback
 
 **Round conditions** (report first): hints used (X/2) and the ceiling that implies; which constraints he asked for and which he never did; whether he verified his own code and whether his claimed output was right.

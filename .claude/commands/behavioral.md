@@ -71,6 +71,7 @@ Land at most one of these per round, and treat a scripted-sounding answer as a r
 - Run `date +%H:%M:%S` again at the START of every one of your turns during the round. The timestamp equals the moment he submitted his answer, so you get an exact length for each answer and follow-up. Track silently — never ask him for the time.
 - When you finish all questions and are about to give feedback, run `date +%H:%M:%S` again. Record it as the round end time.
 - Calculate and include the total time taken in the feedback section as: **Time Taken: X minutes**, plus a per-question breakdown.
+- **NEVER GUESS, ESTIMATE, OR INTERPOLATE A TIME.** Every timestamp you write — in a message to him, in the transcript header, in the per-question breakdown — must come from a `date +%H:%M:%S` call you ran **in that same turn**. Do not extrapolate from an earlier stamp. Do not assume a turn took "about two minutes": the gap between his messages is unbounded and routinely runs to tens of minutes, so an estimated stamp is not a small error, it silently corrupts every timing and the score that follows. If you are about to write a time and have not run the command this turn, run it first. If no real stamp exists for a moment, write "not stamped" — never invent a number.
 
 **Pacing (a real behavioral round is time-boxed too):**
 - Target ~30–35 min for the round: 3–4 questions, each ~6–8 min including follow-ups.
