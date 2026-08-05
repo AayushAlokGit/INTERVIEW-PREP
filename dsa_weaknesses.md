@@ -7,47 +7,45 @@ Last updated: 2026-08-05
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't proactively ask about input semantics (empty, duplicates) | 15 | 9 | 2026-08-05 |
-| Skips clarifying questions on value ranges / scale | 28 | 4 | 2026-07-23 |
-| Under-reads the spec (output format, exact return values) | 1 | 1 | 2026-08-05 |
-| Misses free structural facts stated in the problem | 5 | 3 | 2026-08-05 |
-| Asks for constraints but can't translate them to a budget | 8 | 3 | 2026-08-04 |
+| Doesn't proactively ask about input semantics (empty, duplicates) | 16 | 10 | 2026-08-05 |
+| Asks for constraints but can't translate them to a budget | 9 | 4 | 2026-08-05 |
+| Skips clarifying questions on value ranges / scale | 28 | 3 | 2026-07-23 |
+| Misses free structural facts stated in the problem | 5 | 2 | 2026-08-05 |
 
 ## Approach & Thought Process
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Defaults to generic pattern over structure-exploiting one | 24 | 9 | 2026-08-05 |
-| Adopts an optimality principle without proving it | 4 | 4 | 2026-08-05 |
+| Defaults to generic pattern over structure-exploiting one | 24 | 8 | 2026-08-05 |
+| Adopts an optimality principle without proving it | 5 | 5 | 2026-08-05 |
 | Proposes sliding window without checking predicate monotonicity | 3 | 3 | 2026-08-05 |
-| Requests hints instead of one more independent attempt | 3 | 2 | 2026-08-05 |
-| Fails to recognise a technique he has already used | 4 | 1 | 2026-08-05 |
+| Requests hints instead of one more independent attempt | 3 | 1 | 2026-08-05 |
 
 ## Code Quality & Correctness
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't self-verify/dry-run before declaring done | 75 | 10 | 2026-08-05 |
-| Off-by-one / ordering bugs (update-before-shrink, boundaries) | 16 | 5 | 2026-08-02 |
-| Returns wrong output format / casing vs the spec | 1 | 1 | 2026-08-05 |
-| Increment and decrement guards not mirror conditions | 2 | 1 | 2026-07-28 |
+| Doesn't self-verify/dry-run before declaring done | 76 | 10 | 2026-08-05 |
+| Off-by-one / ordering bugs (update-before-shrink, boundaries) | 16 | 4 | 2026-08-02 |
+| Increment and decrement guards not mirror conditions | 3 | 2 | 2026-08-05 |
+| Tests key presence where a count comparison is required | 1 | 1 | 2026-08-05 |
 
 ## Complexity Analysis
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't state complexity unless explicitly asked | 9 | 9 | 2026-08-05 |
-| Asserts best-case bound, omits true factor (descent/search) | 11 | 2 | 2026-07-23 |
-| Proves invariant only within a loop, not across iterations | 4 | 1 | 2026-08-02 |
+| Doesn't state complexity unless explicitly asked | 9 | 8 | 2026-08-05 |
+| Asserts best-case bound, omits true factor (descent/search) | 11 | 1 | 2026-07-23 |
+| Declares a bound optimal without checking value-domain tricks | 1 | 1 | 2026-08-05 |
 
 ## Communication
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Long silence (7+ min) when stuck instead of thinking aloud | 12 | 9 | 2026-08-05 |
-| Defends/asserts instead of tracing when asked to dry-run | 20 | 6 | 2026-08-02 |
+| Long silence (7+ min) when stuck instead of thinking aloud | 12 | 8 | 2026-08-05 |
+| Defends/asserts instead of tracing when asked to dry-run | 21 | 7 | 2026-08-05 |
 
 ## Time Management
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Never reaches approach independently within budget | 12 | 9 | 2026-08-05 |
-| No code written within the coding-phase budget | 11 | 9 | 2026-08-05 |
+| Never reaches approach independently within budget | 12 | 8 | 2026-08-05 |
+| No code written within the coding-phase budget | 11 | 8 | 2026-08-05 |
 
 ## Derivation Questions
 <!-- Updated by /derive-optimal-algorithm. Ran = times he invoked the question unprompted
@@ -59,7 +57,7 @@ Last updated: 2026-08-05
 | Q3 | Fix the most constrained variable | 1 | 0 | — |
 | Q4 | Is the predicate monotone? | 1 | 3 | 2026-08-05 |
 | Q5 | Which scan direction/order makes it known? | 2 | 1 | 2026-07-28 |
-| Q6 | Name the operation, match the structure | 0 | 2 | 2026-08-05 |
+| Q6 | Name the operation, match the structure | 1 | 2 | 2026-08-05 |
 | Q7 | Candidate set too small, or move set too small? | 1 | 3 | 2026-07-29 |
 | Q8 | What is the minimal state? | 1 | 2 | 2026-08-05 |
-| Q9 | Which constraint have I not spent? | 0 | 3 | 2026-08-04 |
+| Q9 | Which constraint have I not spent? | 0 | 4 | 2026-08-05 |
