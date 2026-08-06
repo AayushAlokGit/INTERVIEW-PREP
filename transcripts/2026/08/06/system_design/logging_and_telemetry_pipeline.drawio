@@ -1,0 +1,344 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1400" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="4800" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="2" value="Distributed Logging &amp; Telemetry Pipeline" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=22;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="3" value="Mock round 2026-08-06 &#183; 40 min" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="58" width="700" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="4" value="PART A &#8212; AAYUSH&#39;S DESIGN (as described in the round)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontSize=16;fontStyle=1;fontColor=#FFFFFF;fillColor=#1F4E79;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="2400" height="36" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="10" value="1 &#183; FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="11" value="&lt;div style=&#39;text-align:left&#39;&gt;1. Ingest logs, metrics, traces from service machines across a company&#39;s fleet&lt;br&gt;&lt;br&gt;2. Store the logs, metrics and traces durably&lt;br&gt;&lt;br&gt;3. Allow engineer to query the metrics timeseries and logs and traces&lt;br&gt;&lt;br&gt;4. Support dashboards on metrics (last 1h / 24h / 7d)&lt;br&gt;&lt;br&gt;5. Support raising alerts on metrics&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#7EA6D9;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="195" width="820" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="12" value="Out of scope: never stated" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=11;fontColor=#B85450;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="380" width="600" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="20" value="2 &#183; NON-FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="960" y="160" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" value="&lt;div style=&#39;text-align:left&#39;&gt;1. Highly available for event ingestion (99.99% ~ 52 min downtime/year)&lt;br&gt;&lt;br&gt;2. Data freshness latency ~ 3 min (event reflected in dashboard within 3 min)&lt;br&gt;&lt;br&gt;3. Alert raised within 1 min of metric threshold being breached&lt;br&gt;&lt;br&gt;4. Low latency query time &amp;lt; 1 min&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#7EA6D9;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="960" y="195" width="820" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="22" value="NFR 2 (3 min freshness) and NFR 3 (1 min alert) were never reconciled" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=11;fontColor=#B85450;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="960" y="350" width="820" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="30" value="3 &#183; SCALE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="425" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="31" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;Inputs (supplied by interviewer after two requests for help):&lt;/b&gt;&lt;br&gt;&lt;br&gt;10,000 hosts &#183; 500 services &#183; 1,000,000 req/s peak&lt;br&gt;Metrics: 200 series/host, 10 s scrape, ~100 B/point&lt;br&gt;Logs: 100 lines/s/host, ~500 B/line&lt;br&gt;Traces: 1% sampled, ~10 spans/trace, ~300 B/span&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="400" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="32" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;Correct derived totals:&lt;/b&gt;&lt;br&gt;&lt;br&gt;Metrics&#160;&#160;&#160;200 K/s&#160;&#160;&#160;20 MB/s&#160;&#160;&#160;1.7 TB/day&lt;br&gt;Logs&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;1 M/s&#160;&#160;500 MB/s&#160;&#160;&#160;&#160;43 TB/day&lt;br&gt;Traces&#160;&#160;&#160;&#160;&#160;100 K/s&#160;&#160;&#160;30 MB/s&#160;&#160;&#160;2.6 TB/day&lt;br&gt;&lt;b&gt;Total&#160;&#160;&#160;&#160;&#160;&#160;1.3 M/s&#160;&#160;~550 MB/s&#160;&#160;~47 TB/day&lt;/b&gt;&lt;br&gt;&lt;br&gt;Retention stated: logs 15 d, traces 15 d. Metrics: never given.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="460" width="420" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="33" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;First pass (incorrect, defended when challenged):&lt;/b&gt;&lt;br&gt;&lt;br&gt;Metrics 20 GB/s&#160;&#160;&#8212; 1,000&#215; too high&lt;br&gt;Logs&#160;&#160;&#160;&#160;500 GB/s&#160;&#8212; 1,000&#215; too high (= 43 PB/day)&lt;br&gt;Traces&#160;&#160;300 GB/s&#160;&#8212; 10,000&#215; too high&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="920" y="460" width="440" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="40" value="4 &#183; CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="425" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="41" value="NEVER PRODUCED&#10;(asked three times)" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#F8CECC;strokeColor=#B85450;fontSize=13;fontStyle=1;fontColor=#B85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="460" width="300" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="42" value="5 &#183; API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="1760" y="425" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="43" value="NEVER PRODUCED&#10;(asked three times)" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#F8CECC;strokeColor=#B85450;fontSize=13;fontStyle=1;fontColor=#B85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1760" y="460" width="300" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="50" value="6 &#183; HIGH-LEVEL DESIGN &#8212; logs path only (metrics, traces and alerting were never designed)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="670" width="1400" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="51" value="Agent on host&#10;(aggregates logs,&#10;tracks what has&#10;been sent)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="720" width="180" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="52" value="Ingesting&#10;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="360" y="720" width="180" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="53" value="Kafka&#10;partitioned by machineId&#10;(preserves per-machine&#10;log ordering)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="660" y="705" width="200" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="54" value="Consumer&#10;process&#10;(polls Kafka)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="980" y="720" width="180" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="55" value="OLAP DB&#10;(never named;&#10;no alternative given)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="705" width="200" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="56" value="Engineer&#10;query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="720" width="160" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="51" target="52">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="61l" value="push logs" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=11;" vertex="1" connectable="0" parent="61">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="52" target="53">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;dashed=1;" edge="1" parent="1" source="53" target="54">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="63l" value="poll" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=11;" vertex="1" connectable="0" parent="63">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="54" target="55">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="64l" value="write" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=11;" vertex="1" connectable="0" parent="64">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;dashed=1;" edge="1" parent="1" source="55" target="56">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="65l" value="query" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=11;" vertex="1" connectable="0" parent="65">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="70" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;Questions asked and left unanswered:&lt;/b&gt;&lt;br&gt;&#8226; What happens to a log line when the datastore stalls for 10 min?&lt;br&gt;&#8226; Which OLAP DB, and over what alternative?&lt;br&gt;&#8226; One service 100&#215;s its log rate &#8212; what breaks first, and what does the engineer see?&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="880" width="900" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="100" value="PART B &#8212; OPTIMAL REFERENCE (what a senior strong-hire would design)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontSize=16;fontStyle=1;fontColor=#FFFFFF;fillColor=#38761D;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1060" width="2400" height="36" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="110" value="B1 &#183; CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#38761D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1120" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="111" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;MetricSeries&lt;/b&gt; &#8212; the identity, not the data&lt;br&gt;&#160;&#160;series_id&#160;&#160;&#160;&#160;&#160;uint64 (hash of name + sorted tags)&lt;br&gt;&#160;&#160;name&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;http_request_duration_ms&lt;br&gt;&#160;&#160;tags&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;{service, region, endpoint, status, host}&lt;br&gt;&#160;&#160;type&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;counter | gauge | histogram&lt;br&gt;&lt;br&gt;&lt;i&gt;Cardinality is the whole game: 10K hosts &#215; 200 series&lt;br&gt;= 2 M active series. Tag combinations multiply it.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1155" width="560" height="185" as="geometry"/>
+        </mxCell>
+        <mxCell id="112" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;MetricPoint&lt;/b&gt; &#8212; the data, kept tiny&lt;br&gt;&#160;&#160;series_id&#160;&#160;&#160;&#160;&#160;uint64&lt;br&gt;&#160;&#160;ts&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;int64 (delta-encoded)&lt;br&gt;&#160;&#160;value&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;float64 (XOR-encoded, Gorilla)&lt;br&gt;&lt;br&gt;&lt;i&gt;Tags live on the series, never repeated per point.&lt;br&gt;This is why 100 B/point on the wire becomes&lt;br&gt;~2 B/point at rest &#8212; ~50&#215; compression.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="640" y="1155" width="560" height="185" as="geometry"/>
+        </mxCell>
+        <mxCell id="113" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;LogEvent&lt;/b&gt;&lt;br&gt;&#160;&#160;ts, level, service, host, trace_id, span_id&lt;br&gt;&#160;&#160;message&#160;&#160;&#160;&#160;&#160;&#160;text (full-text indexed)&lt;br&gt;&#160;&#160;fields&#160;&#160;&#160;&#160;&#160;&#160;&#160;map&amp;lt;string,string&amp;gt;&lt;br&gt;&#160;&#160;ingest_id&#160;&#160;&#160;&#160;uuid (agent-generated, for dedup)&lt;br&gt;&lt;br&gt;&lt;i&gt;trace_id is the join key across all three pillars.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="1155" width="560" height="185" as="geometry"/>
+        </mxCell>
+        <mxCell id="114" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;Span&lt;/b&gt;&lt;br&gt;&#160;&#160;trace_id, span_id, parent_span_id&lt;br&gt;&#160;&#160;service, operation, start_ts, duration_ms&lt;br&gt;&#160;&#160;status, attributes&lt;br&gt;&lt;br&gt;&lt;b&gt;AlertRule&lt;/b&gt;&lt;br&gt;&#160;&#160;rule_id, query (PromQL-like), threshold,&lt;br&gt;&#160;&#160;comparator, for_duration, severity,&lt;br&gt;&#160;&#160;notification_channel, state (OK|PENDING|FIRING)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1840" y="1155" width="560" height="185" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="120" value="B2 &#183; API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#38761D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1390" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="121" value="&lt;div style=&#39;text-align:left;font-family:monospace&#39;&gt;&lt;b&gt;INGEST (write path)&lt;/b&gt;&lt;br&gt;&lt;br&gt;POST /v1/ingest&lt;br&gt;Headers: Authorization: Bearer &amp;lt;host-cert-token&amp;gt;&lt;br&gt;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Content-Encoding: zstd&lt;br&gt;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;X-Batch-Id: &amp;lt;uuid&amp;gt;&#160;&#160;&#8592; idempotency key&lt;br&gt;&lt;br&gt;Body (protobuf/OTLP, batched):&lt;br&gt;{ resource: { service, host, region },&lt;br&gt;&#160;&#160;logs:&#160;&#160;&#160;&#160;[ {ts, level, message, fields, trace_id} ],&lt;br&gt;&#160;&#160;metrics: [ {name, tags, points:[{ts,value}]} ],&lt;br&gt;&#160;&#160;spans:&#160;&#160;&#160;[ {trace_id, span_id, parent, ...} ] }&lt;br&gt;&lt;br&gt;200 { accepted: 4812, rejected: 3,&lt;br&gt;&#160;&#160;&#160;&#160;&#160;&#160;errors: [{index, reason}] }&lt;br&gt;429 { retry_after_ms: 2000 }&#160;&#8592; backpressure signal&lt;br&gt;503 &#8592; agent must buffer and retry w/ same X-Batch-Id&lt;br&gt;&lt;br&gt;&lt;i&gt;Identity comes from the mTLS cert, never the body.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1425" width="560" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="122" value="&lt;div style=&#39;text-align:left;font-family:monospace&#39;&gt;&lt;b&gt;METRIC QUERY (dashboards)&lt;/b&gt;&lt;br&gt;&lt;br&gt;POST /v1/metrics/query&lt;br&gt;{ query: &quot;p99(http_request_duration_ms{service=&#39;checkout&#39;})&quot;,&lt;br&gt;&#160;&#160;start: &quot;2026-08-06T13:00:00Z&quot;,&lt;br&gt;&#160;&#160;end:&#160;&#160;&#160;&quot;2026-08-06T14:00:00Z&quot;,&lt;br&gt;&#160;&#160;step_s: 60,&lt;br&gt;&#160;&#160;group_by: [&quot;region&quot;] }&lt;br&gt;&lt;br&gt;200 {&lt;br&gt;&#160;&#160;series: [&lt;br&gt;&#160;&#160;&#160;&#160;{ tags: {region:&quot;us-east&quot;},&lt;br&gt;&#160;&#160;&#160;&#160;&#160;&#160;points: [[1754487600, 143.2], [1754487660, 151.8]] }&lt;br&gt;&#160;&#160;],&lt;br&gt;&#160;&#160;resolution_s: 60,&lt;br&gt;&#160;&#160;partial: false,&#160;&#160;&#8592; true if shards timed out&lt;br&gt;&#160;&#160;max_ts_ingested: 1754487720&#160;&#8592; freshness, explicit&lt;br&gt;}&lt;br&gt;&lt;br&gt;&lt;i&gt;POST not GET: queries exceed URL length. &lt;br&gt;`partial` + `max_ts_ingested` let the UI show&lt;br&gt;&quot;data may be incomplete&quot; instead of lying.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="640" y="1425" width="560" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="123" value="&lt;div style=&#39;text-align:left;font-family:monospace&#39;&gt;&lt;b&gt;LOG SEARCH (incident debugging)&lt;/b&gt;&lt;br&gt;&lt;br&gt;POST /v1/logs/search&lt;br&gt;{ query: &quot;level:ERROR AND trace_id:4bf92f35...&quot;,&lt;br&gt;&#160;&#160;start, end,&#160;&#160;&#8592; REQUIRED, capped at 24 h span&lt;br&gt;&#160;&#160;limit: 100,&lt;br&gt;&#160;&#160;cursor: &quot;eyJ0cyI6MTc1NDQ4NzYwMCwiaWQiOi4uLn0=&quot; }&lt;br&gt;&lt;br&gt;200 {&lt;br&gt;&#160;&#160;results: [ {ts, level, service, host,&lt;br&gt;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;trace_id, message, fields} ],&lt;br&gt;&#160;&#160;next_cursor: &quot;...&quot; | null,&lt;br&gt;&#160;&#160;approx_total: 48213,&lt;br&gt;&#160;&#160;scanned_bytes: 2147483648&#160;&#8592; cost visibility&lt;br&gt;}&lt;br&gt;&lt;br&gt;&lt;b&gt;TRACES&lt;/b&gt;&lt;br&gt;GET /v1/traces/{trace_id}&#160;&#8594; full span tree&lt;br&gt;GET /v1/traces?service=&amp;amp;min_duration_ms=&amp;amp;start=&amp;amp;end=&lt;br&gt;&lt;br&gt;&lt;i&gt;Cursor not offset: data is append-heavy and&lt;br&gt;shifting; offset paging re-reads and skips rows.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="1425" width="560" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="124" value="&lt;div style=&#39;text-align:left;font-family:monospace&#39;&gt;&lt;b&gt;ALERT RULES (CRUD)&lt;/b&gt;&lt;br&gt;&lt;br&gt;POST&#160;&#160;&#160;/v1/alert-rules&lt;br&gt;{ name: &quot;checkout p99 latency&quot;,&lt;br&gt;&#160;&#160;query: &quot;p99(http_request_duration_ms{service=&#39;checkout&#39;})&quot;,&lt;br&gt;&#160;&#160;comparator: &quot;&amp;gt;&quot;, threshold: 500,&lt;br&gt;&#160;&#160;for_duration_s: 300,&lt;br&gt;&#160;&#160;eval_interval_s: 30,&lt;br&gt;&#160;&#160;severity: &quot;P2&quot;, channel: &quot;pd://checkout-oncall&quot; }&lt;br&gt;&#8594; 201 { rule_id, state: &quot;OK&quot; }&lt;br&gt;&lt;br&gt;GET&#160;&#160;&#160;&#160;/v1/alert-rules?limit=50&amp;amp;cursor=&lt;br&gt;PUT&#160;&#160;&#160;&#160;/v1/alert-rules/{rule_id}&lt;br&gt;DELETE /v1/alert-rules/{rule_id}&lt;br&gt;GET&#160;&#160;&#160;&#160;/v1/alerts?state=FIRING&#160;&#8594; active incidents&lt;br&gt;&lt;br&gt;&lt;i&gt;for_duration is what stops a 1-scrape blip&lt;br&gt;from paging someone at 3am.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1840" y="1425" width="560" height="330" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="130" value="B3 &#183; HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#38761D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1805" width="600" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="200" value="EDGE / HOST" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82B366;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1850" width="300" height="420" as="geometry"/>
+        </mxCell>
+        <mxCell id="201" value="Agent (per host)&#10;&#10;&#8226; tails log files&#10;&#8226; scrapes /metrics&#10;&#8226; receives OTLP spans&#10;&#8226; batches + zstd&#10;&#8226; DISK BUFFER (WAL)&#10;&#8226; at-least-once retry&#10;&#8226; local tail-sampling" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="70" y="1890" width="240" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="202" value="Disk buffer absorbs&#10;a full pipeline outage.&#10;Sized for ~2 h at&#10;peak rate." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontSize=10;fontStyle=2;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="70" y="2110" width="240" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="210" value="INGEST TIER" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6C8EBF;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="1850" width="320" height="420" as="geometry"/>
+        </mxCell>
+        <mxCell id="211" value="Load Balancer&#10;(anycast, regional)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="430" y="1890" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="212" value="Ingest Gateway (stateless, autoscaled)&#10;&#10;&#8226; mTLS auth &#8594; derives host/service identity&#10;&#8226; schema validate, drop malformed&#10;&#8226; per-tenant + per-service RATE LIMIT&#10;&#8226; dedup on X-Batch-Id (Redis, 10 min TTL)&#10;&#8226; splits batch by pillar&#10;&#8226; returns 429 to shed load" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="430" y="1985" width="260" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="213" value="~550 MB/s in.&#10;40-60 nodes at&#10;~10 MB/s each." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontSize=10;fontStyle=2;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="430" y="2185" width="260" height="65" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="220" value="BUFFER" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#D79B00;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="780" y="1850" width="330" height="420" as="geometry"/>
+        </mxCell>
+        <mxCell id="221" value="Kafka: topic `logs`&#10;partition key = hash(service, host)&#10;~600 partitions" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=12;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=20;" vertex="1" parent="1">
+          <mxGeometry x="810" y="1890" width="270" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="222" value="Kafka: topic `metrics`&#10;partition key = hash(series_id)&#10;~200 partitions" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=12;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=20;" vertex="1" parent="1">
+          <mxGeometry x="810" y="2015" width="270" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="223" value="Kafka: topic `traces`&#10;partition key = hash(trace_id)&#10;~100 partitions" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=12;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=20;" vertex="1" parent="1">
+          <mxGeometry x="810" y="2140" width="270" height="105" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="230" value="PROCESSING" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9673A6;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="1850" width="320" height="420" as="geometry"/>
+        </mxCell>
+        <mxCell id="231" value="Log Indexer&#10;batch 10 s / 50 MB&#10;&#8594; columnar segments" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1890" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="232" value="Metric Writer&#10;+ pre-aggregation&#10;+ rollup jobs (1m/5m/1h)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1985" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="233" value="Trace Assembler&#10;groups spans by trace_id&#10;tail-sampling decision" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="2080" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="234" value="Alert Evaluator&#10;reads metrics topic DIRECTLY&#10;&#8594; 1 min alert SLA" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="2175" width="260" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="240" value="STORAGE" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1550" y="1850" width="360" height="420" as="geometry"/>
+        </mxCell>
+        <mxCell id="241" value="ClickHouse &#8212; logs + spans&#10;&#10;MergeTree, ORDER BY&#10;(service, ts)&#10;PARTITION BY toYYYYMMDD(ts)&#10;bloom filter on trace_id&#10;TTL 15 d &#8594; S3 tier" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=12;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=20;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="1890" width="300" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="242" value="TSDB &#8212; metrics&#10;(Mimir / VictoriaMetrics)&#10;&#10;raw 15 d &#183; 1m 90 d&#10;1h 13 months" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=12;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=20;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="2080" width="300" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="243" value="S3 / Blob &#8212; cold tier&#10;parquet, 90 d, queried&#10;on demand" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=12;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=20;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="2185" width="300" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="250" value="SERVING" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#B85450;dashed=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontSize=11;fontColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1970" y="1850" width="430" height="420" as="geometry"/>
+        </mxCell>
+        <mxCell id="251" value="Query Service&#10;&#8226; fan-out to shards&#10;&#8226; per-query byte/time budget&#10;&#8226; returns partial:true on timeout" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="2000" y="1890" width="370" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="252" value="Query Result Cache (Redis)&#10;dashboards repeat the same&#10;window every 30 s &#8212; cache all&#10;but the trailing bucket" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="2000" y="2010" width="370" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="253" value="Dashboard UI&#10;&#183; Log Search UI&#10;&#183; Trace Viewer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="2000" y="2125" width="175" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="254" value="Notification&#10;Service&#10;(out of scope)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="2195" y="2125" width="175" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="301" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="201" target="211">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="301l" value="OTLP/gRPC" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="301">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-10" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="302" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeWidth=2;" edge="1" parent="1" source="211" target="212">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="303" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="212" target="221">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="304" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="212" target="222">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="305" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="212" target="223">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="306" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;dashed=1;" edge="1" parent="1" source="221" target="231">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="307" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;dashed=1;" edge="1" parent="1" source="222" target="232">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="308" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;dashed=1;" edge="1" parent="1" source="223" target="233">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="309" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.9;entryX=0;entryY=0.5;strokeWidth=2;dashed=1;strokeColor=#B85450;" edge="1" parent="1" source="222" target="234">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1130" y="2210"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="309l" value="bypass storage" style="edgeLabel;html=1;fontSize=10;fontColor=#B85450;" vertex="1" connectable="0" parent="309">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-10" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="310" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.4;strokeWidth=2;" edge="1" parent="1" source="231" target="241">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="311" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="232" target="242">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="312" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.8;strokeWidth=2;" edge="1" parent="1" source="233" target="241">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="313" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;strokeColor=#B85450;" edge="1" parent="1" source="234" target="254">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1930" y="2210"/><mxPoint x="1930" y="2300"/><mxPoint x="2282" y="2300"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="313l" value="fire alert" style="edgeLabel;html=1;fontSize=10;fontColor=#B85450;" vertex="1" connectable="0" parent="313">
+          <mxGeometry x="0.3" relative="1" as="geometry"><mxPoint y="-10" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="314" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;entryX=0;entryY=0.5;strokeWidth=2;dashed=1;" edge="1" parent="1" source="241" target="251">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="315" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.9;strokeWidth=2;dashed=1;" edge="1" parent="1" source="242" target="251">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="316" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeWidth=2;" edge="1" parent="1" source="251" target="252">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="317" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.25;exitY=1;entryX=0.5;entryY=0;strokeWidth=2;" edge="1" parent="1" source="252" target="253">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="318" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeWidth=2;dashed=1;strokeColor=#666666;" edge="1" parent="1" source="243" target="241">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1540" y="2220"/><mxPoint x="1540" y="2026"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="318l" value="TTL tier-out" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="318">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-10" as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="400" value="B4 &#183; KEY TRADE-OFFS (each choice vs its named alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#38761D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2320" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="401" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;Push (agent) over pull (Prometheus scrape)&lt;/b&gt;&lt;br&gt;Pull needs service discovery of 10 K targets and cannot capture logs at all. Push gives one uniform path for all three pillars and survives short-lived pods that die between scrapes.&lt;br&gt;&lt;b&gt;Giving up:&lt;/b&gt; no free liveness signal from a failed scrape &#8212; must add explicit agent heartbeats.&lt;br&gt;&lt;br&gt;&lt;b&gt;Kafka over writing straight to the store&lt;/b&gt;&lt;br&gt;Decouples 550 MB/s of ingest from store availability; replay lets you rebuild a corrupted index; multiple independent consumers (indexer, alerting, sampling) read the same stream.&lt;br&gt;&lt;b&gt;Giving up:&lt;/b&gt; a whole tier to operate, and ~seconds of added latency.&lt;br&gt;&lt;br&gt;&lt;b&gt;Separate topics per pillar over one topic&lt;/b&gt;&lt;br&gt;Different volumes (43 vs 1.7 vs 2.6 TB/day), different retention, different consumers, different partition keys. A log storm must not delay metrics &#8212; and metrics carry the alerting SLA.&lt;br&gt;&lt;b&gt;Giving up:&lt;/b&gt; no cross-pillar ordering; correlation is by trace_id at query time.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#7EA6D9;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2355" width="760" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="402" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;Purpose-built TSDB over ClickHouse for metrics&lt;/b&gt;&lt;br&gt;Gorilla/delta-XOR encoding gets ~2 bytes per point vs ~100 on the wire. 200 K pts/s &#215; 13 months is only feasible with that compression, and rollups are native.&lt;br&gt;&lt;b&gt;Giving up:&lt;/b&gt; a second storage system to run, and no joins between metrics and logs in one query.&lt;br&gt;&lt;br&gt;&lt;b&gt;ClickHouse over Elasticsearch for logs&lt;/b&gt;&lt;br&gt;At 43 TB/day, ES&#39;s inverted index costs roughly as much as the data itself and its JVM heap becomes the bottleneck. ClickHouse stores columnar + compressed (~10:1) and brute-force scans a partition fast. Most incident queries are already narrowed by service and time.&lt;br&gt;&lt;b&gt;Giving up:&lt;/b&gt; fast arbitrary full-text search on rare terms &#8212; mitigated with bloom filters on trace_id and a tokenbf index on message.&lt;br&gt;&lt;br&gt;&lt;b&gt;Alert evaluator reads Kafka, not the TSDB&lt;/b&gt;&lt;br&gt;A 1-minute alert SLA cannot sit behind a 3-minute storage freshness SLA. Those two NFRs are in direct conflict unless alerting bypasses storage.&lt;br&gt;&lt;b&gt;Giving up:&lt;/b&gt; alert evaluation sees a slightly different view than dashboards; needs care to avoid confusing on-call.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#7EA6D9;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="840" y="2355" width="760" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="403" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;Partition logs by hash(service, host), NOT machineId&lt;/b&gt;&lt;br&gt;machineId alone gives 10 K keys but consumers scale by partition count, and one noisy host still lands on one partition. Hashing (service, host) spreads a single service&#39;s storm across many partitions while keeping per-host ordering.&lt;br&gt;&lt;b&gt;Giving up:&lt;/b&gt; no total ordering per service &#8212; acceptable, since queries sort by timestamp anyway.&lt;br&gt;&lt;br&gt;&lt;b&gt;Partition metrics by hash(series_id)&lt;/b&gt;&lt;br&gt;Keeps all points of one series on one partition, so the metric writer can batch-compress a series without shuffling.&lt;br&gt;&lt;br&gt;&lt;b&gt;Partition traces by hash(trace_id)&lt;/b&gt;&lt;br&gt;All spans of a trace must land together for the assembler to make a tail-sampling decision without a cross-partition join.&lt;br&gt;&lt;br&gt;&lt;b&gt;Tail sampling over head sampling&lt;/b&gt;&lt;br&gt;Head sampling (decide at request start) keeps a uniform 1% &#8212; which means 99% of the errors you actually needed are gone. Tail sampling buffers the trace and keeps it if any span errored or the trace was slow.&lt;br&gt;&lt;b&gt;Giving up:&lt;/b&gt; assembler must buffer spans for a window; memory cost and late spans.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#7EA6D9;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="2355" width="760" height="330" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="500" value="B5 &#183; DEEP DIVES &#8212; the conversations this round never reached" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#38761D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2730" width="900" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="501" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;THE SCALE BREAK &#8212; the 100&#215; log storm&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Setup:&lt;/b&gt; bad deploy at 14:52. 500 hosts of one service go from 100 &#8594; 10,000 lines/s. That service alone now emits 250 MB/s, on top of the 550 MB/s baseline. This is the moment engineers most need the logs.&lt;br&gt;&lt;br&gt;&lt;b&gt;What breaks, in order:&lt;/b&gt;&lt;br&gt;1. &lt;b&gt;Kafka partition skew.&lt;/b&gt; With the round&#39;s `machineId` key, those 500 hosts hash to at most 500 partitions but the storm is concentrated; those partitions&#39; consumers fall behind while the rest idle.&lt;br&gt;2. &lt;b&gt;Consumer lag.&lt;/b&gt; Indexer throughput is fixed. Lag grows at (arrival &#8722; drain). At +250 MB/s over a 500 MB/s drain, lag grows ~1 min per 2 min of storm.&lt;br&gt;3. &lt;b&gt;Freshness SLA violated.&lt;/b&gt; The 3-min NFR breaks first for the storming service &#8212; and it breaks silently.&lt;br&gt;4. &lt;b&gt;Blast radius.&lt;/b&gt; If all pillars share a topic or a consumer group, metrics lag too &#8594; the 1-min alert SLA dies during the exact incident it exists for.&lt;br&gt;&lt;br&gt;&lt;b&gt;What the engineer at 14:54 actually sees:&lt;/b&gt; an empty or thin result set for the last few minutes &#8212; indistinguishable from &quot;the service is healthy.&quot; That is the dangerous failure: the system lies rather than admitting it is behind.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2765" width="760" height="400" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="502" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;HOW A SENIOR HANDLES IT &#8212; five layers&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;1. Isolate by pillar.&lt;/b&gt; Separate topics and separate consumer groups so a log storm can never delay metrics. Alerting keeps working during a log flood.&lt;br&gt;&lt;br&gt;&lt;b&gt;2. Quota at the gateway.&lt;/b&gt; Per-service token bucket. Over quota &#8594; 429 with `retry_after_ms`. The agent buffers to disk rather than the pipeline melting. A tenant can only hurt itself.&lt;br&gt;&lt;br&gt;&lt;b&gt;3. Shed by value, not arbitrarily.&lt;/b&gt; When over quota, drop DEBUG/INFO first and always keep ERROR. Losing 90% of debug lines during an incident is fine; losing errors is not. Emit a `dropped_lines` counter so the loss is visible.&lt;br&gt;&lt;br&gt;&lt;b&gt;4. Elastic consumers.&lt;/b&gt; Autoscale indexers on consumer lag, not CPU. Over-provision partitions up front (600, not 100) &#8212; you cannot increase partition count later without breaking key ordering.&lt;br&gt;&lt;br&gt;&lt;b&gt;5. Never lie about freshness.&lt;/b&gt; Every query response carries `max_ts_ingested`. The UI shows &quot;data delayed 4 min for service checkout&quot; instead of an innocent empty chart. This single field is the difference between a tool on-call trusts and one they don&#39;t.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="840" y="2765" width="760" height="400" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="503" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;OTHER DEEP DIVES A SENIOR RAISES UNASKED&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Metric cardinality explosion.&lt;/b&gt; Someone puts `user_id` or `request_id` in a tag. 2 M series becomes 200 M overnight and the TSDB index OOMs. Mitigate: per-service series budget, reject new series over the limit, alert the owning team, and expose a top-cardinality-by-service report.&lt;br&gt;&lt;br&gt;&lt;b&gt;Idempotency under at-least-once.&lt;/b&gt; The agent retries on timeout; the batch may already have landed. Duplicate log lines are ugly; duplicate counter increments are &lt;i&gt;wrong&lt;/i&gt;. Fix: agent-generated `X-Batch-Id` deduped at the gateway, and ship counters as monotonic absolute values, not deltas &#8212; then a replay is harmless.&lt;br&gt;&lt;br&gt;&lt;b&gt;Late and out-of-order events.&lt;/b&gt; An agent recovering from a 2-hour buffer replays old data into a window already rolled up. Decide: watermark + a bounded lateness window, and re-run rollups for affected windows.&lt;br&gt;&lt;br&gt;&lt;b&gt;Clock skew.&lt;/b&gt; Host clocks drift; a log arrives with a future timestamp. Stamp both `event_ts` (host) and `ingest_ts` (gateway); query on event_ts, alert on ingest_ts.&lt;br&gt;&lt;br&gt;&lt;b&gt;Monitoring the monitoring.&lt;/b&gt; The pipeline cannot be its own alerting path. A separate minimal watchdog (different region, different stack) tracks consumer lag, gateway 429 rate, agent heartbeat coverage, and end-to-end canary latency &#8212; a synthetic event injected every 10 s and timed until it is queryable.&lt;br&gt;&lt;br&gt;&lt;b&gt;Cost.&lt;/b&gt; 650 TB of hot logs is the dominant line item. Levers: aggressive zstd at the agent (~10:1), tiering to S3 after 3 days, sampling INFO logs at 10% while keeping 100% of ERROR, and charging teams for their own volume so the incentive is aligned.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="2765" width="760" height="400" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="600" value="&lt;div style=&#39;text-align:left&#39;&gt;&lt;b&gt;THE NFR CONTRADICTION NOBODY CAUGHT&lt;/b&gt;&#160;&#160;&#8212;&#160;&#160;NFR 2 says an event is visible within &lt;b&gt;3 minutes&lt;/b&gt;. NFR 3 says an alert fires within &lt;b&gt;1 minute&lt;/b&gt; of a threshold breach.&lt;br&gt;If the alert evaluator queries the same storage that dashboards read, the alert cannot beat the freshness of the data it reads &#8212; 1 min &amp;lt; 3 min is impossible. Self-raising this contradiction, and resolving it by having the evaluator consume the Kafka metrics topic directly, is exactly the &quot;owns the narrative&quot; signal a senior round is graded on.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=14;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3210" width="2360" height="110" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

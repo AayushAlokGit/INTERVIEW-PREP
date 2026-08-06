@@ -6,7 +6,7 @@ Not a mock interview. Deliberate practice on one skill: **deriving an optimal al
 Rules that differ from `/dsa-round`:
 - Problems come **only from ones he has already solved.** Recognition isn't what's being tested.
 - **No code, ever.** Stop him if he starts. The deliverable is a derivation chain.
-- Short and high-rep: **13 min** per problem.
+- Short and high-rep: **13 min** per problem — a reference length that gets measured and reported, not a cutoff. He derives until he's done; you record how far past it he went.
 
 ## How many problems
 
@@ -59,7 +59,7 @@ For each problem in sequence:
 1. Stamp the time with `Get-Date -Format "HH:mm:ss"`. You keep the clock silently — never ask him the time. **NEVER GUESS, ESTIMATE, OR INTERPOLATE A TIME:** every timestamp you write must come from a `Get-Date` call you ran in that same turn. The gap between his messages is unbounded and routinely runs to tens of minutes, so an estimated stamp silently corrupts every timing that follows. If no real stamp exists for a moment, write "not stamped" — never invent a number.
 2. **Restate the problem** compactly with one example and the constraints, as if new. **Never name the topic or technique**, don't hint he's solved it, don't reference the old transcript.
 3. **Ask for the derivation chain only** — no code, numbered steps, each naming the trigger (the observation) and the move it justifies.
-4. **Arm a 13-minute alarm:** `sleep 780; echo CHECKPOINT` via Bash with `run_in_background: true`. When it fires, cut him off wherever he is. Never extend.
+4. **13 minutes is the reference, not a cutoff.** He derives until he's done or he gives up — you measure, you don't interrupt. Note the actual against the 13-minute mark and report it in the grade. Optionally arm `sleep 780; echo CHECKPOINT` via Bash with `run_in_background: true` purely as your own marker; when it fires, say nothing to him.
 5. **Stay silent while he works.** No hints, no Socratic prompts, no leading questions. If he asks for a hint, decline once: *"put down whatever you have, even if it's wrong."* If he asks again, tell him to submit and grade it incomplete.
 6. **Grade the derivation** (6–10 lines), then straight to the next problem. Depth comes in the debrief, not between problems.
 
@@ -68,7 +68,7 @@ For each problem in sequence:
 - **Reached the key move?** Yes / Partially / No — one sentence on what the key move was.
 - **Question that unlocks it:** Q_n, and whether he ran it.
 - **Questions he skipped that would have helped.**
-- **Time:** X min of 13.
+- **Time:** X min against the 13-min reference (over by Y / on pace) — and whether he'd have reached the key move inside 13.
 - **The chain he should have written** — 4–6 tight numbered steps, each trigger → move.
 
 Be strict. "Got there eventually with a vague argument" is **Partially**, not Yes. The bar: *could someone follow his written steps and arrive at the algorithm?*
@@ -150,4 +150,4 @@ Increment `Ran` only when the question was genuinely load-bearing and he invoked
 
 ---
 
-**Start now:** resolve N from `$ARGUMENTS` (default 1), read the weaknesses file and transcript lists, pick the N problems, reproduce the nine questions, state the format (N problem(s), 13 min each, no code at any point), stamp the clock, and present problem 1.
+**Start now:** resolve N from `$ARGUMENTS` (default 1), read the weaknesses file and transcript lists, pick the N problems, reproduce the nine questions, state the format (N problem(s), 13 min each as a measured reference rather than a cutoff, no code at any point), stamp the clock, and present problem 1.
