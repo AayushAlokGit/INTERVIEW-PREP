@@ -171,7 +171,43 @@ long long maxPoints(vector<vector<int>>& points) {
 }
 ```
 
-**Time Complexity:** his answer O(mn^2) — correct for his approach · **Space Complexity:** his answer O(mn) — correct for his approach. Optimal is O(mn) / O(n); he did not reach it.
+**Optimal Solution — Aayush's own O(mn) version (written after the round, full 2-D table, easier to read):**
+```cpp
+class Solution {
+public:
+    long long maxPoints(vector<vector<int>>& points) {
+        int n = points[0].size();
+        int m = points.size();
+        vector<vector<long long>> dp(m, vector<long long>(n, 0));
+
+        // dp[i][j] = max points possible when the point taken in row i was at column j
+        for (int j = 0; j < n; j++) dp[0][j] = points[0][j];
+
+        for (int i = 1; i < m; i++) {
+            vector<long long> left(n), right(n);
+            left[0] = dp[i-1][0];                       // prefix max of dp[i-1][j'] + j'
+            for (int j = 1; j < n; j++)
+                left[j] = max(left[j-1], dp[i-1][j] + j);
+
+            right[n-1] = dp[i-1][n-1] - n + 1;          // suffix max of dp[i-1][j'] - j'
+            for (int j = n-2; j >= 0; j--)
+                right[j] = max(right[j+1], dp[i-1][j] - j);
+
+            for (int j = 0; j < n; j++)
+                dp[i][j] = points[i][j] + max(left[j] - j, right[j] + j);
+        }
+
+        long long ans = INT_MIN;
+        for (int j = 0; j < n; j++) ans = max(ans, dp[m-1][j]);
+        return ans;
+    }
+};
+```
+Verified correct against both examples (11 and 9). O(mn) time, O(mn) space — the extra space over the rolling-array version buys readability, which is a reasonable interview trade. `long long` used throughout, so the overflow bug from the round is gone. Boundary inits are right: `right[n-1] = dp[i-1][n-1] - n + 1` is exactly `-(n-1)`; `m == 1` and `n == 1` both fall through cleanly.
+
+One defect carried over: a `cout << dp[i][j]` debug print left inside the DP loop.
+
+**Time Complexity:** his in-round answer O(mn^2) — correct for that approach · **Space Complexity:** his in-round answer O(mn) — correct for that approach. He did not reach O(mn) time during the round; he derived it independently afterwards, which does not change the round rating but is recorded here.
 
 ---
 
