@@ -92,6 +92,37 @@ Say this out loud. The move that matters isn't conceding — it's the question t
 
 ---
 
+## ⚔️ Backbone / "Disagree and Commit" Angle
+
+> **Added 2026-08-08.** The default telling above is calibrated for *"a time you changed your mind / were wrong"* — it leads with the question you asked and lands on updating your position. For **Amazon's Have Backbone; Disagree and Commit**, or any "held your ground" stem, that framing actively hurts you: the interviewer hears *disagreed, then folded to a senior engineer*. Same facts, inverted emphasis.
+
+**Opener:** *"A senior engineer wanted a service I'd built deleted from every geo. I didn't accept that — I pushed back twice, and I made him show me the cost before I'd agree to anything."*
+
+**Closer:** *"Once I was convinced, I didn't just stop objecting — I built the removal plan with him and documented why, so nobody could quietly undo the decision later. Disagreeing is cheap. Committing to the outcome you argued against is the part that counts."*
+
+**Four beats. Beat 1 and beat 4 are the ones you habitually drop.**
+
+1. **You held ground, twice.** First escalation: you'd reviewed the logs yourself, the failure was transient and geo-specific, a retry cleared it, and the service ran fine everywhere else — so you pushed back rather than complying. When he escalated a *second* time with the same recommendation, you *still* didn't concede. Spend real airtime here; this is the backbone.
+2. **You made him justify it.** Rather than trading assertions, you asked directly why *full* removal — which is what surfaced the 3–4 hour deployment with a mandatory full restart on any mid-deploy failure.
+3. **You did the work before yielding.** Auto-retry: evaluated, unavailable (the deployment platform was abstracted from teams). Passing-geo-only scoping: evaluated, rejected on merits (two divergent main branches for a subset-coverage, zero-customer-exposure internal service). You conceded to evidence you demanded and then verified — not to seniority.
+4. **You committed past agreement.** Co-authored the removal plan. Documented the rationale specifically so a future engineer wouldn't re-add a known landmine — that's defending a decision you'd argued *against*. Walked your manager through it. And on the next rollout with the same engineer, you front-loaded the deployment-impact analysis you'd skipped the first time, which is what let him greenlight it.
+
+**Interviewer probes specific to this angle:**
+
+- **"You eventually agreed with him — so where's the backbone?"**
+  **Ans:** The backbone was refusing to act on the recommendation until it was justified. He escalated twice and I didn't comply either time — I'd reviewed the logs myself and my read was that this was transient and geo-specific, and I said so. What changed my position wasn't him repeating it, it was information I didn't have: the multi-hour restart cost. I then went and tested two ways to keep the service alive before accepting removal. Backbone isn't refusing to update — it's refusing to update without evidence.
+
+- **"How do you distinguish that from just deferring to a senior engineer?"**
+  **Ans:** By what I did in between. If I were deferring, I'd have agreed at the first escalation. Instead I pushed back twice, made him articulate the actual cost, then independently evaluated an auto-retry and a partial-geo rollout and rejected each on its own merits. By the time I agreed, I could explain *why* removal was correct without referencing who had asked for it. And I brought the reasoning to my manager rather than quietly rolling over.
+
+- **"Give me an example of committing to a decision you disagreed with."**
+  **Ans:** This one. Once I accepted removal, I didn't just stop objecting — I co-owned it. I built the removal plan with him, and I wrote up the rationale precisely so that a future engineer wouldn't look at a missing test runner, assume it was an oversight, re-add it, and re-trigger the same deployment failures. I was documenting the case *against my own work* to make the decision durable. And I applied the lesson on the next rollout with him by doing the deployment-impact analysis up front.
+
+- **"What if you'd been right and he was wrong?"**
+  **Ans:** Then the two alternatives I evaluated would have held up — and I'd have pushed them. That's exactly why I evaluated them rather than conceding at the first escalation. The auto-retry failed on a platform constraint and the partial-geo scoping failed on maintenance cost; neither failed because he outranked me. If either had worked I'd have had a concrete counter-proposal instead of an objection.
+
+---
+
 ## Watch Out For
 
 - **This is a "changed my mind" story — lead with the question, not the concession.** The interviewer is testing whether you can update on new information without ego. The hero moment is asking *why*, which reframed the whole disagreement. Don't let it collapse into "a senior engineer told me to remove it and I did."

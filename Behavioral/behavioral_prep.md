@@ -66,6 +66,44 @@ Last updated: 2026-07-17
 
 ---
 
+## Amazon Leadership Principles → Story
+
+> **Why this exists.** Amazon interviewers are each assigned 2–3 LPs and score you against them, not against topics. A loop is 4–5 interviewers × 2–3 LPs = **10–14 probes**, and they debrief together — so a story reused across three interviewers is visible in a way it isn't within one round. 16 LPs, 7 stories: **reuse is expected and normal.** The goal is ≤2 probes per story per loop, not one story per LP.
+>
+> **Rated by what you can actually defend, not by what fits.**
+
+| # | Leadership Principle | Primary | Backup | Coverage |
+|---|---|---|---|---|
+| 1 | **Customer Obsession** | **S006** | S007 (business-side), S004 (manual QA as internal customer) | ⚠️ Thin — one real story |
+| 2 | **Ownership** | S004 | S005, S003, S007 | ✅ Strong |
+| 3 | **Invent and Simplify** | **S006** (registry = one source of truth) | S001 (`ConfigStore` abstraction), S003 (profiles grouped by traffic pattern) | ✅ Good — *label these as simplification, they're already there* |
+| 4 | **Are Right, A Lot** | S003 (learning mode instead of guessing) | S002 (updated on evidence) | ✅ Good — *was shaky only because of the numbers; both audited now* |
+| 5 | **Learn and Be Curious** | S005 | MCP side project, S002 (asked *why*) | ✅ Strong |
+| 6 | **Hire and Develop the Best** | S004 (new grad ramped + added tests off your docs) | Giving-feedback script | ⚠️ Bridge — no formal mentoring, don't pretend |
+| 7 | **Insist on the Highest Standards** | S004 | S001 (audit from a checklist, not memory), S006 | ✅ Strong |
+| 8 | **Think Big** | S003 (company-wide, 23 subs, two teams adopted your doc) | S007 (turned a suspicion into a funded workstream) | ⚠️ Level-calibrated — see note below |
+| 9 | **Bias for Action** | S001 (flag off in 15 min) | S003 (learning-mode deploy), S007 (closing recovery window) | ✅ Strong |
+| 10 | **Frugality** | **S007 ($45K — derive it live)** | S001 ($156K — *attribute + mechanism*) | ✅ Good now |
+| 11 | **Earn Trust** | S001 (admitted fault *before* having a fix) | S005, S006/S007 (credited mentor unprompted) | ✅ Strongest |
+| 12 | **Dive Deep** | S005 (200GB load test → traced to Power BI) | S007 (queried the DB rather than estimating), S003, S001 | ✅ Strongest |
+| 13 | **Have Backbone; Disagree and Commit** | **S002 — Backbone variant only** | S003 (challenged a security decision) | ⚠️ Use the re-angled framing, never the default |
+| 14 | **Deliver Results** | S003 | S005, S007 | ✅ Strong |
+| 15 | Earth's Best Employer | S005 (timezone habit — stopped offloading inconvenience onto another team) | Bridge | Rarely probed for SDE |
+| 16 | Success and Scale Bring Broad Responsibility | S003 (security/exfiltration risk), S007 (billing fairness → PM sign-off) | Bridge | Rarely probed for SDE |
+
+### Load-balancing — don't over-serve one story
+S001, S003 and S004 each appear against 5+ LPs. In a real loop **cap any story at 2 uses.** If S001 has already carried Earn Trust and Bias for Action, route the next probe to S006/S007 even if S001 fits better. Interviewers compare notes; three interviewers hearing the config migration reads as a one-story candidate.
+
+### The three honest caveats
+
+**Think Big is level-calibrated.** At 3.5 years the bar is "proposed scope past what you were handed," not "redirected strategy." S003 is your best shot — company-wide initiative, 23 subscriptions, and two other teams picked up your documented approach. S007 is adjacent: nobody had sized the leak, and quantifying it created the workstream. Neither is a moonshot; don't inflate them. But *"I don't have one"* scores worse than an honest mid-level answer.
+
+**Hire and Develop is a bridge, not a story.** The real evidence is a new grad ramping and adding tests using documentation you wrote — enabling someone else, which is the substance at your level. Pair with the giving-feedback script. Don't claim mentoring you haven't done.
+
+**Customer Obsession rests on S006 alone** — four years old, thinnest recall, and it's their #1 LP. Mitigation: the token-monitoring work (customers over-billed from abnormal AI usage spikes) is a genuine second Customer Obsession story and isn't written up yet. Until it is, this is your most fragile LP.
+
+---
+
 ## Retrieval Table — Question Stem → Story → Opener
 
 > **Why this exists.** The Coverage Map above is *category → story*, which needs you to classify the
@@ -102,8 +140,26 @@ Last updated: 2026-07-17
 - Tell me about a time you had to kill your own work
 - Tell me about a time you got new information that changed a decision
 - How do you handle conflict on a team?
-- Tell me about a time you disagreed but committed
 - **Tell me about a time you couldn't meet a commitment** *(you committed a test runner into the shared pipeline, then retracted the coverage when you couldn't keep it disruption-free — stay on the commitment you dropped, not the peer dynamic)*
+
+#### ⚔️ Backbone variant — **use this framing for "Disagree and Commit" / "held your ground"**
+> Same story, told from the other end. The default framing above leads with *the question I asked* and lands on *changing my mind* — correct for "a time you were wrong." It is a **weak Backbone answer**, because the interviewer hears "disagreed, then folded." For Backbone stems, front-load the resistance and make the commit the closer.
+
+**Opener:** *"A senior engineer wanted a service I'd built deleted from every geo. I didn't accept that — I pushed back twice, and I made him show me the cost before I'd agree to anything."*
+**Closer:** *"Once I was convinced, I didn't just stop objecting — I built the removal plan with him and documented why, so nobody could quietly undo the decision later. Disagreeing is cheap. Committing to the outcome you argued against is the part that counts."*
+
+**The four beats, in order — don't skip 1 or 4:**
+1. **Held ground.** He escalated for full removal; I pushed back — the service ran fine in most geos, the failure was transient, a retry had already cleared it. When he escalated a *second* time, I still didn't concede.
+2. **Made him justify it.** Asked directly *why* full removal, which surfaced the 3–4hr deploy with a full restart on any mid-deploy failure.
+3. **Did the work before yielding.** Evaluated auto-retry (platform-abstracted, not available to us) and passing-geo-only scoping (two main branches for a subset-coverage internal service — overhead unjustified). Conceded on evidence, not on his title.
+4. **Committed all the way.** Co-authored the removal plan, documented the rationale so a future engineer wouldn't re-add the landmine, and brought it to my manager. Then on a later rollout with the same engineer, front-loaded the deployment-impact analysis I'd previously skipped.
+
+- Tell me about a time you disagreed with someone and had to commit anyway
+- Tell me about a time you held your ground / pushed back on a senior person
+- Tell me about a time you disagreed with a decision but supported it
+- Tell me about the strongest disagreement you've had at work
+
+> **Never say "I conceded" as the headline.** You conceded *to evidence you demanded and then verified yourself*, and then you owned the outcome. That's the LP.
 
 ### S003 — NSP Security Rollout ⚠️ **Under-used — reach for this more**
 **Opener:** *"I was handed a company-wide security rollout with a hard two-month deadline, and the highest-leverage thing I did was refuse to design anything until I'd read how the system actually behaved."*
