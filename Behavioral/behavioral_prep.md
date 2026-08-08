@@ -129,7 +129,13 @@ S001, S003 and S004 each appear against 5+ LPs. In a real loop **cap any story a
 - What's the biggest thing you've changed about how you work?
 - Tell me about a time you took a risk
 
-### S002 — Test Runner Removal
+### S002 — Test Runner Removal — **two versions, pick before you speak**
+> ⚠️ This story has **two rehearsed tellings** with opposite emphases. Picking wrong loses the question even though every fact is true. Full decision table in `S002_test_runner_removal_prep.md`.
+
+#### 🔄 Version A — "Changed My Mind" *(the default below)*
+> ✅ **Answers:** a time you were wrong · changed your mind · new information changed a decision · wrong about something technical · killed your own work · couldn't meet a commitment
+> ❌ **Never for:** disagree and commit · held your ground · pushed back on a senior *(→ Version B)*
+
 **Opener:** *"Someone recommended deleting a service I'd built. I disagreed — and what resolved it wasn't an argument, it was a question I asked him."*
 **Closer:** *"I was evaluating a technical event; he was living its operational cost. Understand the operational constraints before you defend the technical decision."*
 
@@ -142,8 +148,12 @@ S001, S003 and S004 each appear against 5+ LPs. In a real loop **cap any story a
 - How do you handle conflict on a team?
 - **Tell me about a time you couldn't meet a commitment** *(you committed a test runner into the shared pipeline, then retracted the coverage when you couldn't keep it disruption-free — stay on the commitment you dropped, not the peer dynamic)*
 
-#### ⚔️ Backbone variant — **use this framing for "Disagree and Commit" / "held your ground"**
-> Same story, told from the other end. The default framing above leads with *the question I asked* and lands on *changing my mind* — correct for "a time you were wrong." It is a **weak Backbone answer**, because the interviewer hears "disagreed, then folded." For Backbone stems, front-load the resistance and make the commit the closer.
+#### ⚔️ Version B — Backbone
+> ✅ **Answers:** disagree and commit · held your ground · pushed back on a senior person · disagreed but supported it anyway · strongest disagreement at work · *neutral* "a disagreement with a teammate" → **start here**
+> ❌ **Never for:** a time you were wrong · changed your mind · killed your own work *(→ Version A)*
+> **Amazon LP:** Have Backbone; Disagree and Commit — **your only coverage for it.**
+>
+> Same story from the other end. Version A leads with *the question I asked* and lands on *changing my mind* — correct for "a time you were wrong," but a **weak Backbone answer**, because the interviewer hears "disagreed, then folded." Front-load the resistance; make the commit the closer.
 
 **Opener:** *"A senior engineer wanted a service I'd built deleted from every geo. I didn't accept that — I pushed back twice, and I made him show me the cost before I'd agree to anything."*
 **Closer:** *"Once I was convinced, I didn't just stop objecting — I built the removal plan with him and documented why, so nobody could quietly undo the decision later. Disagreeing is cheap. Committing to the outcome you argued against is the part that counts."*

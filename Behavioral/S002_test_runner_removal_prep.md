@@ -4,9 +4,28 @@
 
 ---
 
-> **Two rehearsed tellings.** The version immediately below is the **"changed my mind / a time you were wrong"** telling — it leads with the question you asked and lands on updating your position. For **Have Backbone; Disagree and Commit** or any "held your ground" stem, skip to the **Backbone version** further down; the default framing loses that question, because the interviewer hears *disagreed, then folded to a senior engineer*. Same facts, opposite emphasis. Know which one the stem is asking for before you open your mouth.
+## Which version am I telling? — decide before you open your mouth
 
-## Spoken Delivery — "changed my mind" version (say this version out loud)
+> Two rehearsed tellings of the same events, landing on opposite beats. Picking wrong loses the question even though every fact you say is true.
+
+| The stem you hear | Version | Why |
+|---|---|---|
+| "a time you were **wrong**" / "**changed your mind**" / "got new information that changed a decision" / "were **wrong about something technical**" | **Version A — Changed My Mind** | The question rewards updating. Lands on: *I asked why, and the answer changed my position.* |
+| "**disagree and commit**" / "**held your ground**" / "**pushed back** on a senior person" / "disagreed with a decision but **supported it**" / "strongest disagreement you've had" | **Version B — Backbone** | The question rewards conviction *then* commitment. Lands on: *I made him prove it, and then I protected the decision I'd argued against.* |
+| "a **disagreement / conflict** with a teammate" *(neutral phrasing)* | **Version B**, then let follow-ups pull Version A's reflection | Neutral stems are usually scored against Backbone. Start from strength; the humility beat is still available on the follow-up. |
+| "a time you had to **kill your own work**" | **Version A** | About detachment from your own output, not about conflict. |
+| "a time you **couldn't meet a commitment**" | **Version A**, re-pointed | Stay on the coverage commitment you dropped — *not* the peer dynamic. |
+| "**receiving feedback**" | Neither — use **S001** | S002 is the backup here at best. |
+
+**One rule:** never mix them mid-answer. If you open on "I pushed back twice" and close on "so I learned I was wrong," you've delivered neither LP.
+
+---
+
+## Spoken Delivery — **Version A: "Changed My Mind"** (say this version out loud)
+
+> ✅ **Answers:** a time you were wrong · changed your mind · got new information that changed a decision · were wrong about something technical · had to kill your own work · couldn't meet a commitment
+> ❌ **Never for:** disagree and commit · held your ground · pushed back on a senior · strongest disagreement *(→ Version B)*
+> **Lands on:** the question you asked, and updating your position without ego.
 
 I was a software engineer on the Dynamics 365 Sales Hub team, tasked with building an internal test runner service — it executed API tests against the other microservices in our cluster. During a geo-by-geo rollout, the service started causing intermittent deployment failures that blocked the other services in the same deployment package from shipping. A peer senior engineer flagged those failures and recommended removing my service from all geos entirely.
 
@@ -104,9 +123,12 @@ Say this out loud. The move that matters isn't conceding — it's the question t
 
 ---
 
-### Spoken Delivery — Backbone version (say this one out loud too)
+### Spoken Delivery — **Version B: Backbone** (say this one out loud too)
 
-> Use this for Backbone / Disagree and Commit / "held your ground." Use the version at the top of this file for "a time you were wrong / changed your mind." **Do not mix them mid-answer** — they land on opposite beats.
+> ✅ **Answers:** disagree and commit · held your ground · pushed back on a senior person · disagreed with a decision but supported it anyway · strongest disagreement you've had at work · a disagreement/conflict with a teammate *(neutral phrasing → start here)*
+> ❌ **Never for:** a time you were wrong · changed your mind · killed your own work *(→ Version A)*
+> **Lands on:** making him prove the cost, then protecting the decision you'd argued against.
+> **Amazon LP:** Have Backbone; Disagree and Commit *(this is your only coverage — see the LP table in `behavioral_prep.md`)*
 
 I was a software engineer on the Dynamics 365 Sales Hub team, and I'd built an internal test runner service that ran API tests against the other microservices in our cluster. During a geo-by-geo rollout it started causing intermittent deployment failures that blocked the other services in the same deployment package from shipping. A peer senior engineer flagged those failures and recommended removing my service from every geo entirely.
 
