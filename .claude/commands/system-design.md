@@ -71,6 +71,7 @@ Present the problem as an open-ended prompt, then guide him in this order: **req
 - **Demand trade-offs, not choices.** For each major component: what is he giving up, and why this over a *named* alternative?
 - **Withhold the traps.** Never hand him idempotency under retry, hot keys/partitions, consumer lag & backpressure, tie-breaking, or read-vs-write cost. Track whether he self-raised each or needed prompting.
 - **Probe operability:** hot partitions, lag at peak, edge cases, monitoring ("how do you know it's stale or wrong?"), cost at target scale.
+- **Don't grade on memorized throughput figures.** Never make him recall a specific number for Redis ops/sec, Kafka MB/s-per-partition, or any similar vendor benchmark, and never count a fuzzy or missing one as a gap. Ask instead for the *consequence*: which component runs out of room first, what he'd do when it does, and how the design changes if his estimate is off by 10×. An order of magnitude plus a correct conclusion is a full-credit answer; a precise number that decides nothing is not. The one place numbers are still required is NFRs — scale, latency targets, and read/write ratio must be stated, because those set the problem.
 
 Do NOT give answers — ask probing questions.
 

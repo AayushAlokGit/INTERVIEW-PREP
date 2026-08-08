@@ -1,0 +1,313 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1200" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="6000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="2" value="Online Auction System" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=22;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="700" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="10" value="FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="11" value="1. Sellers list items for auction with start price and end time&#10;2. Buyers can participate in auctions&#10;3. Buyers place bids for an item in an auction&#10;4. At auction close time, the buyer with the highest bid wins the item&#10;5. The current maximum bid price is displayed" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="115" width="640" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="12" value="OUT OF SCOPE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#7F7F7F;" vertex="1" parent="1">
+          <mxGeometry x="720" y="80" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="13" value="- Retaining all bid history for all auctions" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="720" y="115" width="400" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="20" value="NON-FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#7A4100;" vertex="1" parent="1">
+          <mxGeometry x="40" y="275" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" value="1. Highly available for accepting buyer bids — 99.99% (~52 min downtime/year)&#10;2. Consistency (revised mid-round):&#10;   - eventual consistency is acceptable for the bids themselves&#10;   - STRONG consistency required for currentMaxPrice — must NOT be stale,&#10;     because it dictates the future bids of the bidders&#10;3. Scale: 10,000 concurrent auctions x 100 bidders each = 1M active bidders&#10;   - 1 bid/sec per active bidder  ->  1M bids/sec average&#10;   - peak 10x  ->  10M bids/sec&#10;4. Write/read ratio: 100:1 (write-side skew is heavy; only the max price is read)&#10;5. Latency: bid accepted p99 &lt; 150 ms" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="310" width="1080" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="90" value="" style="line;strokeWidth=2;html=1;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="40" y="540" width="1080" height="10" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="30" value="CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#2D7600;" vertex="1" parent="1">
+          <mxGeometry x="40" y="570" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="31" value="User&#10;&#10;id&#10;name&#10;email&#10;.." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="605" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="32" value="Item&#10;&#10;id&#10;name&#10;.." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="300" y="605" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="33" value="Auction&#10;&#10;id&#10;itemId&#10;startingPrice&#10;startTime&#10;endTime&#10;sellerId&#10;currentMaxPrice&#10;status&#10;winnerId&#10;winningPrice" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="560" y="605" width="220" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="34" value="Bid&#10;&#10;bidTime&#10;price&#10;buyerId&#10;auctionId" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="820" y="605" width="220" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="91" value="" style="line;strokeWidth=2;html=1;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="40" y="865" width="1080" height="10" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="40" value="API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#6B238E;" vertex="1" parent="1">
+          <mxGeometry x="40" y="895" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="41" value="NOTE: identity extracted from auth headers" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="230" y="895" width="500" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="42" value="POST /auctions&#10;&#10;Request:  { itemId, startPrice, endTime, startTime }&#10;Response: Auction ( id, startTime, startPrice, status,&#10;                    winnerId: null, winningPrice,&#10;                    currentMaxPrice: null )&#10;&#10;Idempotency-Key header to deduplicate client-side retries." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="930" width="520" height="175" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="43" value="POST /auctions/:id/bid&#10;&#10;Request:  { price }&#10;Response: 2xx — bid accepted&#10;          status indicating &quot;auction ended&quot; if the auction has closed&#10;&#10;All bids accepted (a bid below currentMaxPrice is still accepted).&#10;Idempotency-Key header — duplicate bids are NOT stored&#10;(added to avoid write amplification)." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="600" y="930" width="520" height="175" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="44" value="GET /auctions/:id/maxPrice&#10;&#10;Response: Auction ( maxPrice )" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1135" width="520" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="45" value="GET /auctions?cursor={}&amp;limit={}&#10;&#10;Response: Auction ( id, item[ itemName ], currentMaxPrice, .. ),&#10;          nextCursor: &quot;&quot;&#10;&#10;Cursor-based pagination — auctions are dynamically inserted." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="600" y="1135" width="520" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="92" value="" style="line;strokeWidth=2;html=1;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1305" width="1080" height="10" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="50" value="HIGH-LEVEL DESIGN  (as described)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1335" width="500" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="60" value="Buyer&#10;(Client)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1470" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="61" value="Bid Service&#10;(horizontally scaled)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="300" y="1465" width="180" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="62" value="Kafka&#10;partitioned by auctionId&#10;(durable; bids of an auction&#10;naturally ordered)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="580" y="1455" width="220" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="63" value="Idempotent&#10;Consumers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="1465" width="180" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="64" value="DynamoDB&#10;partition key: auctionId&#10;sort key: bidTime&#10;stores Bid + Auction.currentMaxPrice&#10;(authoritative store)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="1450" width="240" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="65" value="Kafka DLQ&#10;bids that failed to write to DB&#10;-> human investigation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="880" y="1640" width="220" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="66" value="Redis&#10;currentMaxPrice&#10;(atomic Lua script — keeps the max)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="290" y="1700" width="240" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="67" value="Read path&#10;GET currentMaxPrice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1705" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="68" value="Monitoring&#10;queue depth -> scale consumers&#10;(keep bid-accept latency down,&#10;prevent backpressure)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="1640" width="240" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="69" value="Cron (scheduled at auction creation&#10;for endTime + grace period)&#10;-> determines winner from&#10;Auction.currentMaxPrice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="1790" width="240" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="70" value="POST bid { price }" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="60" target="61">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="71" value="bid event (key=auctionId)" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="61" target="62">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="72" value="consume" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="62" target="63">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="73" value="write Bid + update currentMaxPrice" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="63" target="64">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="74" value="failed writes" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="63" target="65">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="75" value="direct write of max price (Lua, atomic)" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="61" target="66">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="76" value="read max price" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="67" target="66">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="77" value="on Redis failure: fall back to DB&#10;with request coalescing (1 read)" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;dashed=1;exitX=1;exitY=0.75;entryX=0.5;entryY=1;" edge="1" parent="1" source="66" target="64">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="1780"/>
+              <mxPoint x="700" y="1950"/>
+              <mxPoint x="1300" y="1950"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="78" value="watch queue depth" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;dashed=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="68" target="63">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="79" value="read Auction" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;dashed=1;exitX=0.5;exitY=0;entryX=0;entryY=0.75;" edge="1" parent="1" source="69" target="64">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1150" y="1840"/>
+              <mxPoint x="1150" y="1532"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="93" value="" style="line;strokeWidth=2;html=1;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1990" width="1400" height="10" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="80" value="DEEP DIVE  (as described)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2020" width="500" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="81" value="HOT AUCTION (500k bids/sec on one auctionId)&#10;&#10;- dynamically monitor the incoming bid rate per auction&#10;- when bids cross a threshold, split that auction across&#10;  multiple Kafka shards, multiple DB shards, multiple Redis nodes&#10;- cost: read time now needs scatter-gather queries&#10;  (acceptable — write/read ratio is 100:1, write-side skew is heavy)&#10;&#10;Sizing:  5 Redis nodes per hot auction (500k ops/s / 100k per node)&#10;         10 Kafka partitions per hot auction (500k x 200B = 100 MB/s / 10 MB/s)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F8CECC;strokeColor=#B85450;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2055" width="660" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="82" value="CONSISTENCY OF currentMaxPrice&#10;&#10;- CDC from DynamoDB -&gt; Redis introduces delay, so instead&#10;  the Bid Service writes Redis DIRECTLY on the hot path&#10;- concurrent writers handled with an atomic Lua script that&#10;  always keeps the maximum value&#10;- DynamoDB remains authoritative — it can be verified&#10;  against the actual bids&#10;- Redis node loss: the Bid Service can fail and stop accepting bids" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="740" y="2055" width="700" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="83" value="AUCTION CLOSE&#10;&#10;- a cron is scheduled at auction creation to run at endTime + grace period&#10;- the winner is determined from Auction.currentMaxPrice&#10;  (no full scan of all bids needed — the auction entity is kept up to date)&#10;- SAFETY SIGNAL for the grace period: the queue depth / consumer lag of the&#10;  partition associated with that auction — non-zero depth =&gt; some bids remain&#10;- BOUNDARY RACE: the idempotent consumer compares bidTime against endTime,&#10;  so a bid placed before endTime is admitted even if processing is delayed&#10;- bidTime is stamped by the API gateway clock (server side, not the client)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2315" width="1400" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="94" value="" style="line;strokeWidth=4;html=1;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2570" width="1700" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="100" value="OPTIMAL REFERENCE — what a senior strong-hire would design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2600" width="1000" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="101" value="Reference material added after the round. Your own design above is untouched." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2640" width="1000" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="110" value="1 — OPTIMAL CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#2D7600;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2690" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="111" value="Auction&#10;&#10;auctionId (PK)&#10;itemId, sellerId&#10;startPrice, bidIncrement&#10;startTime, endTime&#10;softCloseWindowSec   &lt;- anti-sniping&#10;status: SCHEDULED | LIVE | CLOSING | SETTLED | CANCELLED&#10;currentPrice, currentLeaderId, currentBidSeq&#10;winnerId, winningPrice, settledAt" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2725" width="400" height="215" as="geometry"/>
+        </mxCell>
+        <mxCell id="112" value="Bid  (append-only log)&#10;&#10;auctionId (PK)&#10;bidSeq (SK)   &lt;- monotonic per auction, NOT wall-clock&#10;bidderId, amount&#10;serverReceivedAt  (gateway clock)&#10;idempotencyKey&#10;outcome: LEADING | OUTBID | REJECTED_LOW | REJECTED_CLOSED" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="2725" width="450" height="215" as="geometry"/>
+        </mxCell>
+        <mxCell id="113" value="AuctionState  (Redis, per auction — the hot object)&#10;&#10;key: auction:{id}&#10;  price, leaderId, seq, endTimeEpochMs, state&#10;&#10;IdempotencyRecord&#10;  key -&gt; { bidSeq, outcome }, TTL ~10 min&#10;&#10;Watcher registry (for outbid push): auction:{id}:subs" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="950" y="2725" width="480" height="215" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="120" value="2 — OPTIMAL API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#6B238E;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2980" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="121" value="POST /v1/auctions          Idempotency-Key: &lt;uuid&gt;&#10;Request : { itemId, startPrice, bidIncrement, startTime, endTime, softCloseWindowSec }&#10;201     : { auctionId, status:&quot;SCHEDULED&quot;, currentPrice, currentLeaderId:null, endTime }&#10;&#10;POST /v1/auctions/{id}/bids     Idempotency-Key: &lt;uuid&gt;&#10;Request : { amount }                       (bidderId from auth token — never the body)&#10;201     : { bidSeq, accepted:true,  isLeading:true,  currentPrice, currentLeaderId, endTime }&#10;409     : { accepted:false, reason:&quot;OUTBID&quot;,        currentPrice, minimumBid, endTime }&#10;410     : { accepted:false, reason:&quot;AUCTION_CLOSED&quot;, closedAt, winningPrice }&#10;429     : { reason:&quot;RATE_LIMITED&quot;, retryAfterMs }&#10;Replay of the same Idempotency-Key returns the ORIGINAL response verbatim, not a new bid.&#10;&#10;GET /v1/auctions/{id}&#10;200     : { auctionId, status, currentPrice, currentLeaderId, endTime, serverTime, version }&#10;          serverTime lets the client render a countdown without trusting its own clock.&#10;&#10;GET /v1/auctions?status=LIVE&amp;cursor=&lt;opaque&gt;&amp;limit=50&#10;200     : { items:[ { auctionId, itemName, currentPrice, endTime } ], nextCursor }&#10;          Cursor over (endTime, auctionId) — stable under inserts; offset would skip/repeat.&#10;&#10;GET /v1/auctions/{id}/events    (SSE)&#10;stream  : { type:&quot;PRICE&quot;, price, leaderId, seq } | { type:&quot;OUTBID&quot; } | { type:&quot;CLOSED&quot;, winnerId }&#10;          Replaces polling. Without this the 100:1 read load is really a polling storm.&#10;&#10;GET /v1/auctions/{id}/bids?cursor=&amp;limit=      (bid history — paginated, scoped out today)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3015" width="1390" height="450" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="130" value="3 — OPTIMAL HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3500" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="131" value="KEY IDEA: split the two concerns. The PRICE is a tiny, contended, strongly-consistent&#10;object -> synchronous single-writer CAS. The BID LOG is huge, uncontended and&#10;eventually consistent -> asynchronous append. Never put the price behind the log." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=12;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3535" width="900" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="140" value="Client&#10;(web / mobile)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="3690" width="140" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="141" value="API Gateway&#10;authn/authz, per-user rate limit,&#10;stamps serverReceivedAt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="3680" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="142" value="Bid Service&#10;(stateless, autoscaled)&#10;1. idempotency check&#10;2. CAS on price&#10;3. respond&#10;4. async append to log" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="3665" width="200" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="143" value="Redis (Cluster, AOF everysec, replica + Sentinel failover)&#10;SINGLE WRITER OF TRUTH FOR PRICE&#10;&#10;Lua script, one round trip, atomic:&#10;  if state != LIVE or now &gt; endTime -&gt; return CLOSED&#10;  if amount &lt;= price               -&gt; return OUTBID(price)&#10;  price = amount; leader = bidder; seq = seq+1&#10;  if endTime - now &lt; softCloseWindow -&gt; endTime += softCloseWindow&#10;  return LEADING(seq, price, endTime)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="3630" width="470" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="144" value="Kafka&#10;topic: bids&#10;key = auctionId&#10;(durable append-only log)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="3900" width="200" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="145" value="Bid Log Consumers&#10;idempotent on (auctionId, bidSeq)&#10;-&gt; DLQ on poison" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="3900" width="220" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="146" value="DynamoDB / Cassandra&#10;PK auctionId, SK bidSeq&#10;append-only bid log&#10;+ Auction row (audit / recovery)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="3895" width="240" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="147" value="Fanout Service&#10;SSE / WebSocket&#10;price + outbid push" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="3900" width="200" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="148" value="Closer Service&#10;Redis ZSET of (endTime, auctionId);&#10;poll head every 100ms — O(log n),&#10;never a table scan.&#10;Waits until consumer lag on the&#10;auction partition == 0, then SETTLES." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="4070" width="290" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="149" value="Reconciler (offline)&#10;replays the bid log, recomputes&#10;the winner, alerts on mismatch&#10;with the Redis-decided winner." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="4070" width="260" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="160" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="140" target="141">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="161" value="POST bid {amount}" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="141" target="142">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="162" value="atomic CAS (1 RTT, ~1ms)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="142" target="143">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="163" value="async append (off the response path)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="142" target="144">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="164" value="consume" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="144" target="145">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="165" value="write bid rows" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="145" target="146">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="166" value="price/outbid events" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="144" target="147">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="167" value="SSE push (no polling)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=0;exitY=0.5;entryX=0.5;entryY=1;" edge="1" parent="1" source="147" target="140">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="130" y="3950"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="168" value="read endTime ZSET / SETTLE" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;dashed=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="148" target="146">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="169" value="replay log" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;dashed=1;exitX=1;exitY=0.25;entryX=0;entryY=1;" edge="1" parent="1" source="149" target="146">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="180" value="4 — KEY TRADE-OFFS (each vs a NAMED alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#7A4100;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4250" width="700" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="181" value="Redis Lua CAS as the price authority   vs   a Postgres row with SELECT ... FOR UPDATE&#10;  + ~1 ms and 100k+ ops/s per key vs a few thousand serialized txns/s; comfortably inside p99 &lt; 150 ms&#10;  - give up: durability. AOF everysec can lose ~1 s of price updates on node loss.&#10;    Mitigated by replica + Sentinel failover and by rebuilding price from the Kafka log on recovery.&#10;&#10;Async bid log   vs   writing the bid row synchronously before responding&#10;  + response latency decoupled from DB write; DB outage degrades durability, not availability&#10;  - give up: a bid is acknowledged before it is in the DB. Acceptable because Kafka is the durability&#10;    boundary, not the DB — and the price (the thing users act on) was already committed in Redis.&#10;&#10;Kafka   vs   Kinesis / SQS&#10;  + per-key ordering and cheap replay for the reconciler; SQS gives neither&#10;  - give up: partition-count management and rebalance stalls at deploy time.&#10;&#10;DynamoDB / Cassandra   vs   sharded Postgres&#10;  + linear write scaling for an append-only log at 1M+ writes/s&#10;  - give up: multi-row transactions — not needed, since all contention lives in one Redis CAS.&#10;&#10;SSE push   vs   client polling GET /auctions/{id}&#10;  + turns 100 reads per write into ~1 fanout per write; removes the real read bottleneck&#10;  - give up: stateful connections, a consistent-hash ring for the fanout fleet, reconnect/replay logic." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4285" width="1390" height="420" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="190" value="5 — DEEP DIVES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4740" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="191" value="THE CORE HARD PROBLEM — contention on one auction&#10;&#10;Every bid on an auction contends on ONE logical value. That is irreducible: you cannot shard&#10;&quot;the current maximum&quot; and still answer &quot;am I leading?&quot; in one hop.&#10;&#10;THE SCALE BREAK: 500k bids/s on a single auction vs ~100k ops/s on one Redis key. 5x over.&#10;&#10;The senior fix is NOT to shard the price — it is to SHED and BATCH before it:&#10;  1. Sticky-route by auctionId to a small set of Bid Coordinator instances (consistent hash).&#10;  2. Each coordinator batches ~10 ms of bids for that auction IN MEMORY, computes the local max,&#10;     and issues ONE Lua CAS with the winner of the batch. 500k/s -&gt; ~100 CAS/s. Break removed.&#10;  3. Losing bids in the batch are answered 409 OUTBID locally — never touch Redis at all.&#10;  4. Admission control: reject bids below currentPrice at the edge. At 100:1 write skew most&#10;     traffic is hopeless bids; dropping them at the gateway is the cheapest win available.&#10;  Cost accepted: ~10 ms of extra latency (budget is 150 ms) and a coordinator failover window&#10;  during which in-flight batched bids must be replayed from Kafka.&#10;&#10;Sharding the price across N Redis keys is the WRONG fix: correctness requires max-of-N read on&#10;every write, so you have not removed the contention — you have made it a distributed read." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4775" width="690" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="192" value="CLOSE SEMANTICS, SNIPING, OPERABILITY&#10;&#10;Finding auctions to close: Redis ZSET keyed on endTime; poll the head every 100 ms.&#10;O(log n) — never scan the auction table. Worst case endTime -&gt; settle: ~100 ms + lag.&#10;&#10;Soft close (anti-sniping): a bid inside the last 30 s EXTENDS endTime by 30 s, inside the&#10;same Lua script. Without it the last-second burst IS the whole system, and the winner is&#10;decided by network jitter rather than by willingness to pay. This is the single most&#10;important real-world auction behaviour and it must be self-raised.&#10;&#10;Boundary race: Redis is the ONLY clock that matters — endTime is compared inside the CAS,&#10;so &quot;in or out&quot; is decided at the moment of the atomic write, not by a client or service clock.&#10;Never order bids by wall-clock across a fleet; order by the Redis-assigned bidSeq.&#10;&#10;Settlement safety: settle only when consumer lag on that auction's partition is 0 — the&#10;winner is already known from Redis, the lag check just guarantees the audit log is complete.&#10;&#10;Hot partition: key Kafka by auctionId for ordering, but a viral auction saturates one partition&#10;(~10 MB/s). Fix: key by (auctionId, bidSeq % K) — ordering is already carried by bidSeq, so the&#10;partition key no longer needs to provide it.&#10;&#10;Monitoring — &quot;how do I know it's wrong?&quot;: Redis-vs-log winner mismatch rate (should be 0),&#10;p99 CAS latency, consumer lag per partition, SSE fanout lag, 409-rate per auction (a spike&#10;means a sniping burst), settle-delay p99, and auctions stuck in CLOSING.&#10;&#10;Cost at scale: ~5-10 Redis nodes + ~30 Kafka brokers + a few hundred stateless pods.&#10;The dominant line item is the SSE fanout fleet, not the write path." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="760" y="4775" width="670" height="400" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
