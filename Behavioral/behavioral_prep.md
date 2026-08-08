@@ -74,7 +74,7 @@ Last updated: 2026-07-17
 
 | # | Leadership Principle | Primary | Backup | Coverage |
 |---|---|---|---|---|
-| 1 | **Customer Obsession** | **S006** | S007 (business-side), S004 (manual QA as internal customer) | ⚠️ Thin — one real story |
+| 1 | **Customer Obsession** | **S006** | **S004** (regression = broken UI a customer sees), **S003** (customer data protection + not breaking live traffic), S007 (business-side + billing fairness) | ⚠️ Improving — S006 primary, but use the **Customer-Impact Framing** section below to open S004/S003 customer-forward |
 | 2 | **Ownership** | S004 | S005, S003, S007 | ✅ Strong |
 | 3 | **Invent and Simplify** | **S006** (registry = one source of truth) | S001 (`ConfigStore` abstraction), S003 (profiles grouped by traffic pattern) | ✅ Good — *label these as simplification, they're already there* |
 | 4 | **Are Right, A Lot** | S003 (learning mode instead of guessing) | S002 (updated on evidence) | ✅ Good — *was shaky only because of the numbers; both audited now* |
@@ -100,7 +100,32 @@ S001, S003 and S004 each appear against 5+ LPs. In a real loop **cap any story a
 
 **Hire and Develop is a bridge, not a story.** The real evidence is a new grad ramping and adding tests using documentation you wrote — enabling someone else, which is the substance at your level. Pair with the giving-feedback script. Don't claim mentoring you haven't done.
 
-**Customer Obsession rests on S006 alone** — four years old, thinnest recall, and it's their #1 LP. Mitigation: the token-monitoring work (customers over-billed from abnormal AI usage spikes) is a genuine second Customer Obsession story and isn't written up yet. Until it is, this is your most fragile LP.
+**Customer Obsession no longer rests on S006 alone — but only if you open correctly.** S006 stays primary (it's the one where the customer is the subject of the story). S004 and S003 are genuine backups *provided* you lead with the customer sentence: for S004, a customer opening the agent and finding the LLM insights don't render; for S003, exfiltration risk on customer data plus the refusal to guess at access rules because a wrong rule breaks live customer traffic. Both framings are true and neither needs new material — see **Customer-Impact Framing** below. The risk that remains isn't coverage, it's **habit**: under pressure you open on the system and never circle back to the person.
+
+---
+
+## Customer-Impact Framing — how to open each story customer-forward
+
+> **Why this exists.** Almost all your work is platform/internal, so your instinct is to open on the *system* — a config store, a security perimeter, a test pipeline. Customer Obsession is your weakest LP and your panel's dimension 3, and the fix is mostly **which sentence you open with**, not new material. Every framing below is true; none requires inventing impact.
+>
+> **The move:** name the person harmed and what they experienced, *then* the system. One sentence, then proceed as normal.
+>
+> **Two hard rules.**
+> 1. **Never say "luckily there was no customer impact."** It's on your banned list. Containment was your design — low-traffic geo first, blast-radius sequencing — not luck. Say *"contained by design"* and then say how.
+> 2. **Don't stretch.** An interviewer can tell the difference between a real customer argument and a retrofitted one. Where the honest answer is "my customer here was internal," say that — it scores better than an inflated claim. The ceilings below are deliberate.
+
+| Story | Customer-forward opening move | Honest ceiling |
+|---|---|---|
+| **S001** Config Migration | *"Config for CRM analytics was stored per-geo, so a single storage outage took the feature down for every tenant in that geo at once. Shrinking that to island scope meant a future outage could only affect one island's customers instead of an entire region's."* Then: rollout started in the **lowest-traffic geo by design** to cap customer exposure, and when it went wrong you **sequenced recovery by blast radius** — stop new damage, recover existing, fix root cause, verify — because the ordering was about limiting who got hurt. | **Strong, second-order.** The reliability argument is genuine. But you were not talking to customers — don't imply you were. |
+| **S003** NSP Rollout | *"The gap was a data-exfiltration risk on resources holding customer data — so this was about customer data protection, not compliance paperwork."* Then the sharper beat: **the reason you refused to write access rules from the code was that a wrong rule breaks live customer traffic.** Learning mode existed specifically so you'd derive rules from real behaviour rather than guess and take features down. "No legitimate traffic disrupted, no features broken" = customers never noticed a company-wide security change, **which was the objective.** | **Strong.** Protecting customer data and not breaking customer traffic are both real and both yours. |
+| **S004** LLM Regression Testing | *"A regression meant a customer opening the sales agent and finding the LLM insights simply didn't render — and we shipped weekly, so a bad release reached customers within days."* Then: you **sat with the manual QA vendors to map the flows customers actually use**, and built the **P0 list with PMs and feature owners** — that prioritisation was customer-criticality, not code coverage. | **Strong.** The system's entire purpose is customers not seeing broken features. This is your best non-S006 Customer Obsession framing. |
+| **S006** Configurable Validations | Already customer-forward. *"Still being billed for a product they'd asked to leave."* | **Primary story.** |
+| **S007** Filing-Fee Automation | Customer here is the **business**, plus a fairness beat: you built the invoice breakdown so a departing customer saw *why* they owed $1,000 rather than an unexplained charge, and you took retroactive invoicing to **PMs** rather than deciding unilaterally what to bill people. | **Moderate.** Revenue-side. Don't pitch it as customer-first; the fairness/communication beat is the honest customer content. |
+| **S005** Copilot Dashboard | *"My customer was internal — leadership — and they'd never had visibility into Copilot usage."* The one genuine external thread: you sized the load test to the **largest customer's data volume**, because the worst-case refresh had to hold for the biggest tenant, not the average one. | **Weak — say "internal customer" out loud.** Analytics *about* Copilot usage. Don't inflate. |
+| **S002** Test Runner Removal | Second-order and worth stating once: your test runner was **blocking customer-facing services from shipping**, and every mid-deploy failure cost hours of restart. Conceding removal was choosing customer-facing deployment reliability over your own coverage. | **Weak, internal.** State it in one clause and move on; the story's value is Backbone, not customers. |
+
+### Drill this separately
+Cover the middle column. For each story, say **only the customer-forward first sentence** — 10 seconds each, seven stories. The failure mode isn't that you lack the argument; it's that under pressure you open on the system and never get back to the person. One pass a day until the customer sentence comes first by reflex.
 
 ---
 
