@@ -4,7 +4,9 @@
 
 ---
 
-## Spoken Delivery (say this version out loud)
+> **Two rehearsed tellings.** The version immediately below is the **"changed my mind / a time you were wrong"** telling — it leads with the question you asked and lands on updating your position. For **Have Backbone; Disagree and Commit** or any "held your ground" stem, skip to the **Backbone version** further down; the default framing loses that question, because the interviewer hears *disagreed, then folded to a senior engineer*. Same facts, opposite emphasis. Know which one the stem is asking for before you open your mouth.
+
+## Spoken Delivery — "changed my mind" version (say this version out loud)
 
 I was a software engineer on the Dynamics 365 Sales Hub team, tasked with building an internal test runner service — it executed API tests against the other microservices in our cluster. During a geo-by-geo rollout, the service started causing intermittent deployment failures that blocked the other services in the same deployment package from shipping. A peer senior engineer flagged those failures and recommended removing my service from all geos entirely.
 
@@ -99,6 +101,34 @@ Say this out loud. The move that matters isn't conceding — it's the question t
 **Opener:** *"A senior engineer wanted a service I'd built deleted from every geo. I didn't accept that — I pushed back twice, and I made him show me the cost before I'd agree to anything."*
 
 **Closer:** *"Once I was convinced, I didn't just stop objecting — I built the removal plan with him and documented why, so nobody could quietly undo the decision later. Disagreeing is cheap. Committing to the outcome you argued against is the part that counts."*
+
+---
+
+### Spoken Delivery — Backbone version (say this one out loud too)
+
+> Use this for Backbone / Disagree and Commit / "held your ground." Use the version at the top of this file for "a time you were wrong / changed your mind." **Do not mix them mid-answer** — they land on opposite beats.
+
+I was a software engineer on the Dynamics 365 Sales Hub team, and I'd built an internal test runner service that ran API tests against the other microservices in our cluster. During a geo-by-geo rollout it started causing intermittent deployment failures that blocked the other services in the same deployment package from shipping. A peer senior engineer flagged those failures and recommended removing my service from every geo entirely.
+
+I didn't accept that. I went and looked at it myself first — joined the debugging session, read the error logs directly rather than taking the characterization secondhand. What I saw was a transient, geo-specific failure: the service was running fine in most geos, and a manual retry cleared it. So my read was that this wasn't a systemic defect, and deleting a service everywhere because of a flake in one geo was an overreaction. I said that.
+
+He escalated again when the same pattern showed up in a second geo, with the same recommendation — full removal. I still didn't concede. My position hadn't changed, because nothing I'd been shown had changed it: it was still transient, still cleared by a retry, still working everywhere else.
+
+What I did instead of arguing louder was ask him to justify the scope. Specifically: why *full* removal, rather than any narrower fix? And that's the question that broke it open. He explained that a full deployment took three to four hours, and any mid-deployment failure meant restarting the entire thing from scratch. So every one of my "transient" failures was costing the team hours of lost deployment progress. I'd been evaluating the failure as a technical event — severity, frequency, retryable. He was living its operational cost, and that was a real, recurring cost I genuinely hadn't accounted for.
+
+But I still didn't just agree, because now I understood the problem well enough to try to solve it without losing the service. I proposed an auto-retry mechanism — he clarified that the deployment platform was abstracted away from individual teams; we could initiate and inspect deployments but couldn't modify retry behavior, so that wasn't available at the layer where the failure happened. Then I proposed scoping the service to only the geos where it hadn't failed. I worked that one through honestly and it didn't survive either: it would have meant maintaining two divergent main branches long-term, for a service that only covered a subset of endpoints and had no customer-facing exposure. The maintenance cost clearly outweighed the partial coverage I'd be preserving.
+
+At that point removal was the right answer, and I could explain why without referencing who had asked for it. So I made the call to concede — on the evidence, not on his seniority.
+
+And then I committed to it properly, which to me is the part that actually matters. I didn't just stop objecting and let him clean it up. I co-owned the removal: built the removal plan with him, and then wrote up the rationale explicitly — a document making the case against my own work. My reasoning was that a future engineer looking at a missing test runner would assume it was an oversight, re-add it, and re-trigger the exact same deployment failures. Without that write-up, the decision would quietly get undone. I also took it to my manager with the full reasoning so the trade-off was visible and owned rather than two engineers deciding quietly, and he agreed it was right for deployment reliability.
+
+After removal the intermittent failures stopped completely, deployments normalized across all geos, and his workflow was no longer exposed to multi-hour restarts. Because the service was internal-only there was zero customer impact throughout, and the coverage loss was accepted as reasonable given its scope.
+
+The follow-through mattered more than the concession. On a later global rollout with the same engineer — associating cloud resources with security perimeters — I front-loaded exactly what I'd missed the first time: I did the deployment-impact analysis up front and validated the resource deployment in a test subscription before we started, then brought him the findings. Same engineer, opposite dynamic, because I led with the operational reality instead of discovering it mid-argument.
+
+What I take from it is that backbone isn't refusing to change your mind — it's refusing to change it without evidence. I made him show me the cost, and I tested two alternatives before yielding. And then once the decision was made, I committed to it hard enough to protect it from being reversed by someone who didn't know why.
+
+---
 
 **Four beats. Beat 1 and beat 4 are the ones you habitually drop.**
 
