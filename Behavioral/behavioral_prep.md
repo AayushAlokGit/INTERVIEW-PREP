@@ -14,6 +14,8 @@ Last updated: 2026-07-17
 | S002 | Knowing When to Concede (Test Runner Removal) | 4.0 | Disagreement with a peer, changing your mind on new info, conceding gracefully |
 | S003 | NSP Security Compliance Deployment | 4 | Technical judgment ("read the system first"), large-scale infra, security, hard deadline |
 | S005 | Copilot Usage Analytics Dashboard | 4 | Learning unfamiliar tech fast, knowing when to ask for help, self-awareness / a habit you fixed, cross-team dependencies |
+| S006 | Configurable Validations Framework (Rippling) | 4 | **Customer obsession / customer impact**, fixing a class instead of an instance, reducing toil, unprioritized backlog work you took on |
+| S007 | Payroll Filing-Fee Automation (Rippling) | 4.5 | **Business impact — your only fully-defensible number ($45K = 45 × $1,000)**, using data to make a case, acting before a window closed, expensive-mistake code |
 
 **Two lead stories (4.5):** S001 and S004. When you get to pick, open with one of these.
 
@@ -49,8 +51,14 @@ Last updated: 2026-07-17
 | Learning unfamiliar tech fast | S005 |
 | Knowing when to ask for help | S005 |
 | Self-awareness / a habit I changed | S005 (timezone coordination) |
-| Business / cost impact | S001 ($156K/yr), S004 (eliminated 1–2 person-days/release) |
-| Above and beyond for a customer | Rippling Configurable Validations |
+| Business / cost impact | **S007 ($45K recovered — the only number you can derive live)**, S001 ($156K/yr — audit before quoting), S004 (eliminated 1–2 person-days/release) |
+| Using data to change a priority / make a case | S007 (primary), S005 (200GB load test → drove Power BI fix) |
+| Acting because a window was closing | S007 (fully-churned customers were unrecoverable) |
+| **Customer obsession / worked backwards from the customer** | **S006** (primary), S007 filing-fee (business-side), S004 (manual QA as internal customer) |
+| Above and beyond for a customer | S006 |
+| Fixing a class of problem, not an instance | S006 (primary), S001 (ConfigStore abstraction) |
+| Reducing toil / support burden | S006 |
+| Taking on work nobody prioritized | S006 (sat in backlog because volume was low) |
 | Couldn't meet a commitment | S002 |
 | Digging into details to understand a complex problem | S005 (perf investigation), S003, S001 |
 | Giving feedback | Script (gap) |
@@ -138,21 +146,33 @@ Last updated: 2026-07-17
 - **Tell me about a time you dug into the details to understand a complex problem** *(the ~200GB load test that reproduced the worst-case initial refresh and traced the ~3hr time to the Power BI layer, not your pipeline)*
 - Tell me about work that got shelved or deprioritized
 
-### Rippling — Filing-Fee Automation *(not in the numbered set, but real and it scored well)*
-**Opener:** *"Rippling was leaking revenue on payroll offboarding because the filing fee was still collected manually — and nobody had put a number on it."*
+### S007 — Payroll Filing-Fee Automation (Rippling) ⭐ **Your one fully-defensible number**
+**Opener:** *"My mentor mentioned in passing that we were probably losing money on payroll offboarding because a $1,000 filing fee was still collected by hand. Nobody had put a number on it, so I went and queried the database — 45 customers, $45,000 uncollected, and a closing window to get any of it back."*
+**Closer:** *"An offhand remark becomes a priority the moment someone puts a number on it. The number was the work."*
 
-- Tell me about your biggest business impact
-- Tell me about a time you found a problem nobody asked you to look at
-- Tell me about work you did outside your assigned scope
-- Tell me about a time you worked with a PM on a customer-facing decision
+- **Tell me about your biggest business impact** *(primary)*
+- **Tell me about a time you used data to make a case / to change a priority**
+- Tell me about a time you dug into something to find out how big it really was
+- Tell me about a time you had to move fast because a window was closing
+- Tell me about a time you saved the company money / recovered revenue
+- Tell me about a time you worked with a PM on a customer-facing money decision
+- Tell me about working on something where mistakes were expensive
+- Tell me about automating a manual process that kept failing
 
-### Rippling — Configurable Validations Framework
-**Opener:** *"Customers offboarding from a product were getting blocked by validations that didn't apply to them, and every block became a support ticket an engineer had to clear by hand."*
+> ⚠️ **Do NOT use for "a problem nobody asked me to look at" or "work outside my assigned scope."** Your mentor surfaced the gap — you sized and fixed it. Claiming discovery here is a trust risk for zero gain; the sizing is the impressive part and it's entirely yours.
 
-- Tell me about a time you reduced toil or support burden
-- Tell me about designing for configurability / extensibility
+### S006 — Configurable Validations Framework (Rippling) ⭐ **Customer Obsession story**
+**Opener:** *"A customer would submit a request to offboard from a Rippling product, get told it went through, and then watch it sit stuck for days with no explanation — because the only thing that could tell them what was wrong was me, manually debugging it."*
+**Closer:** *"A silent failure buried in a pipeline isn't a reporting problem, it's a placement problem. Put the check where the person who can act on it will see it."*
+
+- **Tell me about a time you went above and beyond for a customer** *(primary — lead with the rep stuck for days, not with your own toil)*
+- **Tell me about how you think about the customer / worked backwards from the customer**
 - Tell me about a time you fixed a class of problem instead of an instance
-- **Tell me about a time you went above and beyond for a customer** *(went past clearing tickets by hand to build the framework that removed the customer's false blocks entirely — lead with the customer being unblocked, not the toil)*
+- Tell me about a time you reduced toil or support burden
+- Tell me about work you took on that nobody had prioritized
+- Tell me about designing for configurability / extensibility
+- Tell me about a time you improved someone else's experience of a system
+- Tell me about a time you simplified something *(one registry, one source of truth — rather than a second copy of the checks)*
 
 ---
 
@@ -242,6 +262,56 @@ Last updated: 2026-07-17
 
 **Earned Secret**: Cross-timezone coordination is a logistics problem to solve immediately, not a personal inconvenience to minimize. (Secondary: struggling alone is a false economy — knowing *when* to ask is a skill.)
 **Watch out for**: Own your real contribution on the refresh — you *found & quantified & drove* it; the Power BI team owns the fix. Don't overstate GenAI depth (analytics *about* Copilot, not building it — S004 is the hands-on LLM story). Lead the reflection with the timezone habit — it's a genuine "something I'd do differently" beat.
+
+---
+
+### S006 — Configurable Validations Framework (Rippling) *(Strength 4 — Customer Obsession story)*
+
+**Situation**: Junior engineer at Rippling on Unified Churn — the product handling a customer offboarding from a Rippling product. A customer representative raised the churn request and followed it through. There was **no validation at request time**: the system accepted every request. The eligibility criteria (pending dues and similar) were only checked deep inside the processing pipeline, so a request that failed them silently entered a stuck in-progress state. A normal churn completed in about a day; the rep would wait 3+ days before concluding something was wrong and filing a support ticket — **and while it sat there, the customer was still being billed for a product they'd asked to leave.** Then an engineer (usually me or my mentor) had to debug the request by hand, work out which criterion had failed, and hand-write the explanation into the ticket. Every single occurrence. Volume was low — under 10 churns a month — which is exactly why it had been sitting in the backlog unprioritized.
+
+**Task**: A senior engineer assigned me to fix it. I was the person on the receiving end of those tickets, so I knew the shape of the pain first-hand.
+
+**Action**: The logs on stuck requests pointed at failing validations as the cause — and the real defect wasn't that the failure was reported badly, it was that a request which couldn't possibly succeed had been **accepted in the first place**. So rather than adding alerting or better error surfacing on the stuck state, I moved validation to the point of entry: an API endpoint called on churn form submission that ran the checks and returned failures to the rep before the request was ever created. Rather than writing a second copy of the criteria at the endpoint, I **refactored the existing pipeline validation logic out into a registry** — a dict keyed by the product being churned, mapping to the list of validator functions to run; each validator took the product-level and company-level churn request and returned a boolean plus an error string. One source of truth, so entry-point and pipeline checks could never drift. Pipeline validation stayed in place as a second line of defence. My mentor oriented me on the existing system and, on design review, suggested adding the ability to override specific validations or downgrade their severity — so hard blockers stayed non-negotiable while others could be tuned from the internal admin UI without a deploy, with overrides persisted as validation-rule DB records. I also cleaned up the existing victims: the already-stuck requests were cancelled, with care taken that a mid-churn cancellation didn't leave the customer in a broken state.
+
+**Result**: The rep got the blocking reason at the point of submission, could fix it, and watch it pass. The entire class of "accepted request that silently dies days later" disappeared — no churn request could be created that didn't satisfy its validations, so there was nothing left to debug by hand, and no more days of a customer being billed for a product they were trying to leave. No stuck-request tickets came in afterwards. The framework stayed in active use after I moved on.
+
+**Earned Secret**: A silent failure buried deep in a pipeline isn't a reporting problem, it's a **placement** problem. Move the check to where the person who can fix it will see it. Corollary: when you move a check, refactor the existing logic into one shared place — don't leave a second copy behind to drift.
+
+**Lead with**: the customer still being billed while the request sat stuck. Not the ticket toil, and not the registry design — the person who couldn't find out what was wrong and was paying for the privilege.
+
+**What I'd do differently** *(genuine — you volunteered it under drilling)*: I inferred the customer cost entirely from the tickets I personally debugged. I never went and talked to the support or CS people who fielded them. Had I done that, I'd have understood the billing consequence sooner and could have made a much stronger case for pulling it out of the backlog earlier. Secondary: I shipped it and never instrumented the outcome — I can tell you the failure class was eliminated by construction, but I never measured whether the severity-override knob was actually used, which means I can't say whether that part earned its complexity.
+
+**Watch out for**:
+- **Don't inflate the scale.** Under 10 churns/month. If asked volume, say it plainly and add *why that mattered*: low volume is precisely why it stayed in the backlog and stayed easy to defer. That's the better answer anyway — you fixed unglamorous work nobody would have blamed you for ignoring, and the per-incident cost was high even if the count was low.
+- **Quote no percentage.** The old resume line said "20% fewer tickets"; it was an unmeasured estimate and it has been removed from the resume. Never reintroduce it. Impact here is *mechanism* — a class of failure eliminated by construction — not a measured delta.
+- **Get attribution exactly right.** The **refactor-instead-of-duplicate call was yours** — that's the best technical decision in the story, own it. The **override / severity-downgrade capability was your mentor's suggestion at design review** — credit them. Getting this backwards in either direction is the trust risk; volunteering the mentor's contribution unprompted actually reads as Earn Trust.
+- **Do not claim the multi-page validation was a flaw.** Validation surfaced per page in a multi-step churn flow — that's contextual validation, and it's correct. (An earlier draft of this file wrongly framed it as serial-discovery friction. It isn't.)
+- **Oldest story, weakest recall.** If drilled past what you actually remember: *"This was about four years ago and it's the work I remember least precisely — the shape was X, but I'd rather tell you what I'm confident about than reconstruct details."* Survivable. Inventing architecture is not.
+- **Unknowns, answer honestly**: whether anyone added validators after you left, and whether the severity config was ever exercised — you don't know. "I don't know, I'd left by then" costs nothing. Guessing costs the question.
+
+---
+
+### S007 — Payroll Filing-Fee Automation (Rippling) *(Strength 4.5 — your one bulletproof number)*
+
+**Situation**: Junior engineer at Rippling. When a customer offboarded from Rippling's payroll product, if they met certain additional criteria they were liable for a final, flat **$1,000 filing fee** — payment for filing work Rippling still had to do on their way out. Collecting it was a manual step: the ops team was supposed to notice an eligible churn and reach out to the customer. Under high volume of incoming churn requests, that step just got forgotten. My mentor raised this in conversation as something he suspected was costing us money. Nobody had quantified it.
+
+**Task**: Find out how big it actually was, and if it was worth fixing, fix it. Nobody assigned this — it came out of a conversation.
+
+**Action**: I went and queried the database directly rather than estimating: customers with existing churn requests who met the fee eligibility criteria and had never been charged. **45 customers, $1,000 each — $45,000 uncollected.** I brought that number to my mentor. The number is what turned an offhand remark into work, and it also exposed urgency: once a customer had *fully* churned out there was no billing relationship left and the money was gone permanently. Only customers still mid-churn were recoverable, so every week of delay converted recoverable revenue into unrecoverable. Two pieces of work: (1) **Stop the leak** — the churn process was an automated sequence of steps, so I added a step that generated the filing-fee invoice automatically for any eligible payroll churn, removing the human from the loop entirely. (2) **Recover what was still recoverable** — backdated invoices for the 45 customers still in progress. Since this was real customer money, I got PM sign-off on retroactively invoicing them rather than making that call myself. On safety: invoice creation was idempotent, and actual collection was handled by separate billing infrastructure with its own idempotency, so a re-run couldn't double-charge. Deliberately, my code only *generated* an invoice — the customer still paid it themselves; nothing auto-charged a card. I also built the admin-facing breakdown of the filing-fee charge on the invoice, so the amount wasn't an unexplained line item.
+
+**Result**: $45,000 in backdated invoices generated and charged to the 45 recoverable customers. The manual step was eliminated — eligible churns now generate the fee invoice as part of the automated churn sequence, so a high-volume week can't cause missed revenue anymore. Nothing broke in production. Still in use when I left.
+
+**Earned Secret**: An offhand remark becomes a priority the moment someone puts a number on it. The highest-leverage thing I did wasn't the code — it was spending an afternoon on queries to turn "I think we're losing money here" into "45 customers, $45,000, and it's shrinking every week." Also: when a leak is time-sensitive, sizing it *is* urgency work, not analysis paralysis.
+
+**Lead with**: the number, and the fact that you went and got it. **Never lead with** "I automated a manual process."
+
+**Watch out for**:
+- **This is NOT a Think Big or "found a problem nobody asked about" story.** Your mentor surfaced it. State that plainly and early — *"my mentor raised it, I quantified it"* — and the story loses nothing, because the quantification is the impressive part and it's entirely yours. Claiming discovery gets you caught for no upside.
+- **Derive the $45K, don't recite it.** 45 eligible customers × $1,000 flat = $45,000, from queries you ran yourself. If asked, walk the arithmetic. This is the one number in your entire set that survives arbitrary drilling — use it, and let it do the work the $156K currently can't.
+- **Be precise on "recovered."** $45K is a one-time recovery of backdated invoices, **not** an annual figure. And be honest that customers who had already fully churned were *unrecoverable* — that money was permanently lost. Volunteering that is stronger than being caught by "so you got all of it back?"
+- **You didn't charge anyone automatically.** Your code generated an invoice; the customer paid it. If an interviewer starts probing "you retroactively charged customers?", the answer is invoices with PM sign-off, no automatic card charges.
+- **No failure beat exists here.** Nothing broke. If pushed for what went wrong, don't invent — pivot to the honest limitation (the unrecoverable cohort) or the safety design you'd have to defend if it *had* gone wrong.
+- **Don't oversell the UI.** It was the invoice breakdown for the filing-fee charge, not an admin console. The resume says "admin-facing UI" — keep the spoken version accurate to what it was.
 
 ---
 
