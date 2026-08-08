@@ -57,6 +57,26 @@ A second, complementary insight worth stating: **audit before you migrate, and c
 
 ## Technical Depth Questions (Interviewer Voice)
 
+**The $156K — audited 2026-08-08. Read this before using the number anywhere.**
+
+> **Provenance:** it came from a COGS-reduction email your **manager** sent to senior leadership, attributing the figure to your workstream specifically. It is a **forecast** of annualized savings, not audited realized savings. You never saw a before/after cost figure yourself and you did not do the calculation.
+>
+> **Therefore: attribute it up front, unprompted, every time.** Then pivot to the mechanism, which you *can* defend. The number is legitimate and stays on the resume — the failure mode is presenting it as yours and then having no methodology when asked. Volunteering the limit of what you know converts this from a liability into a transparency signal.
+
+- **"How was the $156K calculated?"**
+  **Ans:** I should be precise about where that number comes from. My manager did the COGS analysis and reported $156K a year to senior leadership, attributed to this workstream — that's his finance-side figure and a forecast of annualized savings, not something I calculated or saw audited after the fact. What I can speak to is *why* the cost came down. We were running one dedicated Azure Table Storage resource per geo, so the cost scaled with the number of geos. PPMS was an existing shared internal platform that other teams were already running on and already funded. So migrating didn't mean finding a cheaper database — it meant decommissioning our entire fleet of per-geo storage resources and riding on infrastructure the org was already paying for. The saving is resource elimination, not a better per-GB rate.
+
+- **"Isn't Cosmos DB more expensive than Table Storage per GB?"**
+  **Ans:** Generally yes, and that's the right instinct — if this had been a like-for-like swap of one dedicated store for another, it probably wouldn't have saved anything. The saving didn't come from the storage technology. It came from no longer running dedicated resources at all: we went from one Table Storage resource per geo, which we paid for directly, to an existing shared platform that was already provisioned and funded for the org. The unit of savings is the decommissioned per-geo resources.
+
+- **"Was that $156K ever realized? Did you verify it?"**
+  **Ans:** Not that I saw personally, no. It was a forecast in a report to leadership, and I'd left before there was any retrospective audit I'm aware of. I'd rather tell you it was a projected annualized figure than imply it was a verified one.
+
+- **"Was the whole $156K attributable to your work?"**
+  **Ans:** The number was reported for my workstream specifically rather than being a team-wide total I'm claiming a share of. That said, it's my manager's attribution, not mine.
+
+---
+
 **Architecture:**
 
 - "Walk me through exactly how your background migration service worked — was it a batch job, event-driven, scheduled?"
