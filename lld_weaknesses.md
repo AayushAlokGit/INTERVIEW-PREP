@@ -1,5 +1,5 @@
 # LLD Weaknesses
-Last updated: 2026-08-08
+Last updated: 2026-08-10
 
 <!-- Sessions = lifetime count (never decreases). Active = current severity 0-10;
      -1 whenever a round gave the chance to exhibit it and he didn't. Row retires at Active 0. -->
@@ -7,37 +7,38 @@ Last updated: 2026-08-08
 ## Requirements & Scoping
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't ask the error/contract semantics | 2 | 2 | 2026-08-08 |
-| Asks interviewer what requirements he's missing | 1 | 1 | 2026-08-08 |
+| Never produces an Out of Scope list | 3 | 3 | 2026-08-10 |
+| Leaves a rule he raised without a resolution | 1 | 1 | 2026-08-10 |
+| Doesn't ask whether the object is multi-threaded | 1 | 1 | 2026-08-10 |
 | Doesn't probe domain variants (currency, multi-payer) | 1 | 1 | 2026-08-08 |
-| Omits given rules from written requirements | 1 | 1 | 2026-08-06 |
 
 ## Entity Modelling
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Entity list needs several revision passes | 1 | 1 | 2026-08-08 |
+| Entity list needs several revision passes | 2 | 2 | 2026-08-10 |
+| Models actors as classes that hold no rule | 1 | 1 | 2026-08-10 |
 
 ## Class Design & Encapsulation
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Incomplete signatures on first submission | 2 | 2 | 2026-08-08 |
-| Declared contract contradicts method body | 2 | 2 | 2026-08-08 |
-| Method references state its class doesn't hold | 1 | 1 | 2026-08-08 |
-| Entities exposed as getter bags | 1 | 1 | 2026-08-08 |
+| Incomplete signatures on first submission | 3 | 3 | 2026-08-10 |
+| Declared contract contradicts method body | 3 | 3 | 2026-08-10 |
+| Method appears in the trace but not the class | 1 | 1 | 2026-08-10 |
 
 ## Responsibility Placement
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Getters used so caller decides (Ask, not Tell) | 2 | 2 | 2026-08-08 |
-| Strategy mutates the input it was handed | 1 | 1 | 2026-08-08 |
+| Getters used so caller decides (Ask, not Tell) | 3 | 3 | 2026-08-10 |
+| Owner object holds state it never acts on | 1 | 1 | 2026-08-10 |
 
 ## Implementation & Correctness
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| No self-trace before submitting | 2 | 2 | 2026-08-08 |
-| Trusts objects passed in by callers | 2 | 2 | 2026-08-08 |
-| Defends an unworkable signature when challenged | 1 | 1 | 2026-08-08 |
-| Float equality used as a control condition | 1 | 1 | 2026-08-08 |
+| No self-trace before submitting | 3 | 3 | 2026-08-10 |
+| Writes a method nothing ever calls | 1 | 1 | 2026-08-10 |
+| Answers a trace request with a dependency, not values | 1 | 1 | 2026-08-10 |
+| Trusts objects passed in by callers | 2 | 1 | 2026-08-08 |
+| Defends a check that isn't in his own code | 1 | 1 | 2026-08-10 |
 
 ## Simplicity & Patterns
 | Weakness | Sessions | Active | Last Seen |
@@ -47,21 +48,22 @@ Last updated: 2026-08-08
 ## Extensibility & Concurrency
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| States no cost for a chosen primitive | 2 | 2 | 2026-08-08 |
-| Names the phase to lock, not the place | 1 | 1 | 2026-08-08 |
+| States no cost for a chosen primitive | 3 | 3 | 2026-08-10 |
+| Names the phase to lock, not the place | 1 | 0 | 2026-08-08 |
 
 ## Communication & Pace
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Leaves a repeated probe unresolved | 1 | 1 | 2026-08-08 |
-| Entities phase overruns via repeated revision | 1 | 1 | 2026-08-08 |
+| Answers one part of a two-part question | 2 | 2 | 2026-08-10 |
+| Entities phase overruns via repeated revision | 2 | 2 | 2026-08-10 |
+| Leaves a repeated probe unresolved | 1 | 0 | 2026-08-08 |
 
 ## Senior Signals
 | Signal | Status | Last Seen |
 |---|---|---|
-| Scopes before designing | Strong | 2026-08-08 |
-| State derived from requirements | Mixed | 2026-08-08 |
-| Rules live with their state (Tell, Don't Ask) | Mixed | 2026-08-08 |
-| Simplicity held under pressure | Strong | 2026-08-08 |
-| Verifies own logic | Mixed | 2026-08-08 |
-| Extends without rewriting | Strong | 2026-08-08 |
+| Scopes before designing | Mixed | 2026-08-10 |
+| State derived from requirements | Strong | 2026-08-10 |
+| Rules live with their state (Tell, Don't Ask) | Weak | 2026-08-10 |
+| Simplicity held under pressure | Strong | 2026-08-10 |
+| Verifies own logic | Weak | 2026-08-10 |
+| Extends without rewriting | Strong | 2026-08-10 |
