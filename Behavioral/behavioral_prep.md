@@ -16,6 +16,7 @@ Last updated: 2026-07-17
 | S005 | Copilot Usage Analytics Dashboard | 4 | Learning unfamiliar tech fast, knowing when to ask for help, self-awareness / a habit you fixed, cross-team dependencies |
 | S006 | Configurable Validations Framework (Rippling) | 4 | **Customer obsession / customer impact**, fixing a class instead of an instance, reducing toil, unprioritized backlog work you took on |
 | S007 | Payroll Filing-Fee Automation (Rippling) | 4.5 | **Business impact — your only fully-defensible number ($45K = 45 × $1,000)**, using data to make a case, acting before a window closed, expensive-mistake code |
+| S008 | BCDR Drill — The Buffer That Wasn't There | 3 | **Cap relief only.** Preventing a problem, not following the documented process, escalating to another team, on-call / DR. 90 seconds. Never lead with it. |
 
 **Two lead stories (4.5):** S001 and S004. When you get to pick, open with one of these.
 
@@ -61,52 +62,59 @@ Last updated: 2026-07-17
 | Taking on work nobody prioritized | S006 (sat in backlog because volume was low) |
 | Couldn't meet a commitment | S002 |
 | Digging into details to understand a complex problem | S005 (perf investigation), S003, S001 |
+| Preventing a problem before it happened | S008 |
+| Not following the documented process / judging a runbook | S008 |
+| On-call / disaster recovery / resilience testing | S008 |
+| Escalating to another team | S008, S005 (Power BI) |
 | Giving feedback | Script (gap) |
 | "Why did you leave Microsoft?" | Script |
 
 ---
 
-## Amazon Leadership Principles → Story
+## Story Reuse and Load-Balancing
 
-> **Why this exists.** Amazon interviewers are each assigned 2–3 LPs and score you against them, not against topics. A loop is 4–5 interviewers × 2–3 LPs = **10–14 probes**, and they debrief together — so a story reused across three interviewers is visible in a way it isn't within one round. 16 LPs, 7 stories: **reuse is expected and normal.** The goal is ≤2 probes per story per loop, not one story per LP.
+> **Company-specific rubric mappings live in their own files.** Amazon's 16 Leadership Principles → `amazon_lp_prep.md`. This file stays company-neutral: the stories, the categories they cover, and how to deploy them anywhere.
+
+**Reuse is expected and normal.** A full onsite is 4–5 interviewers × 2–3 behavioral probes each — call it **10–14 probes against 8 stories**. Nobody has one story per category. The goal is **≤2 uses per story per onsite**, not perfect coverage.
+
+### Don't over-serve one story
+S001, S003 and S004 fit almost everything, which is exactly the trap. **Cap any story at 2 uses per onsite.** If S001 has already carried the trust question and the act-fast question, route the next probe to S006/S007 even when S001 fits better. Interviewers compare notes afterwards; three of them hearing the config migration reads as a one-story candidate, and that impression outlives everything else you said.
+
+**S008 exists specifically for this.** It's a 3, it's short, and it isn't good enough to lead with — but when S001 is spent and a third proactivity/standards probe lands, S008 is a real answer instead of a fourth telling of the config migration. **Bench math:** 8 stories × 2 uses = 16 slots against a 10–14 probe onsite. That's the first slack you've had; it's still thin.
+
+### Angle Bank — same story, different lead sentence
+
+> **What this is and isn't.** Repurposing does **not** expand capacity — the binding constraint is the 2-use cap, which is about *story count*, not category count. What it buys is **routing**: when a story gets pulled for a dimension you didn't rehearse it for, lead with the right beat so it lands on the thing you're being asked about. Every beat below is already in the story; none of it is new material, and none of it fixes the genuine gaps (developing others, outside-my-scope ownership, a miss).
 >
-> **Rated by what you can actually defend, not by what fits.**
+> **The rule:** the repurposed beat goes **first**, and the story's usual centre of gravity shrinks to one sentence of context. If you open on the rehearsed spine, you get scored on the dimension you rehearsed — not the one they asked about.
 
-| # | Leadership Principle | Primary | Backup | Coverage |
-|---|---|---|---|---|
-| 1 | **Customer Obsession** | **S006** | **S004** (regression = broken UI a customer sees), **S003** (customer data protection + not breaking live traffic), S007 (business-side + billing fairness) | ⚠️ Improving — S006 primary, but use the **Customer-Impact Framing** section below to open S004/S003 customer-forward |
-| 2 | **Ownership** | S004 | S005, S003, S007 | ✅ Strong |
-| 3 | **Invent and Simplify** | **S006** (registry = one source of truth) | S001 (`ConfigStore` abstraction), S003 (profiles grouped by traffic pattern) | ✅ Good — *label these as simplification, they're already there* |
-| 4 | **Are Right, A Lot** | S003 (learning mode instead of guessing) | S002 (updated on evidence) | ✅ Good — *was shaky only because of the numbers; both audited now* |
-| 5 | **Learn and Be Curious** | S005 | MCP side project, S002 (asked *why*) | ✅ Strong |
-| 6 | **Hire and Develop the Best** | S004 (new grad ramped + added tests off your docs) | Giving-feedback script | ⚠️ Bridge — no formal mentoring, don't pretend |
-| 7 | **Insist on the Highest Standards** | S004 | S001 (audit from a checklist, not memory), S006 | ✅ Strong |
-| 8 | **Think Big** | S003 (company-wide, 23 subs, two teams adopted your doc) | S007 (turned a suspicion into a funded workstream) | ⚠️ Level-calibrated — see note below |
-| 9 | **Bias for Action** | S001 (flag off in 15 min) | S003 (learning-mode deploy), S007 (closing recovery window) | ✅ Strong |
-| 10 | **Frugality** | **S007 ($45K — derive it live)** | S001 ($156K — *attribute + mechanism*) | ✅ Good now |
-| 11 | **Earn Trust** | S001 (admitted fault *before* having a fix) | S005, S006/S007 (credited mentor unprompted) | ✅ Strongest |
-| 12 | **Dive Deep** | S005 (200GB load test → traced to Power BI) | S007 (queried the DB rather than estimating), S003, S001 | ✅ Strongest |
-| 13 | **Have Backbone; Disagree and Commit** | **S002 — Backbone variant only** | S003 (challenged a security decision) | ⚠️ Use the re-angled framing, never the default |
-| 14 | **Deliver Results** | S003 | S005, S007 | ✅ Strong |
-| 15 | Earth's Best Employer | S005 (timezone habit — stopped offloading inconvenience onto another team) | Bridge | Rarely probed for SDE |
-| 16 | Success and Scale Bring Broad Responsibility | S003 (security/exfiltration risk), S007 (billing fairness → PM sign-off) | Bridge | Rarely probed for SDE |
+| Story → angle | Lead with this | Shrink this to one sentence |
+|---|---|---|
+| **S004 → Simplification** ⭐ *(strongest new angle)* | *"The problem was intractable as posed — you can't write assertions against a nondeterministic system. What made it tractable was one cut: output **quality** goes to an eval system, the **deterministic** layer — setup, rendering, access — goes to E2E. After that cut every remaining decision was obvious."* Simplification = collapsing an unbounded problem into a bounded one. | Playwright, the pipeline wiring, the P0 list. |
+| **S001 → Ownership** | *"I caused production data loss during my own migration, and I want to be clear nobody took it off my hands — I stopped it, restored the drained store, fixed the root cause, and audited every write path before resuming."* | The COGS number. Don't open on savings for an ownership probe. |
+| **S002 → Trust / repair** | *"I lost that argument — and what I did next mattered more than the argument. I built the removal plan **with** him, documented why so nobody would quietly re-add the landmine, and on the next rollout with the same engineer I front-loaded the deployment-impact analysis I'd skipped the first time."* Trust rebuilt after conflict, with the person you'd fought. | The two rejected alternatives — one clause, not the four beats. |
+| **S007 → Trust / candor** | *"This was real customer money being invoiced retroactively, so I didn't make that call myself — I took it to the PMs. And I built the breakdown on the invoice so a departing customer saw **why** they owed $1,000 instead of an unexplained line item."* | The $45K derivation — mention it, don't spend the answer on it. |
+| **S005 → Trust / escalating early** | *"I found a ~3-hour refresh that threatened the daily automation the whole dashboard was premised on, and I put it in the leadership channel **while it was still a risk** — not after I'd solved it. I didn't have a fix yet when I raised it."* | The SCOPE/big-data learning curve. |
+| **S004 → Cost / efficiency** *(backup)* | *"It removed 1–2 people spending a full day per release, every release, permanently."* Efficiency counts engineering time, not only dollars. | Everything else — this is a 60-second answer, not a story. |
+| **S001 → Responsibility at scale** | *"A single storage outage took the feature down for every tenant in that geo at once. Shrinking the fault boundary from geo to island meant a future outage could only ever reach one island's customers."* Capping who a failure can reach. | The incident. This angle is about the *design*, not the mistake. |
 
-### Load-balancing — don't over-serve one story
-S001, S003 and S004 each appear against 5+ LPs. In a real loop **cap any story at 2 uses.** If S001 has already carried Earn Trust and Bias for Action, route the next probe to S006/S007 even if S001 fits better. Interviewers compare notes; three interviewers hearing the config migration reads as a one-story candidate.
+**Two repurposings that do NOT work — don't try:**
+- **S003 as a primary customer story.** The customer-forward opening in the framing table is fine as a backup, but the story's spine is judgment-under-uncertainty and delivery, and it will land as those.
+- **Anything for "developing others."** There is no beat in any of the eight stories where you developed a person. Relabeling won't create one; the bridge script stands until you have real material.
 
 ### The three honest caveats
 
-**Think Big is level-calibrated.** At 3.5 years the bar is "proposed scope past what you were handed," not "redirected strategy." S003 is your best shot — company-wide initiative, 23 subscriptions, and two other teams picked up your documented approach. S007 is adjacent: nobody had sized the leak, and quantifying it created the workstream. Neither is a moonshot; don't inflate them. But *"I don't have one"* scores worse than an honest mid-level answer.
+**"Scope beyond what you were handed" is level-calibrated.** At 3.5 years the bar is "proposed scope past your assignment," not "redirected strategy." S003 is your best shot — company-wide initiative, 23 subscriptions, and two other teams picked up your documented approach. S007 is adjacent: nobody had sized the leak, and quantifying it created the workstream. Neither is a moonshot; don't inflate them. But *"I don't have one"* scores worse than an honest mid-level answer.
 
-**Hire and Develop is a bridge, not a story.** The real evidence is a new grad ramping and adding tests using documentation you wrote — enabling someone else, which is the substance at your level. Pair with the giving-feedback script. Don't claim mentoring you haven't done.
+**Developing others is a bridge, not a story.** The real evidence is a new grad ramping and adding tests using documentation you wrote — enabling someone else, which is the substance at your level. Pair with the giving-feedback script. Don't claim mentoring you haven't done.
 
-**Customer Obsession no longer rests on S006 alone — but only if you open correctly.** S006 stays primary (it's the one where the customer is the subject of the story). S004 and S003 are genuine backups *provided* you lead with the customer sentence: for S004, a customer opening the agent and finding the LLM insights don't render; for S003, exfiltration risk on customer data plus the refusal to guess at access rules because a wrong rule breaks live customer traffic. Both framings are true and neither needs new material — see **Customer-Impact Framing** below. The risk that remains isn't coverage, it's **habit**: under pressure you open on the system and never circle back to the person.
+**Customer impact no longer rests on S006 alone — but only if you open correctly.** S006 stays primary (it's the one where the customer is the subject of the story). S004 and S003 are genuine backups *provided* you lead with the customer sentence: for S004, a customer opening the agent and finding the LLM insights don't render; for S003, exfiltration risk on customer data plus the refusal to guess at access rules because a wrong rule breaks live customer traffic. Both framings are true and neither needs new material — see **Customer-Impact Framing** below. The risk that remains isn't coverage, it's **habit**: under pressure you open on the system and never circle back to the person.
 
 ---
 
 ## Customer-Impact Framing — how to open each story customer-forward
 
-> **Why this exists.** Almost all your work is platform/internal, so your instinct is to open on the *system* — a config store, a security perimeter, a test pipeline. Customer Obsession is your weakest LP and your panel's dimension 3, and the fix is mostly **which sentence you open with**, not new material. Every framing below is true; none requires inventing impact.
+> **Why this exists.** Almost all your work is platform/internal, so your instinct is to open on the *system* — a config store, a security perimeter, a test pipeline. **Customer impact is your weakest dimension** and it's scored everywhere, and the fix is mostly **which sentence you open with**, not new material. Every framing below is true; none requires inventing impact.
 >
 > **The move:** name the person harmed and what they experienced, *then* the system. One sentence, then proceed as normal.
 >
@@ -118,7 +126,7 @@ S001, S003 and S004 each appear against 5+ LPs. In a real loop **cap any story a
 |---|---|---|
 | **S001** Config Migration | *"Config for CRM analytics was stored per-geo, so a single storage outage took the feature down for every tenant in that geo at once. Shrinking that to island scope meant a future outage could only affect one island's customers instead of an entire region's."* Then: rollout started in the **lowest-traffic geo by design** to cap customer exposure, and when it went wrong you **sequenced recovery by blast radius** — stop new damage, recover existing, fix root cause, verify — because the ordering was about limiting who got hurt. | **Strong, second-order.** The reliability argument is genuine. But you were not talking to customers — don't imply you were. |
 | **S003** NSP Rollout | *"The gap was a data-exfiltration risk on resources holding customer data — so this was about customer data protection, not compliance paperwork."* Then the sharper beat: **the reason you refused to write access rules from the code was that a wrong rule breaks live customer traffic.** Learning mode existed specifically so you'd derive rules from real behaviour rather than guess and take features down. "No legitimate traffic disrupted, no features broken" = customers never noticed a company-wide security change, **which was the objective.** | **Strong.** Protecting customer data and not breaking customer traffic are both real and both yours. |
-| **S004** LLM Regression Testing | *"A regression meant a customer opening the sales agent and finding the LLM insights simply didn't render — and we shipped weekly, so a bad release reached customers within days."* Then: you **sat with the manual QA vendors to map the flows customers actually use**, and built the **P0 list with PMs and feature owners** — that prioritisation was customer-criticality, not code coverage. | **Strong.** The system's entire purpose is customers not seeing broken features. This is your best non-S006 Customer Obsession framing. |
+| **S004** LLM Regression Testing | *"A regression meant a customer opening the sales agent and finding the LLM insights simply didn't render — and we shipped weekly, so a bad release reached customers within days."* Then: you **sat with the manual QA vendors to map the flows customers actually use**, and built the **P0 list with PMs and feature owners** — that prioritisation was customer-criticality, not code coverage. | **Strong.** The system's entire purpose is customers not seeing broken features. This is your best non-S006 customer framing. |
 | **S006** Configurable Validations | Already customer-forward. *"Still being billed for a product they'd asked to leave."* | **Primary story.** |
 | **S007** Filing-Fee Automation | Customer here is the **business**, plus a fairness beat: you built the invoice breakdown so a departing customer saw *why* they owed $1,000 rather than an unexplained charge, and you took retroactive invoicing to **PMs** rather than deciding unilaterally what to bill people. | **Moderate.** Revenue-side. Don't pitch it as customer-first; the fairness/communication beat is the honest customer content. |
 | **S005** Copilot Dashboard | *"My customer was internal — leadership — and they'd never had visibility into Copilot usage."* The one genuine external thread: you sized the load test to the **largest customer's data volume**, because the worst-case refresh had to hold for the biggest tenant, not the average one. | **Weak — say "internal customer" out loud.** Analytics *about* Copilot usage. Don't inflate. |
@@ -176,7 +184,7 @@ Cover the middle column. For each story, say **only the customer-forward first s
 #### ⚔️ Version B — Backbone
 > ✅ **Answers:** disagree and commit · held your ground · pushed back on a senior person · disagreed but supported it anyway · strongest disagreement at work · *neutral* "a disagreement with a teammate" → **start here**
 > ❌ **Never for:** a time you were wrong · changed your mind · killed your own work *(→ Version A)*
-> **Amazon LP:** Have Backbone; Disagree and Commit — **your only coverage for it.**
+> ⚠️ **Your only coverage for "held a position under pressure."** There is no second story here — see the gaps list.
 >
 > Same story from the other end. Version A leads with *the question I asked* and lands on *changing my mind* — correct for "a time you were wrong," but a **weak Backbone answer**, because the interviewer hears "disagreed, then folded." Front-load the resistance; make the commit the closer.
 
@@ -194,7 +202,7 @@ Cover the middle column. For each story, say **only the customer-forward first s
 - Tell me about a time you disagreed with a decision but supported it
 - Tell me about the strongest disagreement you've had at work
 
-> **Never say "I conceded" as the headline.** You conceded *to evidence you demanded and then verified yourself*, and then you owned the outcome. That's the LP.
+> **Never say "I conceded" as the headline.** You conceded *to evidence you demanded and then verified yourself*, and then you owned the outcome. That's the whole answer.
 
 ### S003 — NSP Security Rollout ⚠️ **Under-used — reach for this more**
 **Opener:** *"I was handed a company-wide security rollout with a hard two-month deadline, and the highest-leverage thing I did was refuse to design anything until I'd read how the system actually behaved."*
@@ -252,7 +260,7 @@ Cover the middle column. For each story, say **only the customer-forward first s
 
 > ⚠️ **Do NOT use for "a problem nobody asked me to look at" or "work outside my assigned scope."** Your mentor surfaced the gap — you sized and fixed it. Claiming discovery here is a trust risk for zero gain; the sizing is the impressive part and it's entirely yours.
 
-### S006 — Configurable Validations Framework (Rippling) ⭐ **Customer Obsession story**
+### S006 — Configurable Validations Framework (Rippling) ⭐ **Customer-impact story**
 **Opener:** *"A customer would submit a request to offboard from a Rippling product, get told it went through, and then watch it sit stuck for days with no explanation — because the only thing that could tell them what was wrong was me, manually debugging it."*
 **Closer:** *"A silent failure buried in a pipeline isn't a reporting problem, it's a placement problem. Put the check where the person who can act on it will see it."*
 
@@ -284,6 +292,15 @@ Cover the middle column. For each story, say **only the customer-forward first s
 **Giving feedback to a peer.** No story exists. Say: *"I haven't been in a formal position to give feedback yet — most of mine has been peer code review. My principle is specific and actionable over vague: I'd rather say 'this will fail on null input, here's the fix' than 'this needs improvement.'"* Then give a real code-review example. **Never** say "I've never had to tell someone they were wrong" — it reads as either no reflection or stonewalling.
 
 **Prioritizing between competing projects.** Say: *"At my stage I've mostly executed on a defined backlog — my judgment has been sequencing within a problem, not between projects. That's something I want to develop at the next level."* Then immediately pivot to the S001 blast-radius sequencing so the interviewer still gets evidence. **Never** go hypothetical.
+
+### ⛔ Do-not-use memories — true, but they lose the question
+
+> **Why this list exists.** These are real things that happened and they *fit the shape* of a common question — which is exactly why they're dangerous. Under pressure your brain offers the nearest true memory, not the best one. Read this list before a loop so these are pre-rejected.
+
+**The token-optimization workload pushback (D365 Opportunity Agent).** You were assigned token-count optimization for a step in the research flow, then also assigned the regression pipeline; you told your manager you were short on bandwidth, and *he* proposed the priority order. The token work was later dropped.
+- **Feels like:** "a time I pushed back" / "a time I disagreed with my manager" / "how do you prioritize."
+- **Scores as:** low Ownership. You brought a problem instead of a proposal, and your manager supplied the judgment. Both tasks were open-ended, so there wasn't even a delivery risk to flag.
+- **Never say "overwhelmed" or "bandwidth" in a loop.** For pushback → **S002 Version B**. For prioritization → **S001 blast-radius sequencing**, then the honest bridge script below.
 
 > **Banned phrases — each one loses the question outright:**
 > "I do not have any such experience." · "I've never had such a moment." · "Not sure how to answer."
@@ -357,7 +374,7 @@ Cover the middle column. For each story, say **only the customer-forward first s
 
 ---
 
-### S006 — Configurable Validations Framework (Rippling) *(Strength 4 — Customer Obsession story)*
+### S006 — Configurable Validations Framework (Rippling) *(Strength 4 — primary customer-impact story)*
 
 **Situation**: Junior engineer at Rippling on Unified Churn — the product handling a customer offboarding from a Rippling product. A customer representative raised the churn request and followed it through. There was **no validation at request time**: the system accepted every request. The eligibility criteria (pending dues and similar) were only checked deep inside the processing pipeline, so a request that failed them silently entered a stuck in-progress state. A normal churn completed in about a day; the rep would wait 3+ days before concluding something was wrong and filing a support ticket — **and while it sat there, the customer was still being billed for a product they'd asked to leave.** Then an engineer (usually me or my mentor) had to debug the request by hand, work out which criterion had failed, and hand-write the explanation into the ticket. Every single occurrence. Volume was low — under 10 churns a month — which is exactly why it had been sitting in the backlog unprioritized.
 
@@ -376,7 +393,7 @@ Cover the middle column. For each story, say **only the customer-forward first s
 **Watch out for**:
 - **Don't inflate the scale.** Under 10 churns/month. If asked volume, say it plainly and add *why that mattered*: low volume is precisely why it stayed in the backlog and stayed easy to defer. That's the better answer anyway — you fixed unglamorous work nobody would have blamed you for ignoring, and the per-incident cost was high even if the count was low.
 - **Quote no percentage.** The old resume line said "20% fewer tickets"; it was an unmeasured estimate and it has been removed from the resume. Never reintroduce it. Impact here is *mechanism* — a class of failure eliminated by construction — not a measured delta.
-- **Get attribution exactly right.** The **refactor-instead-of-duplicate call was yours** — that's the best technical decision in the story, own it. The **override / severity-downgrade capability was your mentor's suggestion at design review** — credit them. Getting this backwards in either direction is the trust risk; volunteering the mentor's contribution unprompted actually reads as Earn Trust.
+- **Get attribution exactly right.** The **refactor-instead-of-duplicate call was yours** — that's the best technical decision in the story, own it. The **override / severity-downgrade capability was your mentor's suggestion at design review** — credit them. Getting this backwards in either direction is the trust risk; volunteering the mentor's contribution unprompted actually reads as integrity.
 - **Do not claim the multi-page validation was a flaw.** Validation surfaced per page in a multi-step churn flow — that's contextual validation, and it's correct. (An earlier draft of this file wrongly framed it as serial-discovery friction. It isn't.)
 - **Oldest story, weakest recall.** If drilled past what you actually remember: *"This was about four years ago and it's the work I remember least precisely — the shape was X, but I'd rather tell you what I'm confident about than reconstruct details."* Survivable. Inventing architecture is not.
 - **Unknowns, answer honestly**: whether anyone added validators after you left, and whether the severity config was ever exercised — you don't know. "I don't know, I'd left by then" costs nothing. Guessing costs the question.
@@ -398,12 +415,39 @@ Cover the middle column. For each story, say **only the customer-forward first s
 **Lead with**: the number, and the fact that you went and got it. **Never lead with** "I automated a manual process."
 
 **Watch out for**:
-- **This is NOT a Think Big or "found a problem nobody asked about" story.** Your mentor surfaced it. State that plainly and early — *"my mentor raised it, I quantified it"* — and the story loses nothing, because the quantification is the impressive part and it's entirely yours. Claiming discovery gets you caught for no upside.
+- **This is NOT a "big vision" or "found a problem nobody asked about" story.** Your mentor surfaced it. State that plainly and early — *"my mentor raised it, I quantified it"* — and the story loses nothing, because the quantification is the impressive part and it's entirely yours. Claiming discovery gets you caught for no upside.
 - **Derive the $45K, don't recite it.** 45 eligible customers × $1,000 flat = $45,000, from queries you ran yourself. If asked, walk the arithmetic. This is the one number in your entire set that survives arbitrary drilling — use it, and let it do the work the $156K currently can't.
 - **Be precise on "recovered."** $45K is a one-time recovery of backdated invoices, **not** an annual figure. And be honest that customers who had already fully churned were *unrecoverable* — that money was permanently lost. Volunteering that is stronger than being caught by "so you got all of it back?"
 - **You didn't charge anyone automatically.** Your code generated an invoice; the customer paid it. If an interviewer starts probing "you retroactively charged customers?", the answer is invoices with PM sign-off, no automatic card charges.
 - **No failure beat exists here.** Nothing broke. If pushed for what went wrong, don't invent — pivot to the honest limitation (the unrecoverable cohort) or the safety design you'd have to defend if it *had* gone wrong.
 - **Don't oversell the UI.** It was the invoice breakdown for the filing-fee charge, not an admin console. The resume says "admin-facing UI" — keep the spoken version accurate to what it was.
+
+---
+
+### S008 — BCDR Drill: The Buffer That Wasn't There *(Strength 3 — short story, use to relieve the cap on S001/S003)*
+
+> **What this is for.** A 90-second, self-contained *prevention* story. Its job is **load-balancing**: when S001 or S003 has already been spent on proactivity or standards and another probe lands on the same theme, this exists so you don't reuse a story a third time. Do not lead a round with it.
+
+**Situation**: At Microsoft, teams owning microservices deployed across paired availability zones in each region had to run a periodic **BCDR drill** — the platform team injects failure into the nodes of one AZ, and the owning team verifies traffic fails over to the redundant AZ with no availability loss. I was on-call for my team, so running our service's drill was mine. This was my first one.
+
+**Task**: Prove our microservice stayed available through the fault window, against a hard drill deadline.
+
+**Action**: Verifying availability meant hitting the service's regional endpoints and checking for valid responses. The endpoints were behind strict auth — you couldn't curl them; they could only be called from a properly authenticated environment, and that environment had to be **provisioned in the same region as the fault injection**. The on-call documentation walked through that setup and **recommended doing it the day before the drill**. I didn't take that; being cautious on a first drill, I ran the setup **a week out**. Provisioning failed. I checked it wasn't my own misstep against the doc, then raised an incident on the BCDR team with the provisioning failure logs attached — which is why they accepted it immediately rather than bouncing it back as a configuration problem. **They diagnosed it as a capacity shortage for test environments in that region** — a region-level limit, not something specific to my team. It took **three days to resolve**. My buffer absorbed it. The drill then ran on schedule: failover to the second AZ was seamless, no availability drop, nothing broken in our service.
+
+**Result**: The drill was carried out and passed on the deadline. The real result is the counterfactual: the documented process recommended a **one-day** buffer for a failure that took **three days** to clear, and the failure was a regional capacity limit — so anyone provisioning a test environment in that region would have hit the same wall. Following the documentation exactly would have made the drill impossible to run.
+
+**Earned Secret**: A documented prep timeline is only safe if its buffer is larger than the time to recover from the most likely failure in it. Here it was one-third the size. The dependency wasn't the drill — it was **provisioning capacity in someone else's system**, and you can't discover a capacity limit at the moment you need the capacity.
+
+**Lead with**: the arithmetic — *"the runbook said set up one day ahead; the problem I found took three days to fix."* **Never lead with** "I like to start early" — it sounds like a personality trait, not judgment.
+
+**Watch out for**:
+- **Don't claim you saved other teams.** You don't know that anyone else hit it. What you can defend: it was a **region-level** capacity limit, so any team provisioning there would have. State the mechanism, not a rescue.
+- **Don't overstate the diagnosis — the BCDR team found the root cause, not you.** Yours was: reproduced it, ruled out your own error, escalated with logs attached. Own exactly that. The logs are why it was accepted on first contact; that's the defensible detail.
+- **⚠️ The follow-up that will come: "so did you fix the documentation?"** You didn't. Answer it honestly and early rather than getting caught: *"No, and that's the thing I'd change. I concluded the doc was fine because the steps were correct — but the steps weren't the problem, the recommended timing was. I'd proven a one-day buffer couldn't absorb the most likely failure and I still left the next on-call to find that out for themselves."* **This is the strongest beat in the story.** It's a genuine Ownership gap you spotted yourself, and volunteering it converts a 3 into something worth telling.
+- **No failure or conflict beat.** The failover worked, the drill passed, nobody pushed back on you. Don't manufacture drama — the story's whole value is that nothing happened, and that was the point.
+- **Not an Ownership-outside-your-scope story.** You were the on-call; running the drill was assigned to you. The judgment was in the timing, not in taking it on.
+
+**Answers these stems**: a time you prevented a problem before it happened · a time being proactive paid off · a time you didn't follow the documented process · a time you escalated to another team · a time you found a problem in a process · tell me about your on-call experience · a time you tested disaster recovery / worked on resilience
 
 ---
 

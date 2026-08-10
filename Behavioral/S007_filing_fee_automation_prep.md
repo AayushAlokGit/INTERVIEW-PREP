@@ -2,7 +2,8 @@
 **Strength: 4.5 — Your only fully-defensible number**
 **Use for:** Biggest business impact, using data to make a case / change a priority, digging in to size a problem, acting before a window closed, working on code where mistakes are expensive, automating a manual process that kept failing
 
-**Amazon LPs:** Ownership *(primary)* · Dive Deep *(primary — you went and got the data)* · Bias for Action · Frugality · Deliver Results
+**Dimensions:** business impact *(primary)* · going and getting the data *(primary)* · acting on a closing window · cost/revenue · delivery
+*(Amazon LP mapping → `amazon_lp_prep.md`)*
 
 > ⚠️ **NOT a Think Big story. NOT "a problem nobody asked me to look at."** Your mentor surfaced the gap in conversation; you sized and fixed it. Say so plainly — the sizing is the impressive part and it is entirely yours.
 

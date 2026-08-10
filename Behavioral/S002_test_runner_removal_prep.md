@@ -115,7 +115,7 @@ Say this out loud. The move that matters isn't conceding — it's the question t
 
 ## ⚔️ Backbone / "Disagree and Commit" Angle
 
-> **Added 2026-08-08.** The default telling above is calibrated for *"a time you changed your mind / were wrong"* — it leads with the question you asked and lands on updating your position. For **Amazon's Have Backbone; Disagree and Commit**, or any "held your ground" stem, that framing actively hurts you: the interviewer hears *disagreed, then folded to a senior engineer*. Same facts, inverted emphasis.
+> **Added 2026-08-08.** The default telling above is calibrated for *"a time you changed your mind / were wrong"* — it leads with the question you asked and lands on updating your position. For any *"held your ground / disagreed and committed"* stem, that framing actively hurts you: the interviewer hears *disagreed, then folded to a senior engineer*. Same facts, inverted emphasis.
 
 **Opener:** *"A senior engineer wanted a service I'd built deleted from every geo. I didn't accept that — I pushed back twice, and I made him show me the cost before I'd agree to anything."*
 
@@ -128,7 +128,7 @@ Say this out loud. The move that matters isn't conceding — it's the question t
 > ✅ **Answers:** disagree and commit · held your ground · pushed back on a senior person · disagreed with a decision but supported it anyway · strongest disagreement you've had at work · a disagreement/conflict with a teammate *(neutral phrasing → start here)*
 > ❌ **Never for:** a time you were wrong · changed your mind · killed your own work *(→ Version A)*
 > **Lands on:** making him prove the cost, then protecting the decision you'd argued against.
-> **Amazon LP:** Have Backbone; Disagree and Commit *(this is your only coverage — see the LP table in `behavioral_prep.md`)*
+> ⚠️ **Your only coverage for "held a position under pressure."** *(Amazon: Have Backbone; Disagree and Commit — see `amazon_lp_prep.md`.)*
 
 I was a software engineer on the Dynamics 365 Sales Hub team, and I'd built an internal test runner service that ran API tests against the other microservices in our cluster. During a geo-by-geo rollout it started causing intermittent deployment failures that blocked the other services in the same deployment package from shipping. A peer senior engineer flagged those failures and recommended removing my service from every geo entirely.
 

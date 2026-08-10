@@ -1,8 +1,9 @@
 # S006 — Configurable Validations Framework (Rippling, Unified Churn)
-**Strength: 4.0 — Primary Customer Obsession story**
+**Strength: 4.0 — Primary customer-impact story**
 **Use for:** Customer obsession / above and beyond for a customer, fixing a class of problem instead of an instance, reducing toil, taking on unprioritized backlog work, designing for configurability, simplification (one source of truth)
 
-**Amazon LPs:** Customer Obsession *(primary)* · Ownership · Insist on the Highest Standards · Dive Deep *(secondary)* · Invent and Simplify *(secondary)*
+**Dimensions:** customer impact *(primary)* · ownership · standards · investigation *(secondary)* · simplification *(secondary)*
+*(Amazon LP mapping → `amazon_lp_prep.md`)*
 
 ---
 
@@ -110,7 +111,7 @@ Say this out loud. The move that matters isn't building a validations framework 
 
 ## Watch Out For
 
-- **Lead with the customer, not your toil.** Open on the rep watching a request sit stuck for days while the customer keeps getting billed for a product they asked to leave. The version that opens with "I was tired of debugging these tickets" is a Frugality/Ownership answer, not a Customer Obsession one. Same facts, weaker LP.
+- **Lead with the customer, not your toil.** Open on the rep watching a request sit stuck for days while the customer keeps getting billed for a product they asked to leave. The version that opens with "I was tired of debugging these tickets" is a toil/efficiency answer, not a customer answer. Same facts, weaker question.
 - **The hero beat is rejecting the obvious fix.** Better error reporting or alerting on the stuck state was the cheap, natural fix. You went upstream instead, because a request that can't succeed shouldn't be accepted. If the story collapses into "I built a validations framework," you've lost the judgment signal.
 - **Never quote a percentage.** The old resume line claimed "20% fewer churn-related tickets." That was an unmeasured estimate and it has been removed from the resume. Do not reintroduce it in any form. Impact is *mechanism* — a class of failure eliminated by construction — not a measured delta. With sub-10/month volume, a percentage invites arithmetic that makes you look both small and imprecise.
 - **Attribution, in both directions.** Refactor-over-duplicate was **yours** — own it, it's the best technical call in the story. Override/configurable severity was **your mentor's** design-review suggestion — credit it unprompted. Volunteering that reads as Earn Trust; getting caught reversing it does real damage.
