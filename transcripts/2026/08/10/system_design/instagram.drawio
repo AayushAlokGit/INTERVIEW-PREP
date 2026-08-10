@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="System Design" id="system-design">
-    <mxGraphModel dx="1200" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2500" pageHeight="5600" math="0" shadow="0">
+    <mxGraphModel dx="1200" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3400" pageHeight="5300" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -15,11 +15,11 @@
           <mxGeometry x="20" y="125" width="700" height="140" as="geometry"/>
         </mxCell>
         <mxCell id="oos_box" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Out of scope&lt;/b&gt;&lt;br&gt;1. Analytics on posts&lt;br&gt;2. Recommendation / ranking of posts&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1">
-          <mxGeometry x="760" y="125" width="420" height="140" as="geometry"/>
+          <mxGeometry x="800" y="125" width="420" height="140" as="geometry"/>
         </mxCell>
 
         <mxCell id="sep1" value="" style="line;strokeWidth=1;html=1;strokeColor=#CCCCCC;" vertex="1" parent="1">
-          <mxGeometry x="20" y="295" width="2160" height="10" as="geometry"/>
+          <mxGeometry x="20" y="295" width="3300" height="10" as="geometry"/>
         </mxCell>
 
         <mxCell id="hdr_nfr" value="2 — NON-FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
@@ -29,409 +29,453 @@
           <mxGeometry x="20" y="355" width="700" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="boe_box" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Back-of-envelope&lt;/b&gt;&lt;br&gt;100M DAU · 2 posts/user/day → ~2k posts/s avg, peak 5×&lt;br&gt;Feed: 5 loads/user/day × 10 posts → ~50k post reads/s&lt;br&gt;Post size ~1 MB → ~2 GB/s ingest&lt;br&gt;Storage ≈ 60 PB / year&lt;br&gt;Likes: 20/user/day → ~20k likes/s&lt;br&gt;Comments: 5/user/day → ~5k comments/s&lt;br&gt;Storage strategy: object storage (S3) + hot/cold tiering&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF4E5;strokeColor=#B26B00;" vertex="1" parent="1">
-          <mxGeometry x="760" y="355" width="620" height="150" as="geometry"/>
+          <mxGeometry x="800" y="355" width="620" height="150" as="geometry"/>
         </mxCell>
 
         <mxCell id="sep2" value="" style="line;strokeWidth=1;html=1;strokeColor=#CCCCCC;" vertex="1" parent="1">
-          <mxGeometry x="20" y="535" width="2160" height="10" as="geometry"/>
+          <mxGeometry x="20" y="535" width="3300" height="10" as="geometry"/>
         </mxCell>
 
         <mxCell id="hdr_ent" value="3 — CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
           <mxGeometry x="20" y="565" width="500" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="e_user" value="&lt;b&gt;User&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id&lt;br&gt;name&lt;br&gt;email&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
-          <mxGeometry x="20" y="600" width="220" height="140" as="geometry"/>
+          <mxGeometry x="20" y="600" width="240" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="e_post" value="&lt;b&gt;Post&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id&lt;br&gt;userId&lt;br&gt;text&lt;br&gt;mediaS3Url&lt;br&gt;createdAt&lt;br&gt;likeCount (rolled up)&lt;br&gt;commentCount (rolled up)&lt;br&gt;status: UPLOADING_MEDIA | UPLOADED&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
-          <mxGeometry x="280" y="600" width="280" height="140" as="geometry"/>
+          <mxGeometry x="340" y="600" width="300" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="e_like" value="&lt;b&gt;Like&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;userId&lt;br&gt;postId&lt;br&gt;&lt;i&gt;unique(userId, postId)&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
-          <mxGeometry x="600" y="600" width="240" height="140" as="geometry"/>
+          <mxGeometry x="720" y="600" width="260" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="e_comment" value="&lt;b&gt;Comment&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id&lt;br&gt;userId&lt;br&gt;postId&lt;br&gt;text&lt;br&gt;createdAt&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
-          <mxGeometry x="880" y="600" width="240" height="140" as="geometry"/>
+          <mxGeometry x="1060" y="600" width="260" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="e_follow" value="&lt;b&gt;FollowRelationship&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;followingUserId&lt;br&gt;followedUserId&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
-          <mxGeometry x="1160" y="600" width="260" height="140" as="geometry"/>
+          <mxGeometry x="1400" y="600" width="280" height="150" as="geometry"/>
         </mxCell>
 
         <mxCell id="sep3" value="" style="line;strokeWidth=1;html=1;strokeColor=#CCCCCC;" vertex="1" parent="1">
-          <mxGeometry x="20" y="770" width="2160" height="10" as="geometry"/>
+          <mxGeometry x="20" y="780" width="3300" height="10" as="geometry"/>
         </mxCell>
 
         <mxCell id="hdr_api" value="4 — API DESIGN&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;font-weight:normal;font-size:11px;color:#666&quot;&gt;(identity taken from JWT auth token)&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="20" y="800" width="700" height="30" as="geometry"/>
+          <mxGeometry x="20" y="810" width="700" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="api_post" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;POST /posts&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;Idempotency-Key header&lt;/i&gt;&lt;br&gt;Req: { text, mediaDetails }&lt;br&gt;Res: presigned S3 URL to upload media (if media present),&lt;br&gt;else 2xx — post created&lt;br&gt;→ client uploads media directly to S3 with presigned URL&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="20" y="835" width="640" height="120" as="geometry"/>
+          <mxGeometry x="20" y="850" width="660" height="130" as="geometry"/>
         </mxCell>
         <mxCell id="api_feed" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;GET /posts?cursor={}&amp;amp;limit={}&lt;/b&gt;&amp;nbsp;&amp;nbsp;(home feed)&lt;br&gt;Res: { Post(id, mediaUrl, text, likeCount, commentCount, createdAt)[],&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;nextCursor: &quot;&quot; }&lt;br&gt;Cursor pagination — allows dynamic insertion of posts into feed&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="700" y="835" width="640" height="120" as="geometry"/>
+          <mxGeometry x="740" y="850" width="660" height="130" as="geometry"/>
         </mxCell>
         <mxCell id="api_myposts" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;GET /myPosts?page={}&amp;amp;limit={}&lt;/b&gt;&amp;nbsp;&amp;nbsp;(profile grid)&lt;br&gt;Res: Post(id, mediaUrl, text, likeCount, commentCount, createdAt)[]&lt;br&gt;Offset pagination is fine — user is reading their own posts&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="1380" y="835" width="640" height="120" as="geometry"/>
+          <mxGeometry x="1460" y="850" width="660" height="130" as="geometry"/>
         </mxCell>
         <mxCell id="api_follow" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;POST /follow/:userId&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;Idempotency-Key header&lt;/i&gt;&lt;br&gt;Res: FollowRelationship(followingUserId, userId)&lt;br&gt;&lt;br&gt;&lt;b&gt;DELETE /follows/:userId&lt;/b&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="20" y="975" width="640" height="120" as="geometry"/>
+          <mxGeometry x="20" y="1010" width="660" height="130" as="geometry"/>
         </mxCell>
         <mxCell id="api_like" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;POST /posts/:id/likes&lt;/b&gt;&lt;br&gt;Res: 2xx — post liked&lt;br&gt;No idempotency key: unique(userId, postId) makes retry fail at DB level&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /posts/:id/likes?cursor={}&amp;amp;limit={}&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;&lt;b&gt;DELETE /posts/likes/userId&lt;/b&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="700" y="975" width="640" height="120" as="geometry"/>
+          <mxGeometry x="740" y="1010" width="660" height="130" as="geometry"/>
         </mxCell>
         <mxCell id="api_comment" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;POST /posts/:id/comments&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;Idempotency-Key header&lt;/i&gt;&lt;br&gt;Req: { commentText }&amp;nbsp;&amp;nbsp;Res: 2xx — post commented&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /posts/:id/comments?cursor={}&amp;amp;limit={}&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;&lt;b&gt;DELETE (comment)&lt;/b&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="1380" y="975" width="640" height="120" as="geometry"/>
+          <mxGeometry x="1460" y="1010" width="660" height="130" as="geometry"/>
         </mxCell>
 
         <mxCell id="sep4" value="" style="line;strokeWidth=1;html=1;strokeColor=#CCCCCC;" vertex="1" parent="1">
-          <mxGeometry x="20" y="1125" width="2160" height="10" as="geometry"/>
+          <mxGeometry x="20" y="1180" width="3300" height="10" as="geometry"/>
         </mxCell>
 
         <mxCell id="hdr_hld" value="5 — HIGH LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="20" y="1155" width="500" height="30" as="geometry"/>
+          <mxGeometry x="20" y="1210" width="500" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_pg" value="PostgreSQL&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Post, User, Like, Comment,&lt;br&gt;FollowRelationship, upload session&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="1270" width="240" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_cdc" value="CDC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1660" y="1270" width="170" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_worker" value="Feed Workers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1990" y="1270" width="190" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_redis" value="Redis&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;precomputed feed per user&lt;br&gt;TTL 1 day&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="2400" y="1270" width="240" height="130" as="geometry"/>
         </mxCell>
 
         <mxCell id="h_client" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1300" width="170" height="80" as="geometry"/>
+          <mxGeometry x="40" y="1490" width="180" height="90" as="geometry"/>
         </mxCell>
         <mxCell id="h_gw" value="API Gateway&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;auth&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="330" y="1300" width="170" height="80" as="geometry"/>
+          <mxGeometry x="460" y="1490" width="180" height="90" as="geometry"/>
         </mxCell>
         <mxCell id="h_api" value="API Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="620" y="1300" width="180" height="80" as="geometry"/>
+          <mxGeometry x="880" y="1490" width="190" height="90" as="geometry"/>
         </mxCell>
-        <mxCell id="h_pg" value="PostgreSQL&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Post, User, Like, Comment,&lt;br&gt;FollowRelationship, upload session&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="960" y="1180" width="220" height="120" as="geometry"/>
-        </mxCell>
+
         <mxCell id="h_replica" value="Read Replicas" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
-          <mxGeometry x="960" y="1370" width="220" height="100" as="geometry"/>
+          <mxGeometry x="1240" y="1660" width="240" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_note_coalesce" value="On Redis failure: read load falls to the DB&lt;br&gt;→ request coalescing at the API Service" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=12;fillColor=#FFF4E5;strokeColor=#B26B00;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1900" y="1660" width="360" height="110" as="geometry"/>
         </mxCell>
         <mxCell id="h_s3" value="S3&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;media blobs · hot/cold tiering&lt;br&gt;multipart + resumable upload&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="610" y="1540" width="200" height="100" as="geometry"/>
-        </mxCell>
-        <mxCell id="h_cdc" value="CDC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1300" y="1200" width="150" height="80" as="geometry"/>
-        </mxCell>
-        <mxCell id="h_worker" value="Feed Workers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1550" y="1200" width="170" height="80" as="geometry"/>
-        </mxCell>
-        <mxCell id="h_redis" value="Redis&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;precomputed feed per user&lt;br&gt;TTL 1 day&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1820" y="1180" width="220" height="120" as="geometry"/>
-        </mxCell>
-        <mxCell id="h_note_coalesce" value="On Redis failure: read load falls to DB&lt;br&gt;→ request coalescing at API Service" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=10;fillColor=#FFF4E5;strokeColor=#B26B00;fontSize=11;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="1300" y="1420" width="300" height="70" as="geometry"/>
+          <mxGeometry x="880" y="1880" width="230" height="110" as="geometry"/>
         </mxCell>
 
         <mxCell id="ed1" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_client" target="h_gw">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="ed1l" value="POST /posts · GET /posts" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed1">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="ed1l" value="POST /posts · GET /posts" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed1">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="ed2" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_gw" target="h_api">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
+        <mxCell id="ed2l" value="authenticated request" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed2">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+
         <mxCell id="ed3" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_api" target="h_pg">
-          <mxGeometry relative="1" as="geometry"/>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1160" y="1513"/><mxPoint x="1160" y="1335"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="ed3l" value="create Post (status=UPLOADING_MEDIA)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed3">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="10" y="-12" as="offset"/></mxGeometry>
+        <mxCell id="ed3l" value="create Post (status = UPLOADING_MEDIA)" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed3">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-40" y="-70" as="offset"/></mxGeometry>
         </mxCell>
-        <mxCell id="ed4" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=0.5;exitY=1;entryX=0.75;entryY=1;dashed=1;" edge="1" parent="1" source="h_api" target="h_client">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="710" y="1450"/><mxPoint x="167" y="1450"/></Array></mxGeometry>
-        </mxCell>
-        <mxCell id="ed4l" value="presigned S3 URL" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed4">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
-        </mxCell>
-        <mxCell id="ed5" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_client" target="h_s3">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="125" y="1590"/></Array></mxGeometry>
-        </mxCell>
-        <mxCell id="ed5l" value="upload media directly (presigned URL)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed5">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
-        </mxCell>
-        <mxCell id="ed6" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;dashed=1;" edge="1" parent="1" source="h_s3" target="h_api">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="ed6l" value="upload-complete notification → set status=UPLOADED" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed6">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="130" as="offset"/></mxGeometry>
-        </mxCell>
+
         <mxCell id="ed7" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_pg" target="h_cdc">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="ed7l" value="change stream" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed7">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="ed7l" value="change stream" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed7">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="ed8" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_cdc" target="h_worker">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
+        <mxCell id="ed8l" value="post events" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed8">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
         <mxCell id="ed9" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_worker" target="h_redis">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="ed9l" value="update precomputed feeds" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed9">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="ed9l" value="update precomputed feeds" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed9">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
         </mxCell>
+
         <mxCell id="ed10" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=1;exitY=0.75;entryX=0.5;entryY=1;" edge="1" parent="1" source="h_api" target="h_redis">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1930" y="1360"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2520" y="1558"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="ed10l" value="read feed (hot path)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed10">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-40" y="-12" as="offset"/></mxGeometry>
+        <mxCell id="ed10l" value="read precomputed feed (hot path)" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed10">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="380" y="-14" as="offset"/></mxGeometry>
         </mxCell>
-        <mxCell id="ed11" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="h_api" target="h_replica">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="880" y="1340"/><mxPoint x="880" y="1420"/></Array></mxGeometry>
+
+        <mxCell id="ed4" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=0.25;exitY=1;entryX=0.75;entryY=1;dashed=1;" edge="1" parent="1" source="h_api" target="h_client">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="927" y="1660"/><mxPoint x="175" y="1660"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="ed11l" value="fallback reads" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed11">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="ed4l" value="presigned S3 URL" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed4">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="ed11" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=0.9;exitY=1;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="h_api" target="h_replica">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1051" y="1715"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="ed11l" value="fallback reads" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed11">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="10" y="-14" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="ed12" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="h_pg" target="h_replica">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="ed12l" value="replication" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="ed12">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="45" as="offset"/></mxGeometry>
+        <mxCell id="ed12l" value="replication" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed12">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="60" as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="ed5" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_client" target="h_s3">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="130" y="1935"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="ed5l" value="upload media directly (presigned URL)" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed5">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-30" y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="ed6" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;exitX=0.75;exitY=0;entryX=0.75;entryY=1;dashed=1;" edge="1" parent="1" source="h_s3" target="h_api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed6l" value="upload-complete notification → set status = UPLOADED" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="ed6">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-190" as="offset"/></mxGeometry>
         </mxCell>
 
         <mxCell id="sep5" value="" style="line;strokeWidth=1;html=1;strokeColor=#CCCCCC;" vertex="1" parent="1">
-          <mxGeometry x="20" y="1690" width="2160" height="10" as="geometry"/>
+          <mxGeometry x="20" y="2050" width="3300" height="10" as="geometry"/>
         </mxCell>
 
         <mxCell id="hdr_dd" value="6 — DEEP DIVE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="20" y="1720" width="500" height="30" as="geometry"/>
+          <mxGeometry x="20" y="2080" width="500" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="dd1" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Celebrity fan-out&lt;/b&gt;&lt;br&gt;Fan-out-on-write fails for high-follower accounts (50M keys per post).&lt;br&gt;Classify users above a followerCount threshold as celebrities.&lt;br&gt;Write path: skip fan-out for celebrity posts.&lt;br&gt;Read path: look up celebrities the user follows (FollowRelationship),&lt;br&gt;fetch their posts, merge with the precomputed Redis feed.&lt;br&gt;&lt;i&gt;Trade-off: write fan-out removed, complexity moved to read time.&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="20" y="1755" width="700" height="180" as="geometry"/>
+          <mxGeometry x="20" y="2120" width="720" height="190" as="geometry"/>
         </mxCell>
         <mxCell id="dd2" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Merged cursor &amp;amp; threshold crossing&lt;/b&gt;&lt;br&gt;Cursor = postId + createdAt, spanning both the celebrity list&lt;br&gt;and the Redis feed.&lt;br&gt;&lt;br&gt;When a user crosses the celebrity threshold: their older posts&lt;br&gt;are already in followers&#39; Redis feeds, new ones take the merge&lt;br&gt;path → merge the two lists as a union, dropping duplicates.&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="760" y="1755" width="700" height="180" as="geometry"/>
+          <mxGeometry x="820" y="2120" width="720" height="190" as="geometry"/>
         </mxCell>
         <mxCell id="dd3" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Sizing&lt;/b&gt;&lt;br&gt;Fan-out: peak 10k posts/s × 1000 followers = &lt;b&gt;10⁷ Redis writes/s&lt;/b&gt;&lt;br&gt;Redis memory: 100M users × 50 posts × 1 KB = &lt;b&gt;~5 TB&lt;/b&gt;&lt;br&gt;→ single instance insufficient → Redis cluster sharded by userId&lt;br&gt;&lt;br&gt;&lt;b&gt;Optimisation:&lt;/b&gt; fan out only to recently-active users&lt;br&gt;(assume ~50% inactive → fan-out cut ~50%)&lt;br&gt;Dormant user returns → cache miss → GET /posts queries the DB,&lt;br&gt;generates the feed, repopulates Redis (slower initial load)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF4E5;strokeColor=#B26B00;" vertex="1" parent="1">
-          <mxGeometry x="1500" y="1755" width="700" height="180" as="geometry"/>
+          <mxGeometry x="1620" y="2120" width="720" height="190" as="geometry"/>
         </mxCell>
         <mxCell id="dd4" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Operability&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;Metric: delay between post creation and the post being written to Redis — how far the feed pipeline is lagging.&lt;br&gt;Under lag, users see followers&#39; posts on a delay — consistent with the eventual-consistency NFR for posts.&lt;br&gt;Auto-mitigation: scale up worker nodes based on CDC queue depth.&lt;br&gt;&lt;br&gt;&lt;b&gt;Remaining bottleneck (stated):&lt;/b&gt; likes and comments.&amp;nbsp;&amp;nbsp;&lt;b&gt;At 10× denser graph (10⁸ writes/s):&lt;/b&gt; the write-side feed update cannot be removed without blowing the read latency budget — no alternative reached.&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E8F1FA;strokeColor=#1F4E79;" vertex="1" parent="1">
-          <mxGeometry x="20" y="1965" width="2180" height="130" as="geometry"/>
+          <mxGeometry x="20" y="2350" width="2320" height="140" as="geometry"/>
         </mxCell>
 
         <mxCell id="bigsep" value="" style="line;strokeWidth=4;html=1;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2160" width="2450" height="10" as="geometry"/>
+          <mxGeometry x="20" y="2570" width="3300" height="10" as="geometry"/>
         </mxCell>
         <mxCell id="hdr_opt" value="OPTIMAL REFERENCE — what a senior strong-hire would design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;fontColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2190" width="1400" height="45" as="geometry"/>
+          <mxGeometry x="20" y="2600" width="1400" height="45" as="geometry"/>
         </mxCell>
 
         <mxCell id="o_hdr_ent" value="A — CORE ENTITIES (with the fields that were missed)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2260" width="800" height="30" as="geometry"/>
+          <mxGeometry x="20" y="2670" width="800" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="oe_user" value="&lt;b&gt;User&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id, handle, name, email&lt;br&gt;&lt;b&gt;followerCount&lt;/b&gt; (denormalised)&lt;br&gt;&lt;b&gt;isCelebrity&lt;/b&gt; (derived from threshold)&lt;br&gt;&lt;b&gt;lastActiveAt&lt;/b&gt; (drives fan-out policy)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2300" width="300" height="170" as="geometry"/>
+          <mxGeometry x="20" y="2710" width="320" height="180" as="geometry"/>
         </mxCell>
         <mxCell id="oe_post" value="&lt;b&gt;Post&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id (&lt;b&gt;time-sortable, e.g. Snowflake&lt;/b&gt;)&lt;br&gt;authorId, caption, createdAt&lt;br&gt;&lt;b&gt;media[]&lt;/b&gt; — a post is a carousel, not one blob&lt;br&gt;status: PENDING | READY | FAILED&lt;br&gt;likeCount, commentCount (denormalised)&lt;br&gt;&lt;b&gt;visibility&lt;/b&gt; (public / private account)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
-          <mxGeometry x="360" y="2300" width="340" height="170" as="geometry"/>
+          <mxGeometry x="420" y="2710" width="360" height="180" as="geometry"/>
         </mxCell>
         <mxCell id="oe_media" value="&lt;b&gt;Media&lt;/b&gt;&amp;nbsp;&lt;span style=&quot;font-size:10px&quot;&gt;(missed entirely)&lt;/span&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id, postId, type: PHOTO | VIDEO&lt;br&gt;originalKey (S3)&lt;br&gt;&lt;b&gt;renditions[]&lt;/b&gt; {resolution, bitrate, cdnUrl}&lt;br&gt;transcodeStatus, durationMs&lt;br&gt;width, height, blurhash&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
-          <mxGeometry x="740" y="2300" width="340" height="170" as="geometry"/>
+          <mxGeometry x="860" y="2710" width="360" height="180" as="geometry"/>
         </mxCell>
         <mxCell id="oe_like" value="&lt;b&gt;Like&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;userId, postId, createdAt&lt;br&gt;PK(postId, userId) — natural idempotency&lt;br&gt;&lt;i&gt;count kept as a sharded counter,&lt;br&gt;not a single hot row&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="2300" width="320" height="170" as="geometry"/>
+          <mxGeometry x="1300" y="2710" width="340" height="180" as="geometry"/>
         </mxCell>
         <mxCell id="oe_comment" value="&lt;b&gt;Comment&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id, postId, authorId, text, createdAt&lt;br&gt;parentCommentId (threading)&lt;br&gt;PK(postId, id) — clustered for range read&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
-          <mxGeometry x="1480" y="2300" width="320" height="170" as="geometry"/>
+          <mxGeometry x="1720" y="2710" width="340" height="180" as="geometry"/>
         </mxCell>
-        <mxCell id="oe_follow" value="&lt;b&gt;Follow&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;followerId, followeeId, createdAt&lt;br&gt;&lt;b&gt;two indexes&lt;/b&gt;: (followerId) for &quot;who I follow&quot;,&lt;br&gt;(followeeId) for fan-out target list&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
-          <mxGeometry x="1840" y="2300" width="330" height="170" as="geometry"/>
+        <mxCell id="oe_follow" value="&lt;b&gt;Follow&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;followerId, followeeId, createdAt&lt;br&gt;&lt;b&gt;two indexes&lt;/b&gt;: (followerId) for &quot;who I follow&quot;,&lt;br&gt;(followeeId) for the fan-out target list&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="2140" y="2710" width="350" height="180" as="geometry"/>
         </mxCell>
 
         <mxCell id="o_hdr_api" value="B — API DESIGN (explicit shapes; endpoints that were skipped or left vague are marked ★)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2520" width="1200" height="30" as="geometry"/>
+          <mxGeometry x="20" y="2950" width="1200" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="oa1" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;POST /v1/posts&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;Idempotency-Key&lt;/i&gt;&lt;br&gt;Req { caption, media:[{type,filename,sizeBytes}] }&lt;br&gt;201 { postId, status:&quot;PENDING&quot;,&lt;br&gt;&amp;nbsp;&amp;nbsp;uploads:[{mediaId, presignedUrl, expiresAt,&lt;br&gt;&amp;nbsp;&amp;nbsp;partSize, uploadId}] }&lt;br&gt;&lt;br&gt;★&lt;b&gt; POST /v1/posts/:id/complete&lt;/b&gt;&lt;br&gt;client signals upload done → belt-and-braces&lt;br&gt;alongside the S3 event&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2560" width="680" height="220" as="geometry"/>
+          <mxGeometry x="20" y="2990" width="700" height="230" as="geometry"/>
         </mxCell>
         <mxCell id="oa2" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;GET /v1/feed?cursor=&amp;amp;limit=20&lt;/b&gt;&lt;br&gt;200 {&lt;br&gt;&amp;nbsp;items:[{ postId, author:{id,handle,avatarUrl},&lt;br&gt;&amp;nbsp;&amp;nbsp;caption, media:[{cdnUrl, w, h, type, blurhash}],&lt;br&gt;&amp;nbsp;&amp;nbsp;likeCount, commentCount, viewerHasLiked,&lt;br&gt;&amp;nbsp;&amp;nbsp;createdAt }],&lt;br&gt;&amp;nbsp;nextCursor: &quot;&lt;i&gt;opaque, base64&lt;/i&gt;&quot;, hasMore: true }&lt;br&gt;&lt;br&gt;Cursor is &lt;b&gt;opaque&lt;/b&gt; and encodes BOTH sources:&lt;br&gt;{ redisOffset, celebLastPostId, snapshotTs }&lt;br&gt;→ pagination is stable across a live-changing feed&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="740" y="2560" width="700" height="220" as="geometry"/>
+          <mxGeometry x="800" y="2990" width="720" height="230" as="geometry"/>
         </mxCell>
         <mxCell id="oa3" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;GET /v1/users/:id/posts?cursor=&amp;amp;limit=&lt;/b&gt;&amp;nbsp;(profile grid)&lt;br&gt;200 { items:[{postId, thumbnailUrl, type}], nextCursor }&lt;br&gt;&lt;i&gt;— works for any user, not just self; thumbnails only&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;PUT /v1/posts/:id/like&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;★&lt;b&gt;DELETE /v1/posts/:id/like&lt;/b&gt;&lt;br&gt;PUT not POST → idempotent by verb, no key needed&lt;br&gt;200 { likeCount, viewerHasLiked }&lt;br&gt;&lt;br&gt;★&lt;b&gt;GET /v1/posts/:id/comments?cursor=&amp;amp;limit=&lt;/b&gt;&lt;br&gt;200 { items:[{id, author, text, createdAt, replyCount}], nextCursor }&lt;br&gt;★&lt;b&gt;DELETE /v1/comments/:commentId&lt;/b&gt; → 204&lt;br&gt;&lt;b&gt;PUT /v1/users/:id/follow&lt;/b&gt; · ★&lt;b&gt;DELETE /v1/users/:id/follow&lt;/b&gt; → 204&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="1480" y="2560" width="700" height="220" as="geometry"/>
+          <mxGeometry x="1600" y="2990" width="720" height="230" as="geometry"/>
         </mxCell>
 
         <mxCell id="o_hdr_hld" value="C — OPTIMAL HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2830" width="800" height="30" as="geometry"/>
+          <mxGeometry x="20" y="3280" width="800" height="30" as="geometry"/>
         </mxCell>
 
-        <mxCell id="lane_w" value="WRITE PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#888888;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2880" width="200" height="20" as="geometry"/>
+        <mxCell id="lane_w" value="WRITE PATH — post creation &amp;amp; fan-out" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3330" width="400" height="20" as="geometry"/>
         </mxCell>
 
         <mxCell id="o_client" value="Client&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;mobile / web&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="20" y="2920" width="170" height="80" as="geometry"/>
+          <mxGeometry x="20" y="3370" width="180" height="110" as="geometry"/>
         </mxCell>
         <mxCell id="o_gw" value="API Gateway&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;auth · rate limit · TLS&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="280" y="2920" width="180" height="80" as="geometry"/>
+          <mxGeometry x="440" y="3370" width="200" height="110" as="geometry"/>
         </mxCell>
         <mxCell id="o_postsvc" value="Post Service&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;create post · presign · complete&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="550" y="2920" width="200" height="80" as="geometry"/>
+          <mxGeometry x="880" y="3370" width="210" height="110" as="geometry"/>
         </mxCell>
         <mxCell id="o_postdb" value="Post / Graph Store&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Postgres (sharded by userId)&lt;br&gt;posts · follows · comments&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="850" y="2890" width="230" height="120" as="geometry"/>
+          <mxGeometry x="1400" y="3365" width="250" height="120" as="geometry"/>
         </mxCell>
         <mxCell id="o_outbox" value="Outbox → Kafka&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;post.created topic&lt;br&gt;partitioned by authorId&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1180" y="2890" width="200" height="120" as="geometry"/>
+          <mxGeometry x="1900" y="3365" width="220" height="120" as="geometry"/>
         </mxCell>
-        <mxCell id="o_fanout" value="Fan-out Workers&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;skip celebrities&lt;br&gt;skip inactive followers&lt;br&gt;pipelined ZADD, batched&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1480" y="2890" width="220" height="120" as="geometry"/>
+        <mxCell id="o_fanout" value="Fan-out Workers&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;skip celebrities&lt;br&gt;skip inactive followers&lt;br&gt;pipelined ZADD, batched by shard&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="2360" y="3365" width="250" height="120" as="geometry"/>
         </mxCell>
-        <mxCell id="o_feedcache" value="Feed Cache&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Redis Cluster, sharded by userId&lt;br&gt;ZSET feed:{userId} → score=postId&lt;br&gt;capped at 500 · TTL 7d · ~5 TB&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1810" y="2880" width="260" height="140" as="geometry"/>
+        <mxCell id="o_feedcache" value="Feed Cache&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Redis Cluster, sharded by userId&lt;br&gt;ZSET feed:{userId} → score = postId&lt;br&gt;capped at 500 · TTL 7d · ~5 TB&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="2880" y="3355" width="280" height="140" as="geometry"/>
         </mxCell>
 
+        <mxCell id="lane_m" value="MEDIA PATH — upload, transcode, deliver" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3690" width="400" height="20" as="geometry"/>
+        </mxCell>
         <mxCell id="o_s3" value="S3 (originals)&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;multipart · resumable&lt;br&gt;lifecycle → IA → Glacier&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="280" y="3110" width="200" height="100" as="geometry"/>
+          <mxGeometry x="940" y="3730" width="230" height="120" as="geometry"/>
         </mxCell>
-        <mxCell id="o_transq" value="Transcode Queue&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;S3 event → SQS&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
-          <mxGeometry x="560" y="3110" width="180" height="100" as="geometry"/>
+        <mxCell id="o_transq" value="Transcode Queue&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;S3 event → SQS&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="3730" width="210" height="120" as="geometry"/>
         </mxCell>
-        <mxCell id="o_transw" value="Transcode Workers&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;video → HLS ladder&lt;br&gt;image → thumb/med/full&lt;br&gt;retries + DLQ&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="820" y="3110" width="220" height="100" as="geometry"/>
+        <mxCell id="o_transw" value="Transcode Workers&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;video → HLS ladder&lt;br&gt;image → thumb / med / full&lt;br&gt;retries + DLQ&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1920" y="3730" width="240" height="120" as="geometry"/>
         </mxCell>
-        <mxCell id="o_s3d" value="S3 (renditions)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="3110" width="180" height="100" as="geometry"/>
+        <mxCell id="o_s3d" value="S3 (renditions)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="2440" y="3730" width="210" height="120" as="geometry"/>
         </mxCell>
         <mxCell id="o_cdn" value="CDN&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;signed URLs · ~50 GB/s egress&lt;br&gt;&lt;b&gt;THE read path for bytes&lt;/b&gt;&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1380" y="3110" width="240" height="100" as="geometry"/>
+          <mxGeometry x="2920" y="3730" width="240" height="120" as="geometry"/>
         </mxCell>
 
-        <mxCell id="lane_r" value="READ PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#888888;" vertex="1" parent="1">
-          <mxGeometry x="20" y="3290" width="200" height="20" as="geometry"/>
+        <mxCell id="lane_r" value="READ PATH — feed assembly" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="20" y="4020" width="400" height="20" as="geometry"/>
         </mxCell>
         <mxCell id="o_feedsvc" value="Feed Service&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;merge + dedupe + hydrate&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="550" y="3330" width="200" height="90" as="geometry"/>
+          <mxGeometry x="880" y="4070" width="220" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="o_celeb" value="Celebrity Post Cache&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Redis: recent posts per celeb&lt;br&gt;tiny set, extremely hot,&lt;br&gt;replicated to every shard&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
-          <mxGeometry x="850" y="3310" width="240" height="130" as="geometry"/>
+        <mxCell id="o_celeb" value="Celebrity Post Cache&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Redis: recent posts per celeb&lt;br&gt;tiny set, extremely hot,&lt;br&gt;replicated to every shard&lt;/span&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="4070" width="260" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="o_counter" value="Counter Service&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Redis sharded counters&lt;br&gt;like/comment counts&lt;br&gt;flushed to DB periodically&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1180" y="3310" width="230" height="130" as="geometry"/>
+        <mxCell id="o_counter" value="Counter Service&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Redis sharded counters&lt;br&gt;like / comment counts&lt;br&gt;flushed to DB periodically&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1940" y="4070" width="250" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="o_rebuild" value="Feed Rebuilder&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;cache miss → query followees&#39;&lt;br&gt;recent posts, k-way merge,&lt;br&gt;repopulate ZSET&lt;br&gt;single-flight per userId&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
-          <mxGeometry x="1500" y="3310" width="240" height="130" as="geometry"/>
+        <mxCell id="o_rebuild" value="Feed Rebuilder&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;cache miss → query followees&#39;&lt;br&gt;recent posts, k-way merge,&lt;br&gt;repopulate ZSET&lt;br&gt;single-flight per userId&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="2480" y="4070" width="260" height="130" as="geometry"/>
         </mxCell>
 
         <mxCell id="oe1" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_client" target="o_gw">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
+        <mxCell id="oe1l" value="HTTPS" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe1">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
         <mxCell id="oe2" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_gw" target="o_postsvc">
           <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe2l" value="POST /v1/posts" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe2">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe3" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_postsvc" target="o_postdb">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="oe3l" value="INSERT post + outbox row (one txn)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe3">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="oe3l" value="INSERT post + outbox row (one txn)" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe3">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe4" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_postdb" target="o_outbox">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
+        <mxCell id="oe4l" value="poller drains outbox" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe4">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
+        </mxCell>
         <mxCell id="oe5" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_outbox" target="o_fanout">
           <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe5l" value="consume post.created" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe5">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe6" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_fanout" target="o_feedcache">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="oe6l" value="ZADD to active followers only" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe6">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="oe6l" value="ZADD — active followers only" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe6">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
         </mxCell>
+
         <mxCell id="oe7" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o_client" target="o_s3">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="63" y="3060"/><mxPoint x="380" y="3060"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="65" y="3610"/><mxPoint x="1055" y="3610"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="oe7l" value="direct multipart upload (presigned)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe7">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="oe7l" value="direct multipart upload (presigned)" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe7">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="240" y="-14" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe8" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_s3" target="o_transq">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="oe8l" value="ObjectCreated event" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe8">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="oe8l" value="ObjectCreated event" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe8">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe9" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_transq" target="o_transw">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
+        <mxCell id="oe9l" value="dequeue job" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe9">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
+        </mxCell>
         <mxCell id="oe10" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_transw" target="o_s3d">
           <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe10l" value="write renditions" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe10">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe11" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_s3d" target="o_cdn">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="oe11l" value="origin fetch" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe11">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="oe11l" value="origin fetch" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe11">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe12" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=0;entryX=0.75;entryY=1;dashed=1;" edge="1" parent="1" source="o_transw" target="o_postdb">
-          <mxGeometry relative="1" as="geometry"/>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2040" y="3620"/><mxPoint x="1588" y="3620"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="oe12l" value="status → READY (post becomes feed-eligible)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe12">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="140" as="offset"/></mxGeometry>
+        <mxCell id="oe12l" value="status → READY (post becomes feed-eligible)" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe12">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="60" y="-14" as="offset"/></mxGeometry>
         </mxCell>
+
         <mxCell id="oe13" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_gw" target="o_feedsvc">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="370" y="3375"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="540" y="4135"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="oe13l" value="GET /v1/feed" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe13">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="oe13l" value="GET /v1/feed" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe13">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="20" y="-14" as="offset"/></mxGeometry>
         </mxCell>
-        <mxCell id="oe14" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=0;entryX=0.25;entryY=1;" edge="1" parent="1" source="o_feedsvc" target="o_feedcache">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="650" y="3260"/><mxPoint x="1875" y="3260"/></Array></mxGeometry>
+        <mxCell id="oe14" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=0;entryX=1;entryY=0.5;" edge="1" parent="1" source="o_feedsvc" target="o_feedcache">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="990" y="3960"/><mxPoint x="3280" y="3960"/><mxPoint x="3280" y="3425"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="oe14l" value="ZREVRANGEBYSCORE — precomputed feed" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe14">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-260" y="-12" as="offset"/></mxGeometry>
+        <mxCell id="oe14l" value="ZREVRANGEBYSCORE — precomputed feed page" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe14">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-620" y="-14" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe15" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_feedsvc" target="o_celeb">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="oe15l" value="pull celeb posts" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe15">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        <mxCell id="oe15l" value="pull celebrity posts" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe15">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
         </mxCell>
         <mxCell id="oe16" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_celeb" target="o_counter">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="oe17" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o_counter" target="o_rebuild">
+        <mxCell id="oe16l" value="hydrate counts" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe16">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="oe17" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="o_counter" target="o_rebuild">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="oe18" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.25;entryY=1;dashed=1;" edge="1" parent="1" source="o_client" target="o_cdn">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="105" y="3500"/><mxPoint x="1440" y="3500"/></Array></mxGeometry>
+        <mxCell id="oe17l" value="on cache miss" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="oe17">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-16" as="offset"/></mxGeometry>
         </mxCell>
-        <mxCell id="oe18l" value="client fetches media bytes straight from CDN (never through the API)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="oe18">
-          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-180" y="-12" as="offset"/></mxGeometry>
+
+        <mxCell id="oe18" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;dashed=1;strokeColor=#B26B00;" edge="1" parent="1" source="o_client" target="o_cdn">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="110" y="4300"/><mxPoint x="3040" y="4300"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="oe18l" value="client fetches media bytes straight from the CDN — never through the API" style="edgeLabel;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;fontColor=#B26B00;" vertex="1" connectable="0" parent="oe18">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-800" y="-14" as="offset"/></mxGeometry>
         </mxCell>
 
         <mxCell id="o_hdr_to" value="D — KEY TRADE-OFFS (each choice vs its named alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="3600" width="900" height="30" as="geometry"/>
+          <mxGeometry x="20" y="4390" width="900" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="ot1" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Hybrid fan-out&lt;/b&gt; vs pure fan-out-on-write / pure fan-out-on-read&lt;br&gt;Pure write: 50M ZADDs for one celebrity post. Pure read: a 500-followee&lt;br&gt;scatter-gather on every feed load, blows the 200 ms budget.&lt;br&gt;&lt;i&gt;Cost: two code paths, a merge, and a threshold that must be tuned.&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="3640" width="700" height="150" as="geometry"/>
+          <mxGeometry x="20" y="4430" width="720" height="160" as="geometry"/>
         </mxCell>
         <mxCell id="ot2" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Transactional outbox → Kafka&lt;/b&gt; vs Postgres CDC vs publish-from-app&lt;br&gt;Publish-from-app loses events if the process dies after COMMIT.&lt;br&gt;CDC works but couples the pipeline to Postgres WAL internals and&lt;br&gt;to the DB&#39;s sharding. Outbox = one txn, replayable, DB-agnostic.&lt;br&gt;&lt;i&gt;Cost: an extra table, a poller, and outbox-table write amplification.&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="760" y="3640" width="700" height="150" as="geometry"/>
+          <mxGeometry x="820" y="4430" width="720" height="160" as="geometry"/>
         </mxCell>
         <mxCell id="ot3" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Redis ZSET&lt;/b&gt; vs a Redis LIST vs re-querying Postgres&lt;br&gt;ZSET scored by a time-sortable postId gives ordered range reads,&lt;br&gt;O(log n) insert, natural dedupe on merge, and a capped size via&lt;br&gt;ZREMRANGEBYRANK. A LIST gives none of that.&lt;br&gt;&lt;i&gt;Cost: more memory per entry than a raw list.&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="1500" y="3640" width="700" height="150" as="geometry"/>
+          <mxGeometry x="1620" y="4430" width="720" height="160" as="geometry"/>
         </mxCell>
         <mxCell id="ot4" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Postgres (sharded)&lt;/b&gt; vs Cassandra for the post store&lt;br&gt;Posts are append-only and time-ordered — Cassandra&#39;s natural shape,&lt;br&gt;and it scales writes linearly. Postgres wins on the &lt;i&gt;follow graph&lt;/i&gt;&lt;br&gt;(secondary indexes both ways) and on transactional outbox semantics.&lt;br&gt;&lt;i&gt;Cost of PG: you own sharding and resharding yourself.&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="3820" width="700" height="150" as="geometry"/>
+          <mxGeometry x="2420" y="4430" width="720" height="160" as="geometry"/>
         </mxCell>
         <mxCell id="ot5" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;CDN&lt;/b&gt; vs serving media from S3 directly&lt;br&gt;50k reads/s × 1 MB ≈ &lt;b&gt;50 GB/s egress&lt;/b&gt;. S3 direct is both slow&lt;br&gt;(one region, no edge) and the single biggest line on the bill.&lt;br&gt;CDN turns per-request S3 egress into a cached edge hit.&lt;br&gt;&lt;i&gt;Cost: invalidation on delete, signed-URL expiry management.&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
-          <mxGeometry x="760" y="3820" width="700" height="150" as="geometry"/>
+          <mxGeometry x="20" y="4620" width="720" height="160" as="geometry"/>
         </mxCell>
         <mxCell id="ot6" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Sharded Redis counters&lt;/b&gt; vs UPDATE posts SET likeCount = likeCount + 1&lt;br&gt;20k likes/s concentrated on a viral post = row-lock contention on one&lt;br&gt;Postgres row. Sharded in-memory counters + periodic flush absorb it.&lt;br&gt;&lt;i&gt;Cost: the count is approximate for a few seconds, and you need a&lt;br&gt;reconciliation job because increments are not idempotent under retry.&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
-          <mxGeometry x="1500" y="3820" width="700" height="150" as="geometry"/>
+          <mxGeometry x="820" y="4620" width="720" height="160" as="geometry"/>
         </mxCell>
 
         <mxCell id="o_hdr_dd" value="E — DEEP DIVES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="4020" width="800" height="30" as="geometry"/>
+          <mxGeometry x="1620" y="4620" width="800" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="od1" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;1. The scale break, and how it is actually handled&lt;/b&gt;&lt;br&gt;Peak fan-out = 10k posts/s × 1000 followers = &lt;b&gt;10⁷ ZADDs/s&lt;/b&gt;.&lt;br&gt;Levers, in the order a senior applies them:&lt;br&gt;&amp;nbsp;• fan out only to &lt;b&gt;active&lt;/b&gt; followers (lastActiveAt &amp;lt; 7d) → −50%+&lt;br&gt;&amp;nbsp;• &lt;b&gt;batch by shard&lt;/b&gt;: group a post&#39;s followers by Redis shard, one&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;pipelined command per shard instead of N round-trips&lt;br&gt;&amp;nbsp;• &lt;b&gt;lower the celebrity threshold&lt;/b&gt; — the threshold is a &lt;i&gt;dial&lt;/i&gt;, not a&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;binary. At a 10× denser graph (10⁸/s) you move the dial down until&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;most accounts are read-path, and the system converges on&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;fan-out-on-read + a per-user merged-feed cache with a short TTL,&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;so one scrolling session pays for the merge once, not per page.&lt;br&gt;&lt;i&gt;This is the answer the round was asking for at the very end.&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="20" y="4060" width="700" height="290" as="geometry"/>
+          <mxGeometry x="1620" y="4660" width="720" height="300" as="geometry"/>
         </mxCell>
         <mxCell id="od2" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;2. Hot keys &amp;amp; hot partitions&lt;/b&gt;&lt;br&gt;• &lt;b&gt;Celebrity post cache&lt;/b&gt; is read by a huge fraction of all feed loads →&lt;br&gt;&amp;nbsp;&amp;nbsp;replicate it to every Redis shard / keep it in the Feed Service&#39;s&lt;br&gt;&amp;nbsp;&amp;nbsp;local in-process cache with a 1–5 s TTL. A single hot key otherwise&lt;br&gt;&amp;nbsp;&amp;nbsp;pins one shard at 100% while the rest idle.&lt;br&gt;• &lt;b&gt;Kafka partitioned by authorId&lt;/b&gt; → a celebrity is a hot partition.&lt;br&gt;&amp;nbsp;&amp;nbsp;Mitigate by routing celebrity posts to a separate low-fan-out topic.&lt;br&gt;• &lt;b&gt;Viral post like counter&lt;/b&gt; → sharded counter (N sub-keys, sum on read).&lt;br&gt;• &lt;b&gt;Thundering herd&lt;/b&gt;: a celebrity posts and 10M dormant feeds miss at&lt;br&gt;&amp;nbsp;&amp;nbsp;once → single-flight / request coalescing keyed by userId, plus&lt;br&gt;&amp;nbsp;&amp;nbsp;jittered TTLs so keys don&#39;t expire in lockstep.&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="760" y="4060" width="700" height="290" as="geometry"/>
+          <mxGeometry x="2420" y="4660" width="720" height="300" as="geometry"/>
         </mxCell>
         <mxCell id="od3" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;3. Consistency model&lt;/b&gt;&lt;br&gt;• Feed: eventually consistent, target &amp;lt; 5 s post→feed p99.&lt;br&gt;• &lt;b&gt;Read-your-own-writes&lt;/b&gt;: the author&#39;s own new post is injected&lt;br&gt;&amp;nbsp;&amp;nbsp;into their feed synchronously on the write path (or the client&lt;br&gt;&amp;nbsp;&amp;nbsp;optimistically renders it) — never wait on the fan-out worker.&lt;br&gt;• &lt;b&gt;At-least-once everywhere&lt;/b&gt;: ZADD is idempotent (same member,&lt;br&gt;&amp;nbsp;&amp;nbsp;same score) — but &lt;b&gt;counter increments are not&lt;/b&gt;. Dedupe on&lt;br&gt;&amp;nbsp;&amp;nbsp;event id, or store the absolute count rather than a delta.&lt;br&gt;• &lt;b&gt;Unfollow&lt;/b&gt; must remove the followee&#39;s posts from a cached feed,&lt;br&gt;&amp;nbsp;&amp;nbsp;or filter at read time — otherwise stale posts linger for the TTL.&lt;br&gt;• &lt;b&gt;Deleted post&lt;/b&gt; stays in N cached ZSETs → filter at hydrate time&lt;br&gt;&amp;nbsp;&amp;nbsp;(the hydrate step is the authoritative visibility check).&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E9F5E4;strokeColor=#2D7600;" vertex="1" parent="1">
-          <mxGeometry x="1500" y="4060" width="700" height="290" as="geometry"/>
+          <mxGeometry x="20" y="4830" width="720" height="300" as="geometry"/>
         </mxCell>
-        <mxCell id="od4" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;4. Operability &amp;amp; monitoring — with thresholds, not prose&lt;/b&gt;&lt;br&gt;&amp;nbsp;• &lt;b&gt;post→feed lag&lt;/b&gt; p99, measured end-to-end. Page at &amp;gt; 60 s sustained 5 min; warn at 10 s.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Kafka consumer lag&lt;/b&gt; per partition — autoscale fan-out workers on lag, not on CPU. Backpressure plan: shed fan-out&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;to inactive users first (they will get a rebuilt feed on next open anyway) — graceful degradation, not a queue meltdown.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Feed cache hit rate&lt;/b&gt; — a drop means rebuild traffic is about to hit Postgres. Alert below 90%.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Transcode queue depth + DLQ rate&lt;/b&gt; — a stuck transcoder means posts silently never become visible. Alert on any DLQ growth.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Correctness canary&lt;/b&gt;: a synthetic account posts every minute and a synthetic follower asserts the post appears within SLA.&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;This is how you know the feed is &lt;i&gt;wrong&lt;/i&gt; rather than merely slow.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Cost&lt;/b&gt;: ~5 TB Redis cluster, ~60 PB/yr S3 with lifecycle to IA/Glacier, and CDN egress as the dominant line item —&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;which is exactly why the CDN hit rate is itself a business metric worth alerting on.&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
-          <mxGeometry x="20" y="4390" width="2180" height="200" as="geometry"/>
+        <mxCell id="od4" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;4. Operability &amp;amp; monitoring — with thresholds, not prose&lt;/b&gt;&lt;br&gt;&amp;nbsp;• &lt;b&gt;post→feed lag&lt;/b&gt; p99, measured end-to-end. Page at &amp;gt; 60 s sustained 5 min; warn at 10 s.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Kafka consumer lag&lt;/b&gt; per partition — autoscale fan-out workers on lag, not on CPU.&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;Backpressure plan: shed fan-out to inactive users first (they get a rebuilt feed on next open anyway)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;— graceful degradation, not a queue meltdown.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Feed cache hit rate&lt;/b&gt; — a drop means rebuild traffic is about to hit Postgres. Alert below 90%.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Transcode queue depth + DLQ rate&lt;/b&gt; — a stuck transcoder means posts silently never become visible.&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;Alert on any DLQ growth.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Correctness canary&lt;/b&gt;: a synthetic account posts every minute and a synthetic follower asserts the&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;post appears within SLA. This is how you know the feed is &lt;i&gt;wrong&lt;/i&gt; rather than merely slow.&lt;br&gt;&amp;nbsp;• &lt;b&gt;Cost&lt;/b&gt;: ~5 TB Redis cluster, ~60 PB/yr S3 with lifecycle to IA/Glacier, and CDN egress as the&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;dominant line item — which is why CDN hit rate is itself a business metric worth alerting on.&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="820" y="4830" width="720" height="300" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>
