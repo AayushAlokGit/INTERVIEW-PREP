@@ -111,17 +111,19 @@ Contention, scaling writes, and multi-step processes are the three you have real
 
 Round numbers, stated confidently, beat precise numbers derived slowly. Use these to *decide something* — if a calculation doesn't change the design, say so and move on.
 
+These are orientation aids, not facts to recite. Nobody is graded on remembering a vendor's throughput figure; what matters is the *shape* of the reasoning — "this is memory-speed, that is disk-speed, so the cache absorbs the reads" — and knowing which lever you'd pull when a component runs out of room. A rough order of magnitude with the right conclusion beats a precise number with no conclusion. If you don't recall a figure, say "order of a hundred thousand a second per node, and if that's wrong the design changes like *this*" and keep going.
+
 | Thing | Number |
 |---|---|
-| Redis | ~1 ms, 100k+ ops/sec/node |
-| SQL DB | ~50k TPS ceiling, sub-5ms cached reads, single-digit-ms indexed lookups |
-| Shard a database when | sustained writes over ~10k TPS, or the working set stops fitting in memory |
+| Redis | sub-millisecond, memory-speed; a single node handles a lot — scale by sharding, and the real risk is a hot key, not the aggregate ceiling |
+| SQL DB | sub-5ms cached reads, single-digit-ms indexed lookups; write throughput is the wall you hit first |
+| Shard a database when | sustained writes outgrow one primary, or the working set stops fitting in memory |
 | Add/expand cache when | hit rate under ~80%, or read latency over ~1 ms |
 | Cache speedup vs DB | 20–50× |
 | Consistent hashing | ~1/N of keys move when a node joins; naive modulo moves ~everything |
 | Network floor | NY→London ~80 ms RTT; same-region ~1 ms |
 | Object storage | cheap and infinite; the cost is per-request and egress, not storage |
-| Kafka partition | ~10 MB/s sustained; scale by partition count |
+| Kafka partition | one partition is one consumer's worth of ordered throughput — scale by partition count, and partition count is what you actually reason about |
 | A day | ~86k seconds — 1M/day ≈ 12/sec, 1B/day ≈ 12k/sec |
 
 **Depth is graded in three tiers.** Mention the concept when you place the box (shallow). Explain its trade-off and when it applies (medium — this is what most rounds want). Walk implementation details and failure modes only when probed (deep). Volunteering tier-three detail unprompted burns the clock you need for the deep dive.
