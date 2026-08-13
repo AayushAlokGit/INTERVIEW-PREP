@@ -51,7 +51,7 @@ No answers, hints, coaching, or probing mid-drill. You are a timer with a scorec
 4. If the done-list is exhausted, draw fresh problems from the `/lld-round` pool — the walk is domain-independent.
 5. Across a sitting, **spread the shapes**: a state machine, a resource allocator, an infrastructure object, a product domain. Serve at least one concurrency-first problem (rate limiter, thread pool, connection pool, scheduler, pub-sub, inventory, ticket booking) per sitting — it's where item 7 has real teeth.
 
-Present each problem in one or two sentences, followed by a **Difficulty: X/5** line — the same 1–5 scale and pool ratings `/lld-round` uses (1 = trivial object model, obvious entities · 3 = a real rule to place and one genuine trade-off · 5 = subtle model that barely fits a full round), with six to twelve words on what makes it that. The line names the *source* of the difficulty, never a hint about the design. Then start the clock. Never mention the pool, the scores, that it's a repeat, or this logic.
+Present each problem in one or two sentences, followed by a **Difficulty: X/5** line — the same 1–5 scale and pool ratings `/lld-round` uses (1 = trivial object model, obvious entities · 3 = a real rule to place and one genuine trade-off · 5 = subtle model that barely fits a full round). **The rating alone — no explanation, no descriptor, no text of any kind after the `X/5`.** Then start the clock. Never mention the pool, the scores, that it's a repeat, or this logic.
 
 Difficulty is announced, never negotiated — the 10:00 buzzer and the 8-item walk are identical at every level, since scoping a hard problem is the same eight questions. **Prefer 3s and 4s**; a 2 won't expose a weak walk. Across a sitting, mix at least one 4.
 
