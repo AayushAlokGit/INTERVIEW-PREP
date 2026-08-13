@@ -1,0 +1,300 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel dx="1200" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="3400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Strava — Activity Tracking &amp; Segment Leaderboards" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="800" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sec_fr" value="1 — FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="90" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="fr_box" value="&lt;div style=&quot;text-align:left&quot;&gt;0. A user can follow other users of the app&lt;br&gt;1. User records activity (runs, rides) from mobile app&lt;br&gt;2. User location updated during activity by phone GPS coordinate stream&lt;br&gt;3. On activity end, show activity stats: distance, pace, elevation&lt;br&gt;4. Activity details appear in feeds of a user's followers&lt;br&gt;5. Classify certain stretches of road as segments&lt;br&gt;6. Activity passing through a segment gets ranked on an all-time leaderboard&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="20" y="125" width="700" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="oos_box" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Out of scope&lt;/b&gt;&lt;br&gt;1. Global activity leaderboard across all users&lt;br&gt;2. Watching another user's activity live (recording is personal tracking only)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="760" y="125" width="440" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sec_nfr" value="2 — NON-FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="310" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfr_box" value="&lt;div style=&quot;text-align:left&quot;&gt;1. Eventual consistency acceptable for activity feed and leaderboards&lt;br&gt;2. High availability for activity creation + tracking — 99.99% (~52 min/yr)&lt;br&gt;3. Phone pings GPS coordinates every 10s&lt;br&gt;4. Feed load p99 &amp;lt; 200 ms; segment leaderboard may be up to 3 min stale&lt;br&gt;5. Read:write ratio for activities = 100:1&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="20" y="345" width="700" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="boe_box" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Back-of-envelope&lt;/b&gt;&lt;br&gt;100M DAU x 2 activities/day = 200M/day → ~2k activities/s&lt;br&gt;1M concurrent recorders, ping every 10s → 100k GPS updates/s&lt;br&gt;Activity ~100 KB → 2k/s x 100 KB ≈ 200 MB/s of activity data&lt;br&gt;&lt;i&gt;Storage/day + storage/year: deferred, to revisit&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="760" y="345" width="440" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sec_ent" value="3 — CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="520" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_user" value="&lt;b&gt;User&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id&lt;br&gt;name&lt;br&gt;email&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="560" width="200" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_act" value="&lt;b&gt;Activity&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id&lt;br&gt;userId&lt;br&gt;distance&lt;br&gt;pace&lt;br&gt;elevation&lt;br&gt;segmentsCovered: [segmentId]&lt;br&gt;route: [GPS coordinates]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="260" y="560" width="240" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_seg" value="&lt;b&gt;Segment&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;id&lt;br&gt;route: [GPS coordinates]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="540" y="560" width="220" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_follow" value="&lt;b&gt;FollowRelationship&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;fromUserId&lt;br&gt;toUserId&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="800" y="560" width="220" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_s2a" value="&lt;b&gt;SegmentToActivity&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;segmentId&lt;br&gt;activityId&lt;br&gt;&lt;i&gt;+ a sort column for leaderboard&lt;br&gt;ordering (not named)&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="560" width="240" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_note" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Storage note (stated):&lt;/b&gt; GPS coordinate stream stored in a WAL-style store (Cassandra); the metadata store (distance, pace, …) holds a reference to that object.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="710" width="740" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sec_api" value="4 — API DESIGN&#xa;(identity extracted from auth headers)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="810" width="500" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="api_w" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Writes&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;PUT /follow/:userId&lt;/b&gt;&lt;br&gt;→ 2xx&lt;br&gt;&lt;br&gt;&lt;b&gt;POST /activity&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;(Idempotency-Key header)&lt;/i&gt;&lt;br&gt;req: { startTime, startLocation }&lt;br&gt;→ Activity(id, userId, startLocation, status)&lt;br&gt;&lt;br&gt;&lt;b&gt;PUT /activity/:id/locationUpdate&lt;/b&gt;&lt;br&gt;req: { gpsCoordinate }&amp;nbsp;&amp;nbsp;→ 2xx&lt;br&gt;&lt;i&gt;revised: needs a BATCH endpoint + Idempotency-Key&lt;br&gt;header; dedupe key = timestamp&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;PUT /activity/:id/end&lt;/b&gt;&lt;br&gt;→ 2xx&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="20" y="860" width="560" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="api_r" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Reads&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /activity/:id&lt;/b&gt;&lt;br&gt;→ Activity(id, distance, pace, route: [], …)&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /activities?cursor=&amp;amp;limit=&lt;/b&gt;&lt;br&gt;→ Activity(id, distance, userId, pace)[], nextCursor&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /activities/:followedUserId&lt;/b&gt;&lt;br&gt;&lt;b&gt;GET /friends/activities&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;(merged follower feed;&lt;br&gt;response shape not specified)&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /segments/:id/leaderboard?cursor=&amp;amp;limit=&lt;/b&gt;&lt;br&gt;→ Activity(id, distance, userId, pace, &lt;b&gt;duration&lt;/b&gt;)[],&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;nextCursor&lt;br&gt;&lt;br&gt;&lt;i&gt;Cursor-based pagination — chosen because feeds and&lt;br&gt;leaderboards are dynamic/changing datasets.&lt;br&gt;duration also added to Activity and SegmentToActivity.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="620" y="860" width="600" height="300" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="divider" value="" style="line;strokeWidth=3;html=1;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1220" width="2300" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="opt_title" value="OPTIMAL REFERENCE — what a senior strong-hire would design&#xa;(added after the round; the section above is exactly what was described live)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1250" width="1400" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o_sec1" value="A — OPTIMAL CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1330" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e1" value="&lt;b&gt;User&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;userId (PK)&lt;br&gt;name, email&lt;br&gt;followerCount&lt;br&gt;isPro (celebrity flag)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1370" width="230" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e2" value="&lt;b&gt;Activity&lt;/b&gt; (metadata only)&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;activityId (PK, UUID from client)&lt;br&gt;userId, type (run|ride)&lt;br&gt;status: RECORDING|ENDED|PROCESSED&lt;br&gt;startTime, endTime, movingTime&lt;br&gt;distanceM, avgPace, elevGainM&lt;br&gt;boundingBox (minLat,minLng,maxLat,maxLng)&lt;br&gt;streamRef → s3://.../activityId.polyline&lt;br&gt;visibility (public|followers|private)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="290" y="1370" width="330" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e3" value="&lt;b&gt;GpsPoint&lt;/b&gt; (hot stream, Cassandra)&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;PARTITION KEY: activityId&lt;br&gt;CLUSTERING KEY: ts ASC&lt;br&gt;lat, lng, elevM, accuracyM&lt;br&gt;&lt;br&gt;&lt;i&gt;Upsert on (activityId, ts) ⇒ retried&lt;br&gt;batches are naturally idempotent.&lt;br&gt;TTL 7d — after processing the&lt;br&gt;canonical copy is the S3 polyline.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="660" y="1370" width="330" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e4" value="&lt;b&gt;Segment&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;segmentId (PK)&lt;br&gt;name, activityType&lt;br&gt;polyline: [ (lat,lng) ]&lt;br&gt;&lt;b&gt;startPoint, endPoint&lt;/b&gt;&lt;br&gt;&lt;b&gt;startCellId / cellIds: [S2 cell]&lt;/b&gt;&lt;br&gt;boundingBox, lengthM, elevGainM&lt;br&gt;&lt;br&gt;&lt;i&gt;The cell IDs are the field that&lt;br&gt;makes matching cheap.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="1370" width="330" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e5" value="&lt;b&gt;SegmentEffort&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;(segmentId, activityId) PK&lt;br&gt;userId&lt;br&gt;&lt;b&gt;elapsedSec&lt;/b&gt; ← the leaderboard sort key&lt;br&gt;startedAt, endedAt&lt;br&gt;isFlagged (anti-cheat)&lt;br&gt;&lt;br&gt;&lt;i&gt;Leaderboard = efforts ordered by&lt;br&gt;elapsedSec ASC, tie-break startedAt ASC.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="1370" width="340" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e6" value="&lt;b&gt;Follow&lt;/b&gt;&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;(followerId, followeeId) PK&lt;br&gt;createdAt&lt;br&gt;&lt;br&gt;&lt;i&gt;Inverted index on followeeId&lt;br&gt;for fan-out.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="1780" y="1370" width="280" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e7" value="&lt;b&gt;FeedEntry&lt;/b&gt; (materialised)&lt;hr&gt;&lt;div style=&quot;text-align:left&quot;&gt;PARTITION KEY: userId&lt;br&gt;CLUSTERING: createdAt DESC&lt;br&gt;activityId, authorId&lt;br&gt;&lt;i&gt;capped at ~500 entries&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=4;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="2100" y="1370" width="280" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o_sec2" value="B — OPTIMAL API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1620" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_api_w" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;WRITE PATH&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;POST /v1/activities&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;Idempotency-Key: &amp;lt;client UUID&amp;gt;&lt;/i&gt;&lt;br&gt;req&amp;nbsp; { activityId, type, startTime, startLocation }&lt;br&gt;201 { activityId, userId, status:&quot;RECORDING&quot;, uploadToken }&lt;br&gt;&lt;i&gt;Client mints activityId — create is retry-safe with no server state.&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;POST /v1/activities/{id}/points:batch&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;(replaces per-point PUT)&lt;/i&gt;&lt;br&gt;req&amp;nbsp; { batchSeq, points:[ {ts, lat, lng, elev, accuracy} ] }&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;≤ 500 points, gzip, flushed every 30–60 s&lt;br&gt;202 { accepted: n, lastAckedTs }&lt;br&gt;&lt;i&gt;Idempotent by (activityId, ts) upsert — retries and duplicate&lt;br&gt;batches are no-ops. Out-of-order is fine: ts is the clustering key,&lt;br&gt;so Cassandra returns the stream sorted regardless of arrival order.&lt;br&gt;lastAckedTs lets the client prune its local buffer.&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;POST /v1/activities/{id}/complete&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;Idempotency-Key&lt;/i&gt;&lt;br&gt;req&amp;nbsp; { endTime, finalBatch?: [...] }&lt;br&gt;202 { activityId, status:&quot;PROCESSING&quot;, pollUrl }&lt;br&gt;&lt;i&gt;202 not 200 — stats + segment matching are async.&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;PUT /v1/users/{id}/follow&lt;/b&gt;&amp;nbsp;&amp;nbsp;→ 204&amp;nbsp;&amp;nbsp;&lt;i&gt;(PUT = naturally idempotent)&lt;/i&gt;&lt;br&gt;&lt;b&gt;DELETE /v1/users/{id}/follow&lt;/b&gt;&amp;nbsp;&amp;nbsp;→ 204&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1660" width="720" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_api_r" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;READ PATH&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /v1/activities/{id}&lt;/b&gt;&lt;br&gt;200 { activityId, userId, type, startTime, movingTime,&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;distanceM, avgPace, elevGainM, status,&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;polylineUrl: &quot;https://cdn/…&quot;, &amp;nbsp;// signed, NOT inline&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;efforts: [ {segmentId, name, elapsedSec, rank, prRank} ] }&lt;br&gt;&lt;i&gt;Route is a CDN URL, not a JSON array — keeps the metadata&lt;br&gt;response small and lets the map load lazily.&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /v1/feed?cursor=&amp;amp;limit=20&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;(merged follower feed)&lt;/i&gt;&lt;br&gt;200 { items: [ { activityId, author:{userId,name,avatarUrl},&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;type, startTime, distanceM, movingTime, elevGainM,&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;mapThumbUrl, kudosCount } ],&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;nextCursor: &quot;&amp;lt;createdAt|activityId&amp;gt;&quot; }&lt;br&gt;&lt;i&gt;Cursor = (createdAt, activityId) — offset paging skips/duplicates&lt;br&gt;rows when new activities land mid-scroll.&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /v1/users/{id}/activities?cursor=&amp;amp;limit=&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;(profile)&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /v1/segments/{id}/leaderboard?filter=all_time|this_year&lt;/b&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;&amp;amp;gender=&amp;amp;ageGroup=&amp;amp;cursor=&amp;amp;limit=50&lt;/b&gt;&lt;br&gt;200 { segment: {id, name, lengthM, elevGainM},&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;entries: [ {&lt;b&gt;rank&lt;/b&gt;, userId, name, activityId,&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;elapsedSec&lt;/b&gt;, avgSpeed, achievedAt} ],&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;viewer: {rank, elapsedSec, percentile},&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;nextCursor, asOf }&lt;br&gt;&lt;i&gt;`viewer` saves a second round-trip; `asOf` makes the 3-min&lt;br&gt;staleness budget visible to the client instead of implicit.&lt;/i&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="790" y="1660" width="760" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_api_n" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;CONTRACT DECISIONS&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Batching, not per-point.&lt;/b&gt; 1 req/point = 100k–500k req/s&lt;br&gt;at the edge. A 60 s batch of 6 points cuts that ~60x to&lt;br&gt;&amp;lt;10k req/s and survives tunnels, which per-point does not.&lt;br&gt;Cost accepted: up to 60 s of loss if the phone dies&lt;br&gt;mid-activity — fine, the client persists the buffer to disk.&lt;br&gt;&lt;br&gt;&lt;b&gt;Idempotency everywhere on the ingest path.&lt;/b&gt; Mobile&lt;br&gt;networks guarantee at-least-once, never exactly-once.&lt;br&gt;Natural key (activityId, ts) beats a header-based key here&lt;br&gt;because it dedupes at &lt;i&gt;point&lt;/i&gt; granularity, so a partially&lt;br&gt;delivered batch re-sent in a different grouping still converges.&lt;br&gt;&lt;br&gt;&lt;b&gt;202 + poll on complete.&lt;/b&gt; Stats and segment matching&lt;br&gt;take seconds; blocking the request would couple the&lt;br&gt;mobile UX to matcher latency.&lt;br&gt;&lt;br&gt;&lt;b&gt;Cursor pagination&lt;/b&gt; on feed &amp;amp; leaderboard — both are&lt;br&gt;live-mutating lists.&lt;br&gt;&lt;br&gt;&lt;b&gt;Versioned /v1&lt;/b&gt; — mobile clients are un-upgradable in&lt;br&gt;the field; old app versions keep hitting v1 for years.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="1660" width="600" height="430" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o_sec3" value="C — OPTIMAL HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2140" width="600" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_client" value="Mobile App&#xa;&#xa;buffers GPS locally,&#xa;flushes batch / 60s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2210" width="180" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_lb" value="API Gateway / LB&#xa;auth, rate limit, TLS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2220" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_ing" value="Ingest Service&#xa;(stateless, autoscaled)&#xa;validates + upserts points" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="510" y="2205" width="200" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_cass" value="&lt;b&gt;Cassandra&lt;/b&gt;&#xa;GpsPoint&#xa;PK activityId / CK ts&#xa;TTL 7d" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="790" y="2190" width="180" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_act" value="Activity Service&#xa;create / complete / read" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="510" y="2400" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_pg" value="&lt;b&gt;Postgres&lt;/b&gt; (sharded by userId)&#xa;Activity metadata, User, Follow&#xa;+ read replicas" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="790" y="2385" width="180" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_kafka" value="&lt;b&gt;Kafka&lt;/b&gt;&#xa;topic: activity-completed&#xa;partitioned by activityId&#xa;~2k msg/s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="2380" width="200" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_proc" value="Activity Processor&#xa;&#xa;reads stream → computes&#xa;distance / pace / elevation,&#xa;encodes polyline → S3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="2190" width="210" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_s3" value="&lt;b&gt;S3&lt;/b&gt; + CDN&#xa;compressed polylines&#xa;map thumbnails&#xa;~20 TB/day" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1620" y="2180" width="180" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_match" value="&lt;b&gt;Segment Matcher&lt;/b&gt;&#xa;&#xa;route cells → candidate segments&#xa;→ traversal check → SegmentEffort" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="2395" width="210" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_segidx" value="&lt;b&gt;Segment Index&lt;/b&gt;&#xa;S2 cell → [segmentId]&#xa;in-memory / Redis&#xa;(few M segments, fits)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1620" y="2385" width="180" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_fanout" value="Feed Fan-out Worker&#xa;&#xa;followers → FeedEntry writes&#xa;(skips celebrities)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="2610" width="210" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_feeddb" value="&lt;b&gt;Cassandra&lt;/b&gt; FeedEntry&#xa;PK userId / CK createdAt DESC" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1620" y="2600" width="180" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_lbsvc" value="Leaderboard Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1880" y="2410" width="190" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_redis" value="&lt;b&gt;Redis ZSET&lt;/b&gt;&#xa;lb:{segmentId} →&#xa;score=elapsedSec, member=userId&#xa;ZADD (absolute, idempotent)&#xa;ZRANGE for top-N + rank" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="2130" y="2385" width="230" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_feedsvc" value="Feed Service&#xa;p99 &amp;lt; 200 ms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1880" y="2625" width="190" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_cache" value="&lt;b&gt;Redis&lt;/b&gt; hydration cache&#xa;activity cards, author profiles" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="2130" y="2600" width="230" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="h_dlq" value="&lt;b&gt;DLQ&lt;/b&gt;&#xa;un-matchable / poison&#xa;activities + replay tool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="2610" width="200" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="f1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_client" target="h_lb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1l" value="POST points:batch&#xa;(≤500 pts, gzip)" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=10;" vertex="1" connectable="0" parent="f1">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-22" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_lb" target="h_ing">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_ing" target="h_cass">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3l" value="upsert (activityId, ts)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f3">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_lb" target="h_act">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4l" value="create / complete / read" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f4">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="-10" y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_act" target="h_pg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_pg" target="h_kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f6l" value="activity-completed&#xa;(transactional outbox)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f6">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-20" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_kafka" target="h_proc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_kafka" target="h_match">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_kafka" target="h_fanout">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.25;entryX=1;entryY=0.25;" edge="1" parent="1" source="h_proc" target="h_cass">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f10l" value="read full point stream" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f10">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_proc" target="h_s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f11l" value="polyline + thumb" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f11">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.75;entryX=0.5;entryY=0;" edge="1" parent="1" source="h_proc" target="h_pg">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1290" y="2300"/><mxPoint x="1290" y="2350"/><mxPoint x="880" y="2350"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="f12l" value="write stats, status=PROCESSED" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f12">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-12" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_match" target="h_segidx">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f13l" value="cell lookup" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f13">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_segidx" target="h_lbsvc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f14l" value="SegmentEffort" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f14">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_lbsvc" target="h_redis">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f15l" value="ZADD elapsedSec" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f15">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_fanout" target="h_feeddb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_feeddb" target="h_feedsvc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="h_feedsvc" target="h_cache">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f18l" value="hydrate cards" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f18">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" edge="1" parent="1" source="h_kafka" target="h_dlq">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="f19l" value="after N retries" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="f19">
+          <mxGeometry x="0" relative="1" as="geometry"><mxPoint x="45" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="f20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="h_client" target="h_feedsvc">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="110" y="2900"/><mxPoint x="1850" y="2900"/><mxPoint x="1850" y="2670"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="f20l" value="GET /v1/feed  ·  GET /v1/segments/{id}/leaderboard  ·  GET /v1/activities/{id}  (read paths)" style="edgeLabel;html=1;fontSize=11;fontStyle=2;" vertex="1" connectable="0" parent="f20">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint x="120" y="-14" as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="o_sec4" value="D — KEY TRADE-OFFS (each choice vs its named alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2960" width="800" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_to" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;Point stream in Cassandra (7d TTL) + polyline in S3&lt;/b&gt;&amp;nbsp;&amp;nbsp;vs&amp;nbsp;&amp;nbsp;&lt;i&gt;everything in Postgres&lt;/i&gt; / &lt;i&gt;everything in S3&lt;/i&gt; / &lt;i&gt;a TSDB&lt;/i&gt;&lt;br&gt;Postgres can't take 100k–500k append/s and the rows are write-once, never updated — no need for its transactional machinery. Pure S3 can't take small&lt;br&gt;in-flight appends. A TSDB is built for aggregation over metrics, not for retrieving one entity's ordered stream. Cassandra's (partition, clustering) model is&lt;br&gt;exactly &quot;append ordered points to one activity, read them all back once.&quot; &lt;b&gt;Given up:&lt;/b&gt; no joins, no transactions, and a two-store consistency problem —&lt;br&gt;the polyline in S3 and the stats in Postgres can diverge if the processor dies mid-write, so processing is idempotent and re-runnable from Cassandra.&lt;br&gt;&lt;br&gt;&lt;b&gt;Storage math that forces this:&lt;/b&gt; 200M activities/day x 100 KB = &lt;b&gt;20 TB/day ≈ 7 PB/yr&lt;/b&gt;. Raw points at ~30 B x 360/activity ≈ 11 KB, so a delta-encoded&lt;br&gt;polyline compresses ~5–10x → ~2–3 TB/day in S3. That difference is the whole reason the canonical copy is a blob and Cassandra is a 7-day buffer.&lt;br&gt;&lt;br&gt;&lt;b&gt;Async matching off Kafka&lt;/b&gt;&amp;nbsp;&amp;nbsp;vs&amp;nbsp;&amp;nbsp;&lt;i&gt;matching inline in the complete request&lt;/i&gt;&lt;br&gt;Inline couples a p99 mobile response to a multi-second CPU-bound geometry job at 2k/s. Async gives retries, DLQ, independent scaling, and replay when the&lt;br&gt;segment table changes. &lt;b&gt;Given up:&lt;/b&gt; efforts aren't visible the instant the activity ends — which is exactly why the 3-min leaderboard staleness NFR exists.&lt;br&gt;&lt;br&gt;&lt;b&gt;S2/geohash cell index for candidate segments&lt;/b&gt;&amp;nbsp;&amp;nbsp;vs&amp;nbsp;&amp;nbsp;&lt;i&gt;PostGIS ST_Intersects per activity&lt;/i&gt; / &lt;i&gt;brute-force compare against all segments&lt;/i&gt;&lt;br&gt;Brute force is O(activities x segments) — millions of comparisons per activity, hopeless. PostGIS works but puts 2k/s of heavy geometry queries on the&lt;br&gt;transactional DB. An in-memory cell→segment map is a hash lookup per cell and the whole index (few million segments) fits in RAM per worker.&lt;br&gt;&lt;b&gt;Given up:&lt;/b&gt; index must be rebuilt/broadcast when segments change, and cell granularity is a tuning knob (too coarse = many candidates, too fine = huge index).&lt;br&gt;&lt;br&gt;&lt;b&gt;Redis ZSET per segment&lt;/b&gt;&amp;nbsp;&amp;nbsp;vs&amp;nbsp;&amp;nbsp;&lt;i&gt;SQL ORDER BY elapsedSec LIMIT 50&lt;/i&gt;&lt;br&gt;ZSET gives O(log N) rank-of-a-member — the &quot;you are #412&quot; number is the expensive part in SQL, which needs a window function over the whole segment.&lt;br&gt;&lt;b&gt;Given up:&lt;/b&gt; memory cost, and it's a derived cache — Postgres SegmentEffort stays the source of truth so the ZSET can be rebuilt after a Redis loss.&lt;br&gt;&lt;b&gt;Idempotency note:&lt;/b&gt; use ZADD with the absolute elapsedSec, never ZINCRBY — a redelivered Kafka message must be a no-op, not a double-count.&lt;br&gt;&lt;br&gt;&lt;b&gt;Hybrid feed fan-out&lt;/b&gt;&amp;nbsp;&amp;nbsp;vs&amp;nbsp;&amp;nbsp;&lt;i&gt;pure fan-out-on-write&lt;/i&gt; / &lt;i&gt;pure fan-out-on-read&lt;/i&gt;&lt;br&gt;Fan-out-on-write hits 200ms p99 trivially but a pro athlete with 500k followers turns one activity into 500k writes. Fan-out-on-read is cheap to write but&lt;br&gt;makes every feed load a scatter-gather across hundreds of followees. Hybrid: precompute for normal users, pull-and-merge at read time for the few&lt;br&gt;thousand celebrity accounts. &lt;b&gt;Given up:&lt;/b&gt; two code paths and a merge step, plus a threshold that needs tuning.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3000" width="2340" height="620" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o_sec5" value="E — DEEP DIVES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3670" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd1" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;1. THE CORE HARD PROBLEM — segment matching&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Naive:&lt;/b&gt; for each finished activity, compare its route against every segment's polyline.&lt;br&gt;With millions of segments x 2k activities/s this is astronomically wrong.&lt;br&gt;&lt;br&gt;&lt;b&gt;Fix — candidate generation then verification:&lt;/b&gt;&lt;br&gt;1. Cover each segment's polyline with S2 cells (~level 13, roughly 1 km) at&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;segment-creation time; build cellId → [segmentId] and hold it in worker memory.&lt;br&gt;2. For a finished activity, compute the set of cells its route touches (a few hundred).&lt;br&gt;3. Union the segments in those cells → typically tens to low hundreds of candidates.&lt;br&gt;4. &lt;b&gt;Verify each candidate:&lt;/b&gt; find the route point nearest the segment start (within&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;~15 m), then walk the route forward checking it stays within a corridor of the&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;segment polyline &lt;i&gt;in order&lt;/i&gt;, until the segment end. Frechet-style corridor check,&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;not point-set overlap — otherwise running the road backwards would match.&lt;br&gt;5. &lt;b&gt;elapsedSec&lt;/b&gt; = interpolated timestamp at exit − at entry. Interpolate, don't snap:&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;a 10 s sample gap at 30 km/h is 83 m of positional error on a 400 m segment.&lt;br&gt;&lt;br&gt;&lt;b&gt;Edge cases a senior raises:&lt;/b&gt; multiple laps of the same segment in one activity (emit&lt;br&gt;the best effort, keep all); partial traversal (reject); a route that joins mid-segment&lt;br&gt;(reject); GPS drift in urban canyons (accuracy field gates the match).&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3710" width="760" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd2" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;2. THE SCALE-BREAK — push it 10–50x&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;First break: the traffic model itself.&lt;/b&gt; 200M activities/day at ~40 min each ⇒&lt;br&gt;200M x 2400 s / 86400 s ≈ &lt;b&gt;5.5M concurrent recorders&lt;/b&gt;, not 1M. So ingest is&lt;br&gt;~550k points/s, 5x the stated figure. Batching every 60 s brings the &lt;i&gt;request&lt;/i&gt;&lt;br&gt;rate to ~90k req/s and the &lt;i&gt;row&lt;/i&gt; rate stays 550k/s — fine for Cassandra spread&lt;br&gt;across activityId partitions, which have no hot key by construction.&lt;br&gt;&lt;br&gt;&lt;b&gt;Second break: the matcher is CPU-bound.&lt;/b&gt; At 2k finished activities/s, if&lt;br&gt;verification costs ~50 ms of CPU per activity that's 100 cores steady-state,&lt;br&gt;before peak. Peak is not uniform — Saturday 9am in Europe is many times the&lt;br&gt;mean. Fixes: partition Kafka by activityId and scale consumers horizontally;&lt;br&gt;accept lag at peak and let the 3-min staleness SLA absorb it; shed nothing.&lt;br&gt;&lt;br&gt;&lt;b&gt;Third break: 10x growth ⇒ 70 PB/yr.&lt;/b&gt; Tiering becomes mandatory — recent&lt;br&gt;polylines on standard storage, older ones to Glacier, and stats stay hot in&lt;br&gt;Postgres so the profile page never touches cold storage.&lt;br&gt;&lt;br&gt;&lt;b&gt;Fourth break: a mass-participation event.&lt;/b&gt; 50k runners on the same course&lt;br&gt;within 3 hours ⇒ one segment's ZSET takes a huge write burst and everyone&lt;br&gt;reads that same leaderboard. See hot keys →&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="820" y="3710" width="760" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd3" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;3. HOT KEYS &amp;amp; HOT PARTITIONS&lt;/b&gt;&lt;br&gt;&lt;b&gt;Viral segment&lt;/b&gt; (Alpe d'Huez, a marathon course): one ZSET key takes&lt;br&gt;concentrated reads and writes. Mitigate with a read-through local cache in the&lt;br&gt;Leaderboard Service (top-100 is what 99% of viewers ask for, TTL 60 s — well&lt;br&gt;inside the 3-min budget), and Redis replicas serving reads. Deep-page requests&lt;br&gt;fall through to Postgres.&lt;br&gt;&lt;b&gt;Celebrity author:&lt;/b&gt; handled by the hybrid fan-out, not by the datastore.&lt;br&gt;&lt;b&gt;No hot partition on ingest:&lt;/b&gt; activityId is effectively random — this is why it&lt;br&gt;is the partition key rather than userId.&lt;br&gt;&lt;br&gt;&lt;b&gt;4. CONSISTENCY MODEL&lt;/b&gt;&lt;br&gt;Activity metadata: read-your-writes for the author (route the author's read to&lt;br&gt;the primary), eventual for everyone else.&lt;br&gt;Feed and leaderboard: eventual, bounded — the &lt;code&gt;asOf&lt;/code&gt; field in the leaderboard&lt;br&gt;response makes the bound explicit rather than a silent lie.&lt;br&gt;Postgres SegmentEffort is the source of truth; the ZSET is a rebuildable cache.&lt;br&gt;&lt;b&gt;Tie-breaking:&lt;/b&gt; equal elapsedSec ⇒ earlier achievedAt ranks higher. Deterministic&lt;br&gt;ordering matters or pagination cursors skip and duplicate rows.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1620" y="3710" width="740" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd4" value="&lt;div style=&quot;text-align:left&quot;&gt;&lt;b&gt;5. OPERABILITY — how do you know it's stale or wrong?&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;(the L5-vs-L4 section, and the one most often skipped)&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Freshness as a first-class metric:&lt;/b&gt; emit &lt;code&gt;activityCompletedAt → effortVisibleAt&lt;/code&gt; as a histogram and alert on p99 &amp;gt; 3 min — the NFR becomes a monitor, not a sentence in a doc.&lt;br&gt;&lt;b&gt;Kafka consumer lag&lt;/b&gt; per consumer group, alerted before it eats the staleness budget. Lag spikes at deploy time from partition rebalancing are the classic cause.&lt;br&gt;&lt;b&gt;Correctness monitors:&lt;/b&gt; matched-efforts-per-activity distribution (a sudden drop means the segment index failed to load); DLQ depth; % of activities where the polyline exists in S3&lt;br&gt;but stats are missing in Postgres (the two-store divergence).&lt;br&gt;&lt;b&gt;Anti-cheat / data quality:&lt;/b&gt; reject or flag efforts implying impossible speed for the activity type (a 60 km/h &quot;run&quot;), GPS teleports between consecutive points, and accuracy&lt;br&gt;values above threshold. Without this the all-time leaderboard is permanently topped by a car.&lt;br&gt;&lt;b&gt;Backfill / replay:&lt;/b&gt; when a segment is added or edited, replay recent activities from Kafka (or the S3 polylines) through the matcher. This is why the polyline is durable and&lt;br&gt;processing is idempotent.&lt;br&gt;&lt;b&gt;Failure behaviour:&lt;/b&gt; ingest must stay up at 99.99% — it is the only path that can lose unrecoverable user data. If Cassandra is degraded, buffer to Kafka and drain later;&lt;br&gt;the client's on-disk buffer plus idempotent upserts means a full ingest outage degrades to delayed uploads, not lost activities. Feed and leaderboard may serve stale or&lt;br&gt;fail soft — a blank leaderboard is an inconvenience, a lost 5-hour ride is a churned user.&lt;br&gt;&lt;b&gt;Cost at target scale:&lt;/b&gt; S3 dominates (~2–3 TB/day of polylines ≈ 1 PB/yr, growing forever) — lifecycle policies and the raw-vs-compressed decision are a real budget line,&lt;br&gt;not a footnote. Matcher CPU is second. Redis memory for leaderboards is comparatively trivial.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="20" y="4180" width="2340" height="300" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
