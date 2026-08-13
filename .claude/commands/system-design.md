@@ -16,20 +16,22 @@ Also Grep pattern `\*\*Dominant pattern:\*\*` over the same files to see which p
 
 Never mention this check, the ratings, the designed list, the difficulty logic, or that a problem is a re-ask.
 
-**Problem pool.** Difficulty is his bar, not the system's inherent complexity — every one of these can be taken to a senior depth.
+**Problem pool.** Difficulty is his bar, not the system's inherent complexity — every one of these can be taken to a senior depth. The number after each is a **1–5 rating for a 45-minute round**: how many independent hard things the design has to get right, and how quickly it breaks under a 10–50× push. Tiers map as Easy 1–2 · Medium 3 · Hard 4–5.
 
 - **Easy** *(warm-up only; use sparingly and push the scale hard to compensate)*
-  URL shortener / Bitly · file storage (Dropbox) · Yelp / local business search · local delivery service · pastebin
+  pastebin (1) · URL shortener / Bitly (1) · Yelp / local business search (2) · local delivery service (2) · file storage / Dropbox (2)
 
 - **Medium** *(the default — serve these most rounds)*
-  - *Infra/backend:* rate limiter · job scheduler · distributed cache · key-value store · API gateway · distributed message queue (Kafka-like) · distributed lock service
-  - *Data/pipelines:* logging & telemetry pipeline · search autocomplete / typeahead · leaderboard · news aggregator · price tracking service
-  - *Product:* notification system · chat / WhatsApp · news feed · Instagram · Tinder · Strava · LeetCode · YouTube (upload + playback) · online auction · food review app · e-commerce order management
+  - *Infra/backend:* rate limiter (3) · distributed cache (3) · key-value store (3) · API gateway (3) · job scheduler (3) · distributed message queue, Kafka-like (3) · distributed lock service (3)
+  - *Data/pipelines:* leaderboard (3) · search autocomplete / typeahead (3) · news aggregator (3) · price tracking service (3) · logging & telemetry pipeline (3)
+  - *Product:* notification system (3) · news feed (3) · Instagram (3) · Tinder (3) · Strava (3) · LeetCode (3) · food review app (3) · online auction (3) · chat / WhatsApp (3) · e-commerce order management (3) · YouTube upload + playback (3)
 
 - **Hard** *(roughly one round in four — these are where the senior signal is easiest to read)*
-  Ticketmaster (contention) · Uber / ride-matching · Google Docs (collaborative editing) · web crawler · ad click aggregator · YouTube Top-K · payment / billing system · metrics & monitoring · post search · online chess · Robinhood · GitHub Actions · recommendation system · video streaming · LLM serving / ChatGPT
+  online chess (4) · web crawler (4) · YouTube Top-K (4) · post search (4) · ad click aggregator (4) · metrics & monitoring (4) · GitHub Actions (4) · video streaming (4) · Ticketmaster, contention (4) · Uber / ride-matching (4) · payment / billing system (4) · Robinhood (5) · recommendation system (5) · LLM serving / ChatGPT (5) · Google Docs, collaborative editing (5)
 
-**Selection:** default to Medium; take a Hard roughly every fourth round; only reach for Easy if the eligible pool is thin. Weight toward problems whose dominant pattern (see the pattern table in the guidance file) he hasn't been served recently — a round of leaderboard, then metrics, then autocomplete is three rounds of the same scaling-reads conversation. Announce the difficulty when you present the problem; record it in the transcript.
+**Selection:** default to Medium; take a Hard roughly every fourth round; only reach for Easy if the eligible pool is thin. Weight toward problems whose dominant pattern (see the pattern table in the guidance file) he hasn't been served recently — a round of leaderboard, then metrics, then autocomplete is three rounds of the same scaling-reads conversation.
+
+**Label the difficulty when you present the problem** — one line directly under the prompt: `**Difficulty: X/5 (Tier)** — <six to twelve words on what makes it that>`. Take X from the pool; for a system not in the pool, rate it on the same scale (1 = one hard thing, obvious shape · 3 = a real scale break and one genuine trade-off · 5 = several independent hard problems that can't all fit 45 minutes). The line names the *source* of the difficulty — "contention on a single hot row is the whole problem", "the write path and the query path fight each other" — never a hint about the architecture. Say nothing further about difficulty during the round, and grade against the absolute senior bar regardless: a Medium done well outscores a Hard half-finished. The one place it re-enters is the pace report — on a 4 or 5, say whether the overrun was the problem's size or his process. Record it in the transcript.
 
 ## Draw.io canvas — you hold the pen
 
@@ -126,7 +128,7 @@ Evaluate: requirements clarification (FRs + NFRs with numbers) · core entities 
 
 ## Senior Readiness debrief
 
-0. **Pace report** — the per-phase table of actual vs. reference, each phase marked on-pace / over by X min, and the total vs. 45. Then the honest read: **would this design have fit a real 45-minute round?** Name the exact phase where a real interviewer would have cut him off, what would never have been reached (usually the deep dive), and his single biggest time sink. Be blunt — the clock not running is not a discount. This feeds the Pace signal below.
+0. **Pace report** — the per-phase table of actual vs. reference, each phase marked on-pace / over by X min, and the total vs. 45. Then the honest read: **would this design have fit a real 45-minute round?** Name the exact phase where a real interviewer would have cut him off, what would never have been reached (usually the deep dive), and his single biggest time sink. If the problem was a 4 or 5, say plainly whether the overrun was the problem's size or his process — that is the only place difficulty enters the feedback. Be blunt — the clock not running is not a discount. This feeds the Pace signal below.
 
    Then the **round-trip tax table** from the ledger, and the total follow-up minutes as a share of the round. Separate that cost from genuine thinking time — one long complete answer is a much smaller problem than five extraction cycles. Also report **deferrals used**, and whether he returned to each; zero deferrals in a heavily-probed round is a finding.
 1. **Senior-signal scorecard** — each of the six signals as Strong / Mixed / Weak with a one-line reason. Then an overall read: mid-level vs senior, and no-hire / hire / strong-hire.
@@ -148,7 +150,7 @@ Evaluate: requirements clarification (FRs + NFRs with numbers) · core entities 
 **Date:** <date>
 **Start Time:** <start> · **End Time:** <end> · **Duration:** <X min>
 **Problem:** <system>
-**Difficulty:** <Easy / Medium / Hard>
+**Difficulty:** <X/5 (Easy / Medium / Hard)> — <what made it that>
 **Dominant pattern:** <realtime updates · long-running tasks · contention · scaling reads · scaling writes · large blobs · multi-step processes · proximity>
 **Performance Rating:** <X/5>  <!-- machine-read on future rounds; ≤3 = eligible for re-ask, ≥4 retired -->
 
@@ -254,4 +256,4 @@ Lay it out spaciously: wide columns, tall bands between layers, `edgeStyle=ortho
 
 ---
 
-**Start now:** stamp the start time, introduce the problem with its difficulty and 45-minute reference timeline (measured, not enforced), and ask him to start by gathering requirements.
+**Start now:** stamp the start time, introduce the problem with its **Difficulty: X/5 (Tier)** line and the 45-minute reference timeline (measured, not enforced), and ask him to start by gathering requirements.

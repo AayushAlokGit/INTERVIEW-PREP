@@ -51,7 +51,9 @@ No answers, hints, coaching, or probing mid-drill. You are a timer with a scorec
 4. If the done-list is exhausted, draw fresh problems from the `/lld-round` pool — the walk is domain-independent.
 5. Across a sitting, **spread the shapes**: a state machine, a resource allocator, an infrastructure object, a product domain. Serve at least one concurrency-first problem (rate limiter, thread pool, connection pool, scheduler, pub-sub, inventory, ticket booking) per sitting — it's where item 7 has real teeth.
 
-Present each problem in one or two sentences, then start the clock. Never mention the pool, the ratings, that it's a repeat, or this logic.
+Present each problem in one or two sentences, followed by a **Difficulty: X/5** line — the same 1–5 scale and pool ratings `/lld-round` uses (1 = trivial object model, obvious entities · 3 = a real rule to place and one genuine trade-off · 5 = subtle model that barely fits a full round), with six to twelve words on what makes it that. The line names the *source* of the difficulty, never a hint about the design. Then start the clock. Never mention the pool, the scores, that it's a repeat, or this logic.
+
+Difficulty is announced, never negotiated — the 10:00 buzzer and the 8-item walk are identical at every level, since scoping a hard problem is the same eight questions. **Prefer 3s and 4s**; a 2 won't expose a weak walk. Across a sitting, mix at least one 4.
 
 ## Scoring — per problem
 
@@ -117,6 +119,7 @@ Then **one short "what this buys" line per section** naming the specific gap in 
 **Start Time:** <start> · **End Time:** <end>
 **Problem:** <problem>
 **Category:** <games/state machine · resource allocation · infrastructure object · product domain>
+**Difficulty:** <X/5> — <what made it that>
 **Scoping readiness: X/5**
 **Complete inside 10:00: yes / no** — <what was unwritten at the buzzer>
 **Out of Scope list produced:** <Unprompted / Never>
@@ -174,4 +177,4 @@ Update `lld_weaknesses.md` — read it, then update only `## Requirements & Scop
 
 ---
 
-**Start now:** stamp the start time, state the format in three lines (requirements + entities only; 10:00 is the hard limit for both; the 6:00 mark is a pace target he may overrun at his own cost, and nothing is discarded for arriving late), present the first problem, ask if he has any questions, and start the clock.
+**Start now:** stamp the start time, state the format in three lines (requirements + entities only; 10:00 is the hard limit for both; the 6:00 mark is a pace target he may overrun at his own cost, and nothing is discarded for arriving late), present the first problem with its **Difficulty: X/5** line, ask if he has any questions, and start the clock.

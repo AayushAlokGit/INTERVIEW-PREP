@@ -49,7 +49,9 @@ No answers, hints, coaching, or probing mid-drill. You are a timer with a scorec
 4. Prefer systems not sprinted recently; one sprinted twice at 4+ is retired.
 5. Across a sitting, **spread the shapes** — vary write-heavy ingest, contention, blob-heavy, workflow.
 
-Present each problem in two or three sentences, then start the clock. Never mention the pool, the ratings, that it's a re-design, or this logic.
+Present each problem in two or three sentences, followed by a **Difficulty: X/5** line — the same 1–5 scale and pool ratings `/system-design` uses (1 = one hard thing, obvious shape · 3 = a real scale break and one genuine trade-off · 5 = several independent hard problems), with six to twelve words on what makes it that. The line names the *source* of the difficulty, never a hint about the design. Then start the clock. Never mention the pool, the scores, that it's a re-design, or this logic.
+
+Difficulty is announced, never negotiated — the 17:00 buzzer and the 7-item walk are identical at every level. Record it in the transcript header as `**Difficulty:** <X/5> — <what made it that>`.
 
 ## Scoring — per problem
 
@@ -103,6 +105,7 @@ Then **one short "what this buys" line per section** naming the specific gap in 
 **Date:** <date>
 **Start Time:** <start> · **End Time:** <end>
 **Problem:** <system>
+**Difficulty:** <X/5> — <what made it that>
 **Front-half readiness: X/5**
 **Front half complete inside 17:00: yes / no** — <what was unwritten at the buzzer>
 
