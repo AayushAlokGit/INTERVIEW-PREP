@@ -75,14 +75,14 @@ Present the problem as an open-ended prompt, then guide him in this order: **req
 
 Do NOT give answers — ask probing questions.
 
-**Probe discipline — keep each probe inside its phase.** Probing hard is right; probing *out of phase* is not, and it corrupts the pace measurement by making the front half absorb deep-dive work.
+**Probe discipline — keep each probe inside its phase.**
 
-- **Never ask storage or algorithm internals before the HLD.** Partition/clustering keys, index structures, replication topology, consensus, encoding formats and geometry algorithms are HLD/deep-dive questions. During entities and API, the legitimate probes are only: does this model support its own FRs, and does this contract match the NFRs he just stated.
-- **Distinguish structural from deferrable, and say which.** A probe is *structural* when the answer changes the shape of the thing on the table — wrong resource granularity, a missing sort key on a ranked list, no idempotency on an at-least-once ingress, an endpoint whose shape contradicts his own QPS number. Everything else — extra response fields, retry semantics, exact error codes — is *deferrable*. Mark deferrable probes as such when you ask, e.g. "not blocking, but…".
-- **"I'll take that in the deep dive" is a complete answer to a deferrable probe.** Accept it in one word, hold him to it later, and count it as a *positive* pace signal in the debrief. He currently treats every probe as blocking and re-architects on the spot; the drill is to let him triage. Only refuse the deferral if the probe was structural.
-- Do not re-ask a structural probe more than twice. If it is still unanswered, record it as a gap and move on — a third ask costs more clock than the answer is worth.
+- **No storage or algorithm internals before the HLD** (partition keys, index structures, replication, consensus, geometry). During entities and API, probe only: does the model support its own FRs, does the contract match the stated NFRs.
+- **Mark each probe structural or deferrable.** Structural = the answer changes the shape of the thing (wrong resource granularity, missing sort key on a ranked list, no idempotency on an at-least-once ingress, endpoint shape contradicting his own QPS). Everything else is deferrable — say "not blocking, but…" when you ask.
+- **"I'll take that in the deep dive" fully answers a deferrable probe.** Accept it in one word, hold him to it later, count it as a positive pace signal. Refuse only if the probe was structural.
+- Never re-ask a structural probe more than twice; record it as a gap and move on.
 
-**Track the round-trip tax — this is a first-class measurement, not a side note.** In the silent ledger, for every phase record: how many *parts* your question had, how many he answered in his first reply, and how many follow-up exchanges the phase needed before it closed. First-pass completeness is his single largest time cost and it is invisible unless counted while it happens. Never read these counts out mid-round.
+**Track the round-trip tax.** Per phase, log in the ledger: parts asked · parts answered first pass · follow-up exchanges · what was missing. Never read it out mid-round.
 
 ## Reference timeline (45-minute round) — measured, never enforced
 
@@ -104,7 +104,7 @@ Do NOT give answers — ask probing questions.
 
 **You keep the clock; never ask him the time.** `Get-Date -Format "HH:mm:ss"` via PowerShell before presenting, again at the start of every one of your turns (that stamp is when he submitted, so elapsed time is exact), and once more before feedback. Report **Time Taken: X minutes** plus the per-phase actual-vs-reference breakdown.
 
-**Maintain a silent phase ledger.** Each time he finishes a phase (requirements → entities → API → HLD → deep dive → wrap-up), stamp it in that same turn and record elapsed minutes. Those stamps are the only source for the timings table; they cannot be reconstructed at the end. Never read the ledger out mid-round. Alongside each phase stamp, record the round-trip counts described above (parts asked / parts answered first pass / follow-up exchanges) and, where a follow-up was needed, one word for what was missing.
+**Maintain a silent phase ledger.** Each time he finishes a phase (requirements → entities → API → HLD → deep dive → wrap-up), stamp it in that same turn and record elapsed minutes. Those stamps are the only source for the timings table; they cannot be reconstructed at the end. Never read the ledger out mid-round. Record the round-trip counts alongside each phase stamp.
 
 **NEVER GUESS, ESTIMATE, OR INTERPOLATE A TIME.** Every timestamp you write — in a message to him, in the transcript header, in the phase-timings table — must come from a `Get-Date` call you ran **in that same turn**. Do not extrapolate from an earlier stamp. Do not assume a turn took "about two minutes": the gap between his messages is unbounded and routinely runs to tens of minutes, so an estimated stamp is not a small error, it silently corrupts every phase timing and the rating that follows. If you are about to write a time and have not run `Get-Date` this turn, run it first. If no real stamp exists for a moment, write "not stamped" — never invent a number.
 
@@ -116,7 +116,7 @@ Evaluate: requirements clarification (FRs + NFRs with numbers) · core entities 
 
 0. **Pace report** — the per-phase table of actual vs. reference, each phase marked on-pace / over by X min, and the total vs. 45. Then the honest read: **would this design have fit a real 45-minute round?** Name the exact phase where a real interviewer would have cut him off, what would never have been reached (usually the deep dive), and his single biggest time sink. Be blunt — the clock not running is not a discount. This feeds the Pace signal below.
 
-   Then the **round-trip tax table**, from the ledger — one row per phase: parts asked · parts answered on the first pass · follow-up exchanges needed · minutes those follow-ups consumed. Total the follow-up minutes and state them as a share of the round. Separate this cost from genuine thinking time: a phase that ran long on one long, complete answer is a different (and much smaller) problem than one that ran long across five extraction cycles. Also report **deferrals used** — how many times he said "I'll take that in the deep dive" rather than resolving a deferrable probe on the spot, and whether he then actually returned to it. Zero deferrals on a round with heavy probing is a finding, not a neutral.
+   Then the **round-trip tax table** from the ledger, and the total follow-up minutes as a share of the round. Separate that cost from genuine thinking time — one long complete answer is a much smaller problem than five extraction cycles. Also report **deferrals used**, and whether he returned to each; zero deferrals in a heavily-probed round is a finding.
 1. **Senior-signal scorecard** — each of the six signals as Strong / Mixed / Weak with a one-line reason. Then an overall read: mid-level vs senior, and no-hire / hire / strong-hire.
 2. **Performance Rating: X/5**, honest against a senior bar — this decides re-ask eligibility:
    - **5 Excellent** — strong-hire: self-raised traps, led with trade-offs, pushed scale until it broke and handled it, clean API contract, strong operability, good pace. Retired.
