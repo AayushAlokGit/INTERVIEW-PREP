@@ -23,7 +23,8 @@ Don't stop at the comfortable number.
 - That break is usually the **senior-differentiating conversation** (e.g. for leaderboards: you can't shard a sorted set and keep a cheap global rank → bucketed/hierarchical ranking, approximate rank via score-histogram + local exact rank, sharded ZSETs with roll-up).
 
 ## 4. Treat the API as a designed contract
-- Concrete **response shapes** with explicit fields (`{ playerId, rank, score, percentile }`, neighbor list structure).
+- Explicit **request shapes** — the caller's contract, named fields, every mutating endpoint.
+- Responses: name the returned entity, and spell out the **load-bearing fields** — `nextCursor`, the id an async write returns for polling, a version/etag under concurrency, a status enum the client branches on. Skip the rest; a full field list isn't the signal.
 - **Pagination** on list/Top-N endpoints — cursor vs offset and *why* (cursor for live/changing data).
 - Correct HTTP verbs, idempotency on write/event contracts, versioning, error semantics.
 - Name every endpoint, including the read ones.
@@ -44,7 +45,7 @@ Don't stop at the comfortable number.
 
 ## Quick pre-round self-check
 - [ ] Did I state avg **and** peak numbers, with the arithmetic, unprompted?
-- [ ] Did I give response shapes + pagination for every endpoint?
+- [ ] Did I give request shapes + pagination for every endpoint, and the load-bearing response fields?
 - [ ] Did I justify each major component against an alternative?
 - [ ] Did I raise the idempotency / consistency / failure traps before being asked?
 - [ ] Did I push scale until something broke, and design for the broken case?

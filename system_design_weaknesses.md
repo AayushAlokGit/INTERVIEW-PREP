@@ -14,7 +14,7 @@ Last updated: 2026-08-13 (session 41 - design sprint: Ticketmaster, Ad Click Agg
 ## API Design
 | Weakness | Sessions | Last Seen |
 |---|---|---|
-| Vague response shape (no explicit fields) | 27 | 2026-08-13 |
+| Response omits load-bearing fields (cursor, id, status) | 27 | 2026-08-13 |
 | Misses read/delete endpoints until prompted | 5 | 2026-08-13 |
 | No idempotency on the most contended write | 3 | 2026-08-13 |
 | No error/status semantics on any endpoint | 2 | 2026-08-13 |
