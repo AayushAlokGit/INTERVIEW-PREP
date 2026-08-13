@@ -101,5 +101,69 @@ Response: File(id, fileS3Url, updatedAt)[]
 ## Where the time went
 Requirements ran 1:13 long on volume — six NFRs written as prose, including one that carries no number at all. Entities were fast and disciplined (2:45). The API was the phase that deserved the borrowed time and got the leftovers, finishing 55s past the hard stop. Nothing was lost to round-trips or clarifying questions; the whole overrun is front-loaded.
 
+## Ideal front half (writable in the same 17 minutes)
+
+### Requirements (~7 min)
+**FRs:** upload a file of any size · download · share with a user at a permission level · a device syncs changes made on another device.
+**Out of scope:** version history, conflict-merge UX, search, comments, offline conflict resolution.
+
+**NFRs:**
+- Availability 99.9% on upload/sync; downloads served from CDN/object store, effectively higher.
+- Consistency: file *bytes* immutable once written, so eventual is fine; **file metadata read-your-writes on the uploading device**. Share grants strongly consistent (a revoked share can't keep serving).
+- Latency: metadata ops p99 < 200ms. Byte transfer bounded by client bandwidth — we never proxy bytes.
+- Sync freshness: change visible on other devices within 60s.
+- Scale: 100M DAU × 2 uploads/day = 200M/day ÷ 10^5 = **2k uploads/s**; 10:1 read → **20k reads/s**. Avg file 1MB → **2 GB/s ingest**, ~170 TB/day.
+- **Plausibility check:** "1MB average across photos, docs and the occasional video is defensible — 100kB is too low for a consumer sync product, 10MB implies video-heavy. 2 GB/s is real but it's all S3 PUT traffic, not our servers, since clients upload direct."
+- Durability: 11 nines on bytes (object storage). Metadata replicated and backed up.
+- Storage growth: 170 TB/day ≈ 62 PB/yr before dedup → **dedup by content hash is a cost requirement, not a nicety.**
+
+*What this buys:* the plausibility line is one sentence and it changes the design — it turns 200 MB/s into 2 GB/s, justifies direct-to-S3, and surfaces dedup, which his version never reached.
+
+### Core entities (~3 min)
+- **File** — `id`, `ownerId`, `name`, `size`, `contentHash`, `latestVersionId`, `updatedAt`, `status: PENDING|COMMITTED`. Key `id`; index `(ownerId, updatedAt)`.
+- **Chunk** — `fileId`, `chunkIndex`, `chunkHash`, `size`, `s3Key`. Unique `(fileId, chunkIndex)`. *Load-bearing:* arbitrary size + irregular network means resumable upload, which means the file is a list of independently-retryable chunks; chunk hash is also where dedup happens.
+- **Device** — `id`, `userId`, `lastSyncCursor`. *Load-bearing:* each device needs its own position in the change log or `changedSince` is guesswork.
+- **ChangeLogEntry** — `userId`, `seq` (monotonic), `fileId`, `changeType`, `at`. Cursor = `seq`, not a timestamp — immune to clock skew.
+- **FileShare** — `fileId`, `sharedWithUserId`, `permission: VIEW|EDIT`, `grantedBy`. Unique `(fileId, sharedWithUserId)`.
+- **User** — `id`, `email`.
+
+*What this buys:* his API designed multipart resumable upload against a model with no chunk in it, and `changedSince` against no cursor. These two entities make the endpoints he already wrote implementable.
+
+### API design (~7 min)
+```
+POST /files                                    Idempotency-Key: <uuid>
+  req  { name, size, contentHash, chunkSize, parentFolderId? }
+  res  201 { fileId, uploadSessionId, status: "PENDING",
+             chunks: [{ index, uploadUrl, expiresAt }],   // presigned, direct to S3
+             alreadyUploadedChunks: [int] }               // dedup + resume in one field
+
+GET  /files/{id}/upload-session               // resume after a network drop
+  res  200 { uploadSessionId, missingChunks: [{ index, uploadUrl, expiresAt }] }
+
+POST /files/{id}/commit                        Idempotency-Key: <uuid>
+  req  { uploadSessionId, chunkHashes: [...] }
+  res  200 { fileId, versionId, status: "COMMITTED" }
+       409 if a chunk is missing or a hash mismatches
+
+GET  /files/{id}
+  res  200 { fileId, name, size, contentHash, downloadUrl, expiresAt, status, updatedAt }
+
+GET  /files?parentFolderId=&cursor=&limit=50
+  res  200 { files: [...], nextCursor }
+
+GET  /sync/changes?since={seq}&deviceId=&limit=100
+  res  200 { changes: [{ seq, fileId, changeType, at }], nextCursor, hasMore }
+       // cursor = monotonic seq, NOT a timestamp: no clock skew, no missed writes
+       // at 20k reads/s this is the hot path — cap limit, long-poll rather than tight-poll
+
+PUT    /files/{id}/shares/{userId}   req { permission }   -> 200   (idempotent by nature)
+DELETE /files/{id}/shares/{userId}                        -> 204
+DELETE /files/{id}                                        -> 204 soft-delete, trash retention
+
+Errors: 409 conflicting commit · 410 expired presigned URL · 413 over quota · 429 rate limit
+```
+
+*What this buys:* three specific gaps — `nextCursor` on the sync endpoint (the one place it's load-bearing), the deletes, and `alreadyUploadedChunks`, which expresses dedup and resume as one response field rather than two subsystems.
+
 ## Feedback given
 Strongest front half of the drill so far, and the first with a real out-of-scope list. The API in particular reads like a designed contract — presigned URLs rather than proxied bytes, a named upload-session id for resumability, idempotency on the create, and a completion call whose purpose he articulated. What's still costing him is the sanity check (never performed, on the one assumption that mattered) and the missing chunk entity, which left the API describing a mechanism the data model doesn't contain.

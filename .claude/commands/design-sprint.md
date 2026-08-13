@@ -82,6 +82,18 @@ Score each phase **0–5** on everything that existed **at 17:00**, whenever in 
 
 Be blunt. The value of this drill is that the 17-minute buzzer is honest.
 
+## Ideal front half — after the debrief, one per problem
+
+For **each** problem, write the front half a senior candidate would have produced **in the same 17 minutes** — not an exhaustive design doc. It must be visibly writable in the box: if your version couldn't be typed in 17 minutes, it's teaching the wrong target.
+
+Three sections, tight:
+
+1. **Requirements** — the 7-item walk filled in: FRs, explicit out-of-scope, availability, consistency per subsystem, latency with percentiles, the traffic model *with its one-line plausibility check shown*, read:write ratio, storage growth. Model the sanity check explicitly — it's the thing he keeps skipping.
+2. **Core entities** — objects, the fields that matter, keys/uniqueness, and **call out the entity that only appears under load** (the chunk, the counter, the log segment, the lease) with one line on why it exists.
+3. **API design** — full endpoint list with verbs and paths, request shapes with named fields, load-bearing response fields only, pagination, idempotency, error semantics.
+
+Then **one short "what this buys" line per section** naming the specific gap in his version it closes. No generic advice, no HLD, no deep-dive material — this is the front half only.
+
 ## Transcript
 
 `mkdir -p` then Write to `transcripts/<YEAR>/<MONTH>/<DAY>/design_sprint/<problem_name>.md` (zero-padded date, snake_case name), one file per problem.
@@ -112,6 +124,11 @@ Be blunt. The value of this drill is that the 17-minute buzzer is honest.
 ## What was still missing at 17:00
 
 ## Where the time went
+
+## Ideal front half (writable in the same 17 minutes)
+### Requirements
+### Core entities
+### API design
 
 ## Feedback given
 ```

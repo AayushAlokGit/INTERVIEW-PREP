@@ -91,5 +91,75 @@ If workflow currently running returns live logs else returns stored logs
 ## Where the time went
 Requirements ran 2:35 over on volume — seven NFRs where four would do, two of which aren't NFRs. Entities ran a further 2:35 over, and produced the best entity set of the sitting, so the time bought something. But nothing was repaid, and the API opened with 2:20 left. He got one endpoint down. The failure is sequencing, not knowledge: the six missing endpoints are obvious ones he could have listed as bare verbs and paths in under a minute had he started the phase on the clock.
 
+## Ideal front half (writable in the same 17 minutes)
+
+### Requirements (~7 min)
+**FRs:** repo event (push/PR) triggers a run · parse workflow YAML into a job DAG · schedule jobs onto isolated ephemeral runners respecting `dependsOn` · stream logs live · cancel/re-run.
+**Out of scope:** artifact storage, caching, self-hosted runners, billing, matrix expansion.
+
+**NFRs:**
+- Availability 99.99% on event ingest — a dropped webhook is a build that silently never runs. **Durable enqueue before ack.**
+- Consistency: a job must run **at most once** per (run, job, attempt) — double-executing a deploy is the failure that matters. Run status read-your-writes for the triggering user.
+- Latency: queue → job start p95 < 30s, p99 < 3 min. Log line → viewer p95 < 2s.
+- Scale: 1M DAU, ~10 pushes + 1 PR/day = 11M events/day ÷ 10^5 = **110 events/s avg, 550/s peak**.
+- Concurrency: 110/s × 300s avg runtime = **33,000 concurrent runners** steady state; peak ~**165,000**.
+- **Plausibility check:** "165k concurrent VMs at peak is a very large fleet — that's GitHub's actual order of magnitude, so it's plausible for this DAU, but it means warm-pool sizing is the whole problem. Most peaks are business-hours regional, so a global fleet smooths this; I'd provision ~50k warm and burst."
+- Log volume: 33k concurrent jobs × ~1 KB/s ≈ **33 MB/s ingest**, ~2.8 TB/day; 7-day retention ≈ 20 TB. **Logs are the dominant storage, not run metadata.**
+- Durability: run state survives a scheduler crash — a 40-minute job cannot be lost.
+
+*What this buys:* the same arithmetic he did, plus the check. The check reveals that 165k is peak-not-steady and that warm-pool sizing is the real design problem — and adds the log-volume line, never computed despite logs being the biggest thing in the system.
+
+### Core entities (~3 min)
+- **WorkflowDefinition** — `id`, `repoId`, `path`, `commitSha`, `triggers[]`, `parsedDagJson`. Unique `(repoId, path, commitSha)` — definitions pinned to a commit, so re-running an old build uses the old YAML.
+- **JobDefinition** — `id`, `workflowDefId`, `name`, `steps[]`, `dependsOn[]`, `runsOn`. (One DAG mechanism, not two — drop `jobSequence`.)
+- **WorkflowRun** — `id`, `workflowDefId`, `repoId`, `triggerEventId`, `status: QUEUED|RUNNING|SUCCESS|FAILED|CANCELLED`, `startedAt`, `finishedAt`. Index `(repoId, createdAt desc)`.
+- **JobRun** — `id`, `runId`, `jobDefId`, `status`, `attempt`, `runnerId`, `leaseExpiresAt`, `startedAt`. Unique `(runId, jobDefId, attempt)` — this is the at-most-once guarantee.
+- **Runner** — `id`, `machineType`, `image`, `status: IDLE|LEASED|BUSY|DRAINING`, `currentJobRunId`, `lastHeartbeatAt`. *Load-bearing:* heartbeat + lease expiry are how a dead runner's job gets reclaimed rather than hanging forever.
+- **LogSegment** — `jobRunId`, `seq`, `byteOffset`, `s3Key`, `sealed: bool`. *Load-bearing:* a live stream can't read a finished S3 object; the tail is served from hot storage, older segments from S3. **This is the entity that makes FR 4 possible.**
+
+*What this buys:* his entity set was genuinely good — definition/execution split and a machine status enum. The additions are the lease (dead-runner recovery), the attempt counter (at-most-once), and the log segment (the 2s streaming NFR had no data model behind it).
+
+### API design (~7 min) — **start this at 12:00 regardless of where entities are**
+```
+# --- ingest ---
+POST /webhooks/{provider}                      Idempotency-Key: <delivery-id>
+  req  { repoId, eventType, commitSha, ref, ... }
+  res  202 { runIds: [...] }                   // ack only after durable enqueue
+       // dedup on provider delivery id — webhooks are at-least-once
+
+POST /repos/{repoId}/runs                      Idempotency-Key: <uuid>   // manual dispatch
+  req  { workflowPath, ref, inputs{} }
+  res  201 { runId, status: "QUEUED" }
+
+# --- read ---
+GET /repos/{repoId}/runs?status=&branch=&cursor=&limit=50
+  res  200 { runs: [{ runId, status, commitSha, startedAt, durationMs }], nextCursor }
+
+GET /runs/{runId}
+  res  200 { runId, status, jobs: [{ jobRunId, name, status, dependsOn[], attempt }] }
+       // no cursor: a run's job list is bounded and small
+
+# --- logs ---
+GET /jobs/{jobRunId}/logs?sinceSeq={n}         // poll / incremental
+  res  200 { segments: [{ seq, lines[] }], nextSeq, sealed: bool }
+GET /jobs/{jobRunId}/logs/stream               // SSE, live tail, ~2s target
+       // same seq cursor as above, so a client can switch between them mid-job
+
+# --- control ---
+POST /runs/{runId}/cancel                      Idempotency-Key   -> 202
+POST /runs/{runId}/rerun    req { failedOnly: bool }  Idem-Key   -> 201 { newRunId }
+
+# --- runner control plane ---
+POST /runners/register    req { machineType, image }   -> 201 { runnerId, leaseToken }
+POST /runners/{id}/claim  req { labels[] }             -> 200 { jobRunId, steps[], leaseExpiresAt }
+                                                       -> 204 no work
+POST /runners/{id}/heartbeat  req { jobRunId }         -> 200 { leaseExpiresAt, shouldCancel: bool }
+POST /jobs/{jobRunId}/complete  req { status, exitCode }  Idem-Key -> 200
+
+Errors: 409 cancel on a finished run · 410 expired lease (runner must stop) · 429 concurrency limit
+```
+
+*What this buys:* this is the phase that scored 1/5, and the gap wasn't knowledge — it was opening the phase at 14:35. The endpoint list above, verbs and paths only, is about 60 seconds of typing. Write that skeleton first, then fill shapes downward until the buzzer; a complete list with thin shapes reads far better than one endpoint with a rich shape.
+
 ## Feedback given
 The capacity derivation is real progress — he produced a concrete fleet-size number unprompted, which earlier sittings never did. The remaining half of that habit is testing it: both the arithmetic and the plausibility of 165k machines fail a one-line check. The API result is the headline problem. A CI system with no way to start a build would not survive the first minute of an HLD discussion, and it was lost to allocation rather than to any gap in understanding.
