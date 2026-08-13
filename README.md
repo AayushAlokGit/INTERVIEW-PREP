@@ -11,6 +11,8 @@ A personal workspace for software engineering interview preparation — behavior
 | `dsa_weaknesses.md` | Tracked weak spots for DSA / coding rounds |
 | `system_design_senior_guidance.md` | Senior-level system design guidance |
 | `system_design_weaknesses.md` | Tracked weak spots for system design rounds |
+| `lld_senior_guidance.md` | Senior-level LLD guidance, including the 8-item requirements walk |
+| `lld_weaknesses.md` | Tracked weak spots for LLD rounds |
 | `Study materials/` | Crash-course refreshers (Python, Node.js, React, SQL) |
 | `.claude/commands/` | Claude Code slash commands for running mock interview rounds |
 
@@ -22,6 +24,10 @@ The `.claude/commands/` directory defines slash commands for practicing with Cla
 - `/behavioral` — standalone behavioral round
 - `/dsa-round` — standalone DSA / coding round
 - `/system-design` — standalone system design round
+- `/lld-round` — standalone low-level / object-oriented design round
+- `/design-sprint` — timeboxed system design front half (requirements + entities + API), 17 min per problem
+- `/lld-sprint` — timeboxed LLD scoping drill (requirements walk + entities), 10 min per problem
+- `/derive-optimal-algorithm` — derivation-only drill on an already-solved DSA problem
 - `/interview-feedback` — structured feedback and debrief on the session
 
 ## Notes
