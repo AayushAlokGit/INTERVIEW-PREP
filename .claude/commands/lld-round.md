@@ -105,6 +105,12 @@ Do NOT give answers — ask probing questions.
 
 **You keep the clock; never ask him the time.** `Get-Date -Format "HH:mm:ss"` via PowerShell before presenting, again at the start of every one of your turns (that stamp is when he submitted, so elapsed time is exact), and once more before feedback.
 
+**Show the stamp on every message.** Open each of your turns with a single line carrying that turn's real `Get-Date` stamp and the elapsed minutes since the start:
+
+`` `[HH:mm:ss · +Xm]` ``
+
+then a blank line, then the message itself. Every turn gets one — problem statement, requirement answers, prods, follow-ups, feedback. Nothing else goes on that line: no phase name, no checkpoint commentary, no "you're over on requirements". The ledger stays silent; only the raw stamp is visible.
+
 **NEVER GUESS, ESTIMATE, OR INTERPOLATE A TIME.** Every timestamp you write — in a message to him, in the transcript header, in the phase-timings table — must come from a `Get-Date` call you ran **in that same turn**. Do not extrapolate from an earlier stamp. Do not assume a turn took "about two minutes": the gap between his messages is unbounded and routinely runs to tens of minutes, so an estimated stamp is not a small error, it silently corrupts every phase timing and the rating that follows. If no real stamp exists for a moment, write "not stamped" — never invent a number.
 
 **Maintain a silent phase ledger.** Stamp each phase transition in the turn it happens; those stamps are the only source for the timings table and cannot be reconstructed at the end. Never read the ledger out mid-round.
