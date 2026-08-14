@@ -1,5 +1,5 @@
 # DSA Weaknesses
-Last updated: 2026-08-06
+Last updated: 2026-08-13
 
 <!-- Sessions = lifetime count (never decreases). Active = current severity 0-10;
      -1 whenever a round gave the chance to exhibit it and he didn't. Row retires at Active 0. -->
@@ -7,46 +7,45 @@ Last updated: 2026-08-06
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't proactively ask about input semantics (empty, duplicates) | 18 | 10 | 2026-08-06 |
-| Asks for constraints but can't translate them to a budget | 12 | 7 | 2026-08-06 |
-| Misses free structural facts stated in the problem | 7 | 3 | 2026-08-06 |
+| Doesn't proactively ask about input semantics (empty, duplicates) | 19 | 10 | 2026-08-13 |
+| Asks for constraints but can't translate them to a budget | 13 | 8 | 2026-08-13 |
+| Misses free structural facts stated in the problem | 8 | 4 | 2026-08-13 |
 
 ## Approach & Thought Process
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Defaults to generic pattern over structure-exploiting one | 26 | 9 | 2026-08-06 |
-| Adopts an optimality principle without proving it | 6 | 4 | 2026-08-06 |
-| Proposes sliding window without checking predicate monotonicity | 3 | 3 | 2026-08-05 |
-| Patches the loop condition instead of shrinking the move set | 1 | 1 | 2026-08-06 |
-| Requests a hint before stating any approach | 1 | 1 | 2026-08-06 |
+| Defaults to generic pattern over structure-exploiting one | 27 | 10 | 2026-08-13 |
+| Adopts an optimality principle without proving it | 7 | 5 | 2026-08-13 |
+| Proposes sliding window without checking predicate monotonicity | 3 | 2 | 2026-08-05 |
+| Patches the loop condition instead of shrinking the move set | 2 | 2 | 2026-08-13 |
+| Picks nearest instead of earliest from own candidate set | 1 | 1 | 2026-08-13 |
 
 ## Code Quality & Correctness
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't self-verify/dry-run before declaring done | 79 | 10 | 2026-08-06 |
-| Off-by-one / ordering bugs (update-before-shrink, mark-on-pop) | 17 | 3 | 2026-08-06 |
-| Misses degenerate/identity edge cases (source == target) | 2 | 2 | 2026-08-06 |
+| Doesn't self-verify/dry-run before declaring done | 80 | 10 | 2026-08-13 |
+| Off-by-one / ordering bugs (update-before-shrink, mark-on-pop) | 18 | 4 | 2026-08-13 |
 | Ignores integer overflow implied by the given constraints | 2 | 2 | 2026-08-06 |
-| Increment and decrement guards not mirror conditions | 3 | 1 | 2026-08-05 |
+| Misses degenerate/identity edge cases (source == target) | 2 | 1 | 2026-08-06 |
+| Tests only the given examples, never a self-made input | 1 | 1 | 2026-08-13 |
 
 ## Complexity Analysis
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't state complexity unless explicitly asked | 10 | 7 | 2026-08-05 |
-| Doesn't check own complexity against the constraint budget | 3 | 3 | 2026-08-06 |
-| Leaves iteration count unbounded in the stated bound | 1 | 1 | 2026-08-06 |
+| Doesn't state complexity unless explicitly asked | 11 | 8 | 2026-08-13 |
+| Doesn't check own complexity against the constraint budget | 4 | 4 | 2026-08-13 |
 
 ## Communication
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Long silence (7+ min) when stuck instead of thinking aloud | 15 | 10 | 2026-08-06 |
-| Defends/asserts instead of tracing when asked to dry-run | 23 | 8 | 2026-08-06 |
+| Long silence (7+ min) when stuck instead of thinking aloud | 16 | 10 | 2026-08-13 |
+| Defends/asserts instead of tracing when asked to dry-run | 24 | 9 | 2026-08-13 |
 
 ## Time Management
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Never reaches approach independently within budget | 15 | 10 | 2026-08-06 |
-| No code written within the coding-phase budget | 14 | 10 | 2026-08-06 |
+| Never reaches approach independently within budget | 16 | 10 | 2026-08-13 |
+| No code written within the coding-phase budget | 15 | 10 | 2026-08-13 |
 
 ## Derivation Questions
 <!-- Updated by /derive-optimal-algorithm. Ran = times he invoked the question unprompted
