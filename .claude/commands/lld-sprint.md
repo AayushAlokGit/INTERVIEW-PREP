@@ -106,7 +106,7 @@ Score roughly one point per two items hit, then adjust for quality. **Hard caps,
    - **2** — no Out of Scope list, entities never settled, or class design started but never covered the orchestrator.
    - **1** — the box ran out before class design was meaningfully started.
 
-Be blunt. The value of this drill is that the 10-minute buzzer is honest.
+Be blunt. The value of this drill is that the 22-minute buzzer is honest.
 
 ## Ideal front half — after the debrief, one per problem
 
