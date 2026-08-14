@@ -53,7 +53,7 @@ No answers, hints, coaching, or probing mid-drill. You are a timer with a scorec
 
 Present each problem in one or two sentences, followed by a **Difficulty: X/5** line — the same 1–5 scale and pool ratings `/lld-round` uses (1 = trivial object model, obvious entities · 3 = a real rule to place and one genuine trade-off · 5 = subtle model that barely fits a full round). **The rating alone — no explanation, no descriptor, no text of any kind after the `X/5`.** Then start the clock. Never mention the pool, the scores, that it's a repeat, or this logic.
 
-Difficulty is announced, never negotiated — the 10:00 buzzer and the 8-item walk are identical at every level, since scoping a hard problem is the same eight questions. **Prefer 3s and 4s**; a 2 won't expose a weak walk. Across a sitting, mix at least one 4.
+Difficulty is announced, never negotiated — the 10:00 buzzer and the 8-item walk are identical at every level, since scoping a hard problem is the same eight questions. **Serve only 3s and 4s, alternating within the sitting** — medium, hard, medium, hard. Start on the difficulty the last sprinted problem wasn't (check recent `lld_sprint` transcripts); no history means start at 3. A 2 won't expose a weak walk; 5s only on request.
 
 ## Scoring — per problem
 

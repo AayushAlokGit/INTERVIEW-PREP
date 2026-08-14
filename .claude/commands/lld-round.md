@@ -18,14 +18,14 @@ Never mention this check, the ratings, the done list, or that a problem is a re-
 
 **Problem pool** (3–5 years level — skip the trivial ones unless the pool is exhausted). The number after each is its **difficulty 1–5 for a 40-minute box** — not intrinsic complexity, but how subtle the object model is and how tight the clock runs:
 
-- *Games & state machines:* Tic-Tac-Toe with variable N (2), Connect Four (2), Snakes & Ladders (2), Blackjack / deck of cards (3), vending machine (3), chess move validation (4), text editor with undo (4), elevator system (4)
-- *Resource allocation:* parking lot (2), Amazon Locker (3), library management (3), hotel/room reservation (3), meeting room scheduler (3), car rental / bike share (3), movie ticket booking with seat holds (4), ride-matching dispatcher (4)
-- *Infrastructure objects:* LRU cache (2), rate limiter (3), logging service (3), connection pool (3), retry / circuit breaker (3), key-value store with TTL (3), in-memory file system (4), task scheduler (4), thread pool (4), pub-sub message bus (4), LFU cache (4)
-- *Product domains:* ATM (2), shopping cart with promotions (3), inventory management (3), notification dispatcher (3), food delivery order tracking (3), Splitwise / expense splitter (4), coupon / discount engine (4), version-controlled document (4), spreadsheet cell dependencies (5)
+- *Games & state machines:* Tic-Tac-Toe with variable N (2), Connect Four (2), Snakes & Ladders (2), coffee machine (2), Blackjack / deck of cards (3), vending machine (3), chess move validation (4), text editor with undo (4), elevator system (4)
+- *Resource allocation:* parking lot (2), Amazon Locker (3), library management (3), hotel/room reservation (3), meeting room scheduler (3), car rental / bike share (3), train platform assignment (3), movie ticket booking with seat holds (4), ride-matching dispatcher (4), concurrent parking lot — multi-threaded (4), elevator bank with multiple cars (5)
+- *Infrastructure objects:* LRU cache (2), trie / prefix tree (2), hash map with collision handling (2), rate limiter (3), logging service (3), connection pool (3), retry / circuit breaker (3), key-value store with TTL (3), URL shortener service (3), in-memory file system (4), task scheduler (4), thread pool (4), pub-sub message bus (4), LFU cache (4), search index with ranking (4)
+- *Product domains:* ATM (2), shopping cart with promotions (3), inventory management (3), notification dispatcher (3), food delivery order tracking (3), restaurant order management (3), Splitwise / expense splitter (4), coupon / discount engine (4), version-controlled document (4), payment processor (4), music streaming service (4), spreadsheet cell dependencies (5)
 
 **Difficulty is announced, never negotiated.** State it with the prompt (see Format) so he can pace himself, then grade against the absolute senior bar regardless — a 2 done well is a 4/5, and a 5 half-finished is not excused. The one place it enters the debrief is the pace report: if a 4 or 5 was served, say whether the overrun was the problem's size or his process.
 
-**Prefer 3s and 4s.** A 2 is a warm-up and won't expose a weak requirements walk — the domain is obvious enough to wing. Serve one only if the pool is thin or the last round was a 5.
+**Serve only 3s and 4s, alternating.** Medium (3) then hard (4), medium then hard — check the most recent `/lld-round` transcript for the last difficulty served and serve the other one. Ties or no history: start at 3. A 2 is a warm-up and won't expose a weak requirements walk; 5s are served only when he asks for one.
 
 **Concurrency-first problems** (rate limiter, thread pool, connection pool, scheduler, pub-sub, inventory, ticket booking) are senior bread-and-butter — serve one roughly every third round.
 

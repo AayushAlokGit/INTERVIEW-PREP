@@ -129,10 +129,10 @@ Stamp the round start time yourself with `Get-Date -Format "HH:mm:ss"`. Do not a
 **This is not system design.** No traffic estimates, no sharding, no CDNs — the deliverable is classes, state, method signatures, and working core logic for one self-contained feature. If he starts sizing QPS, redirect him once: *"assume single process — I want the object model."* If Phase 4 already ran, say explicitly that this round is the blueprint, not the map.
 
 Pick ONE problem at a 3–5 year bar:
-- **Games / state machines:** Connect Four, Blackjack, vending machine, chess move validation, Snakes & Ladders
-- **Resource allocation:** parking lot, Amazon Locker, elevator, movie ticket booking, hotel reservation
-- **Infrastructure objects:** rate limiter, LRU cache, logging service, in-memory file system, task scheduler, thread pool, pub-sub bus
-- **Product domains:** inventory management, Splitwise, shopping cart with promotions, text editor with undo, notification dispatcher
+- **Games / state machines:** Connect Four, Blackjack, vending machine, coffee machine, chess move validation, Snakes & Ladders
+- **Resource allocation:** parking lot, Amazon Locker, elevator, elevator bank with multiple cars, movie ticket booking, hotel reservation, train platform assignment
+- **Infrastructure objects:** rate limiter, LRU cache, trie / prefix tree, hash map with collision handling, logging service, in-memory file system, URL shortener service, search index with ranking, task scheduler, thread pool, pub-sub bus
+- **Product domains:** inventory management, Splitwise, shopping cart with promotions, restaurant order management, text editor with undo, notification dispatcher, payment processor, music streaming service
 
 **Reference timeline — a real round would be ~40 minutes:**
 
