@@ -1,5 +1,5 @@
 # DSA Weaknesses
-Last updated: 2026-08-18
+Last updated: 2026-08-19
 
 <!-- Sessions = lifetime count (never decreases). Active = current severity 0-10;
      -1 whenever a round gave the chance to exhibit it and he didn't. Row retires at Active 0. -->
@@ -7,43 +7,43 @@ Last updated: 2026-08-18
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't proactively ask about input semantics (empty, duplicates) | 22 | 10 | 2026-08-18 |
-| Asks for constraints but can't translate them to a budget | 17 | 10 | 2026-08-18 |
-| Misses free structural facts stated in the problem | 11 | 6 | 2026-08-18 |
+| Doesn't proactively ask about input semantics (empty, duplicates) | 23 | 10 | 2026-08-19 |
+| Asks for constraints but can't translate them to a budget | 18 | 10 | 2026-08-19 |
+| Misses free structural facts stated in the problem | 11 | 5 | 2026-08-18 |
 
 ## Approach & Thought Process
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Defaults to generic pattern over structure-exploiting one | 31 | 10 | 2026-08-18 |
-| Adopts an optimality principle without proving it | 9 | 5 | 2026-08-18 |
-| Proposes sliding window without checking predicate monotonicity | 3 | 1 | 2026-08-05 |
+| Defaults to generic pattern over structure-exploiting one | 31 | 9 | 2026-08-18 |
+| Adopts an optimality principle without proving it | 9 | 4 | 2026-08-18 |
+| Doesn't pin an endpoint to reduce a 2D count to 1D | 1 | 1 | 2026-08-19 |
 
 ## Code Quality & Correctness
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't self-verify/dry-run before declaring done | 84 | 10 | 2026-08-18 |
-| Off-by-one / ordering bugs (update-before-shrink, mark-on-pop) | 21 | 7 | 2026-08-18 |
-| Tests only the given examples, never a self-made input | 5 | 5 | 2026-08-18 |
+| Doesn't self-verify/dry-run before declaring done | 85 | 10 | 2026-08-19 |
+| Tests only the given examples, never a self-made input | 6 | 6 | 2026-08-19 |
+| Off-by-one / ordering bugs (update-before-shrink, mark-on-pop) | 21 | 6 | 2026-08-18 |
 | Binary search: lo=mid paired with a down-biased mid | 1 | 4 | 2026-08-17 |
-| Inverts a derived inequality when translating it into code | 1 | 1 | 2026-08-18 |
+| Leaves debug output live in submitted code | 1 | 1 | 2026-08-19 |
 
 ## Complexity Analysis
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't check own complexity against the constraint budget | 8 | 8 | 2026-08-18 |
-| Doesn't state complexity unless explicitly asked | 13 | 8 | 2026-08-17 |
+| Doesn't check own complexity against the constraint budget | 9 | 9 | 2026-08-19 |
+| Doesn't state complexity unless explicitly asked | 13 | 7 | 2026-08-17 |
 
 ## Communication
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Long silence (7+ min) when stuck instead of thinking aloud | 19 | 10 | 2026-08-18 |
-| Defends/asserts instead of tracing when asked to dry-run | 26 | 9 | 2026-08-17 |
+| Long silence (7+ min) when stuck instead of thinking aloud | 19 | 9 | 2026-08-18 |
+| Defends/asserts instead of tracing when asked to dry-run | 26 | 8 | 2026-08-17 |
 
 ## Time Management
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Never reaches approach independently within budget | 19 | 10 | 2026-08-18 |
-| No code written within the coding-phase budget | 18 | 10 | 2026-08-18 |
+| Never reaches approach independently within budget | 19 | 9 | 2026-08-18 |
+| No code written within the coding-phase budget | 18 | 9 | 2026-08-18 |
 
 ## Derivation Questions
 <!-- Updated by /derive-optimal-algorithm. Ran = times he invoked the question unprompted
@@ -52,7 +52,7 @@ Last updated: 2026-08-18
 |---|---|---|---|---|
 | Q1 | Write the brute force as a function signature | 3 | 3 | 2026-08-04 |
 | Q2 | Name the repeated work | 7 | 1 | 2026-08-14 |
-| Q3 | Fix the most constrained variable | 1 | 0 | — |
+| Q3 | Fix the most constrained variable | 1 | 1 | 2026-08-19 |
 | Q4 | Is the predicate monotone? | 2 | 3 | 2026-08-05 |
 | Q5 | Which scan direction/order makes it known? | 2 | 1 | 2026-07-28 |
 | Q6 | Name the operation, match the structure | 2 | 4 | 2026-08-17 |
