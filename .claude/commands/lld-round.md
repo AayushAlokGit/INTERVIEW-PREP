@@ -10,8 +10,8 @@ This is **not** system design. No traffic estimates, no sharding, no CDNs. The d
 **Load the senior bar.** Read `C:/Users/aayus/Desktop/Interview Prep/lld_senior_guidance.md`, internalize the **8-item requirements walk** (you grade phase 1 against it), and internalize the six senior signals: (1) scopes before designing, (2) state derived from requirements, (3) rules live with the state they act on / Tell-Don't-Ask, (4) simplicity held under pressure, (5) verifies own logic, (6) extends without rewriting. Probe for them silently; score them in the debrief. Never coach from this file during the round.
 
 **Pick the problem.** Glob `transcripts/*/*/*/lld/*.md` (base `C:/Users/aayus/Desktop/Interview Prep`) — each filename is a problem already done; ignore `summary_*.md`. Then Grep pattern `\*\*Performance Rating:\*\*`, path `transcripts`, glob `*/lld/*.md`, mode `content`.
-- Rating ≥ 4 (or no rating line) = **Mastered**, never re-ask.
-- Rating ≤ 3 = eligible; most recent rating decides if it appears twice.
+- Rating ≥ 3 (or no rating line) = **Mastered**, never re-ask.
+- Rating ≤ 2 = eligible; most recent rating decides if it appears twice.
 - Prefer a new problem, but roughly 1 in 3 rounds re-ask the weakest eligible one (lowest rating, oldest first as tiebreak), presented as if new.
 
 Never mention this check, the ratings, the done list, or that a problem is a re-ask.
@@ -145,7 +145,7 @@ Then the rubric, each scored with a one-line reason:
 **Performance Rating: X/5** — honest against a mid/senior bar. This decides re-ask eligibility.
 - **5 Excellent** — clean scoped requirements with out-of-scope, right entities first try, state fully justified, working core logic he verified himself, follow-ups absorbed at a seam, concurrency category named and handled. Retired.
 - **4 Strong** — solid design, minor gaps or one prompted signal. Retired.
-- **3 Pass** — a workable design that needed real prompting on responsibilities, patterns, or edge cases; or code that never quite got written. Eligible for re-ask.
+- **3 Pass** — a workable design that needed real prompting on responsibilities, patterns, or edge cases; or code that never quite got written. Retired.
 - **2 Weak** — God class, data classes with no behavior, rules scattered across callers, or broken core logic. Eligible.
 - **1 Poor** — no coherent object model, or the design had to be led out of him. Eligible.
 
@@ -191,7 +191,7 @@ Bash `mkdir -p` then Write to `C:/Users/aayus/Desktop/Interview Prep/transcripts
 **Problem:** <title>
 **Category:** <games/state machine · resource allocation · infrastructure object · product domain>
 **Difficulty:** <X/5> — <what made it that>
-**Performance Rating:** <X/5>  <!-- machine-read on future rounds; ≤3 = eligible for re-ask, ≥4 retired -->
+**Performance Rating:** <X/5>  <!-- machine-read on future rounds; ≤2 = eligible for re-ask, ≥3 retired -->
 **Hints Used:** <n>/2
 **Requirements Asked:** <what he asked> · **Never Asked:** <what he didn't>
 **Walk coverage:** <n>/8 hit
