@@ -1,0 +1,374 @@
+<mxfile host="65bd71144e">
+    <diagram name="System Design" id="system-design">
+        <mxGraphModel dx="720" dy="165" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2900" pageHeight="4800" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Price Tracking Service" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=22;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="20" width="700" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="90" width="500" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="FR1 — Users can add products they want tracked, with the URL of the product&#xa;on the e-commerce site from where tracking needs to be done.&#xa;&#xa;FR2 — Users can choose to be notified when price of a product &lt;= set target price.&#xa;&#xa;FR3 — Users can view product price history as a chart&#xa;(any time window within the last 2 years)." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F1FA;strokeColor=#6C8EBF;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="125" width="700" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="OUT OF SCOPE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+                    <mxGeometry x="800" y="90" width="500" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="(none stated)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontColor=#808080;" vertex="1" parent="1">
+                    <mxGeometry x="800" y="125" width="480" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="NON-FUNCTIONAL REQUIREMENTS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="330" width="500" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="NFR1 — Highly available for detecting price change (99.99%).&#xa;For price chart and user notification, lower availability acceptable.&#xa;&#xa;NFR2 — Freshness latency for price-change notification: 5 min.&#xa;Price chart latency p99 &lt; 1s.&#xa;&#xa;NFR3 — Eventual consistency acceptable for price-points data.&#xa;&#xa;NFR4 — Price data retained for 2 years." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="365" width="700" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="SCALE / TRAFFIC MODEL" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+                    <mxGeometry x="800" y="330" width="500" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="GIVENS (fixed for this round)&#10;&#10;1. 100M registered users, 10M DAU&#10;2. 20 tracked products per user (avg)&#10;3. 50M distinct product URLs across all users&#10;4. A product&#39;s price changes ~once per week (avg)&#10;5. Chart views: 2 per DAU per day&#10;6. Retention: 2 years of price history&#10;7. Peak-to-average 3x; on Black Friday price-change rate 20x normal&#10;&#10;Convention: a day = 10^5 seconds&#10;&#10;Derived numbers (QPS, storage, poll rate, fanout) are the&#10;candidate&#39;s to compute." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="800" y="365" width="580" height="300" as="geometry"/>
+        </mxCell>
+                <mxCell id="30" value="CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="610" width="500" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="User" style="swimlane;html=1;startSize=30;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="645" width="260" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="id&#xa;name" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;" vertex="1" parent="31">
+                    <mxGeometry y="30" width="260" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="Product" style="swimlane;html=1;startSize=30;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="340" y="645" width="260" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="id&#xa;productPageUrl&#xa;createdAt" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;" vertex="1" parent="33">
+                    <mxGeometry y="30" width="260" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="PriceSubscription" style="swimlane;html=1;startSize=30;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="640" y="645" width="260" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="productId&#xa;userId&#xa;createdAt&#xa;targetPrice" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;" vertex="1" parent="35">
+                    <mxGeometry y="30" width="260" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="PricePoint" style="swimlane;html=1;startSize=30;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+                    <mxGeometry x="940" y="645" width="260" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="productId&#xa;price&#xa;timestamp" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;" vertex="1" parent="37">
+                    <mxGeometry y="30" width="260" height="80" as="geometry"/>
+                </mxCell>
+      
+        <mxCell id="40" value="API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="810" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="41" value="NOTE: Identity extracted from JWT auth token" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="840" width="600" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="42" value="POST /priceSubscriptions&#10;  Request:  { productUrl }&#10;  Response: PriceSubscription(id, userId, targetPrice = null, productId)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="875" width="700" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="43" value="PUT /priceSubscriptions/:id/notify&#10;  Request:  { targetPrice }&#10;  Response: PriceSubscription(id, userId, targetPrice = null, productId)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="980" width="700" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="44" value="GET /products/:id/pricePoints?from={}&amp;to={}&#10;  Response: { PricePoint(productId, price, timestamp)[],&#10;              nextCursor: timestamp }&#10;  (cursor pagination)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1085" width="700" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="50" value="HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1240" width="500" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="51" value="Cron Job Fleet&#10;(runs every 5 min = freshness NFR)&#10;products assigned across instances" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1300" width="240" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="52" value="E-commerce Product URLs&#10;(Amazon / Walmart / ...)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1470" width="240" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="53" value="Kafka&#10;partitioned by productId&#10;(ordering per product)" style="shape=process;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="420" y="1300" width="240" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="54" value="Consumers&#10;process price-point event,&#10;decide whether to notify" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="780" y="1300" width="240" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="55" value="PriceSubscription store&#10;(queried by productId)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#D5E8D4;strokeColor=#82B366;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="800" y="1490" width="200" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="56" value="Notify relevant users" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="1320" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="57" value="SQL DB — PricePoints&#10;indexed on timestamp" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#D5E8D4;strokeColor=#82B366;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="1470" width="220" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="58" value="Price chart query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="1680" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="60" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="51" target="52">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="60l" value="fetch price by querying URL" style="edgeLabel;html=1;align=left;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="60">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="6" y="-2" as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="51" target="53">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="61l" value="price point + timestamp" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="61">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="53" target="54">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="62l" value="price-point event" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="62">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="54" target="55">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="63l" value="query subscriptions for productId" style="edgeLabel;html=1;align=left;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="63">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="6" y="-2" as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="54" target="56">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="64l" value="if price &lt;= target" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="64">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" edge="1" parent="1" source="57" target="58">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="65l" value="serves price chart" style="edgeLabel;html=1;align=left;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="65">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="6" y="-2" as="offset"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="66" value="?  price point saved to SQL DB&#10;   — writer not yet specified" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#B85450;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="1400" width="300" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="70" value="" style="line;strokeWidth=3;html=1;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1820" width="2200" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="71" value="OPTIMAL REFERENCE - what a senior strong-hire would design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1850" width="1200" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="72" value="Everything above is exactly what was described in the round. Everything below is the teaching the round withheld." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1888" width="1400" height="26" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="80" value="1 - OPTIMAL CORE ENTITIES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1935" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="81" value="User" style="swimlane;html=1;startSize=28;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1975" width="300" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="81a" value="id&#10;name, email, pushToken&#10;notificationPrefs" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;" vertex="1" parent="81">
+          <mxGeometry x="0" y="28" width="300" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="82" value="Product (one row per unique URL)" style="swimlane;html=1;startSize=28;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="1975" width="380" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="82a" value="id&#10;canonicalUrl     (unique key - dedups polling)&#10;retailerDomain   (drives per-domain rate limit)&#10;+ lastKnownPrice   &lt;&lt; MISSING in his model&#10;+ lastPolledAt     &lt;&lt; MISSING&#10;+ nextPollAt       &lt;&lt; MISSING - the scheduler key&#10;+ pollIntervalSec  (adaptive: volatile 5m, dead 1d)&#10;+ parserVersion    (detect markup breakage)&#10;createdAt" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fontFamily=Courier New;fontSize=11;" vertex="1" parent="82">
+          <mxGeometry x="0" y="28" width="380" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="83" value="PriceSubscription" style="swimlane;html=1;startSize=28;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="1975" width="420" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="83a" value="id&#10;productId, userId&#10;targetPrice&#10;+ armed: bool      &lt;&lt; THE MISSING FIELD&#10;                   false after firing; re-armed only&#10;                   when price rises back above target.&#10;                   Without it you notify every 5 min&#10;                   forever while price sits below target.&#10;+ lastNotifiedAt&#10;createdAt&#10;INDEX (productId, targetPrice) -- range query, not scan" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fontFamily=Courier New;fontSize=11;" vertex="1" parent="83">
+          <mxGeometry x="0" y="28" width="420" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="84" value="PriceChange (NOT PriceSample)" style="swimlane;html=1;startSize=28;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1975" width="440" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="84a" value="productId   (partition key)&#10;timestamp   (clustering key, DESC)&#10;price&#10;&#10;Written ONLY when price != lastKnownPrice.&#10;~104 rows/yr/product instead of 105,000.&#10;550 TB  ---&gt;  ~500 GB   (1000x)&#10;A price chart is a STEP FUNCTION: the change&#10;points ARE the complete information." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fontFamily=Courier New;fontSize=11;" vertex="1" parent="84">
+          <mxGeometry x="0" y="28" width="440" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="85" value="PriceRollup (daily pre-aggregate)" style="swimlane;html=1;startSize=28;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1740" y="1975" width="400" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="85a" value="productId, day&#10;open, close, min, max&#10;&#10;Serves any long window in ~730 rows.&#10;A chart is ~1000 px wide - more points&#10;than that is data you pay to ship and&#10;the client pays to throw away." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fontFamily=Courier New;fontSize=11;" vertex="1" parent="85">
+          <mxGeometry x="0" y="28" width="400" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="90" value="2 - OPTIMAL API DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2250" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="91" value="Identity from JWT on every endpoint.&#10;&#10;POST   /v1/subscriptions                     Idempotency-Key: &lt;uuid&gt;&#10;  req  { productUrl, targetPrice }&#10;  201  { id, productId, targetPrice, armed, createdAt }&#10;  409  URL already tracked by this user    422  unparseable / unsupported retailer&#10;&#10;PATCH  /v1/subscriptions/:id&#10;  req  { targetPrice }                 &lt;-- id in the PATH (his PUT had none)&#10;  200  { id, productId, targetPrice, armed }&#10;  404  not found / not owned    422  targetPrice &lt;= 0&#10;&#10;DELETE /v1/subscriptions/:id          -&gt; 204        (he had no delete)&#10;&#10;GET    /v1/subscriptions?cursor=&amp;limit=50          (he had no list)&#10;  200  { items: Subscription[], nextCursor }&#10;&#10;GET    /v1/products/:id/prices?from=&amp;to=&amp;resolution=auto|raw|hourly|daily&#10;  200  { points: [{t, price}], resolution, nextCursor }&#10;       resolution=auto -&gt; server picks rollup granularity from window width,&#10;       so a 2-year window returns ~730 points, NOT 220,000.&#10;       This is the endpoint that makes p99 &lt; 1s true instead of hoped-for." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#E1D5E7;strokeColor=#9673A6;fontFamily=Courier New;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2290" width="1100" height="420" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="92" value="KEY CONTRACT POINTS HE MISSED" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=13;fontStyle=1;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="2290" width="600" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="93" value="1. Resource addressability - PUT /priceSubscriptions/notify has no id.&#10;&#10;2. Error semantics - zero endpoints had any. A caller cannot distinguish&#10;   &quot;bad URL&quot;, &quot;retailer unsupported&quot;, &quot;not your subscription&quot;, &quot;already tracked&quot;.&#10;&#10;3. resolution / downsampling parameter - the single field that turns an&#10;   11 MB, 2.2 GB/s-egress read into a 30 KB one.&#10;&#10;4. Idempotency-Key on POST - a retried create must not double-subscribe.&#10;&#10;5. His PUT response echoed targetPrice = null on the endpoint whose only&#10;   job is setting targetPrice (copy-paste from the POST response).&#10;&#10;6. No list, no delete - users can create trackers and never manage them." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="2325" width="940" height="290" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="100" value="3 - OPTIMAL HIGH-LEVEL DESIGN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2760" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="101" value="INGEST / POLL PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2800" width="400" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="102" value="Poll Scheduler&#10;Redis ZSET scored by nextPollAt&#10;(NOT static cron assignment)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2860" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="103" value="Fetch Workers&#10;lease w/ visibility timeout&#10;dead worker lease expires&#10;and is re-taken - no silent stale" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="2860" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="104" value="Per-domain Rate Limiter&#10;token bucket + proxy pool&#10;(respect retailer limits)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="760" y="2860" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="105" value="Retailer sites&#10;Amazon / Walmart / ..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="2870" width="220" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="106" value="Last-Known-Price Cache&#10;Redis: productId -&gt; price&#10;CHANGE FILTER - drops ~99.9%&#10;of polls before they become writes" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#FFF2CC;strokeColor=#D6B656;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="3060" width="250" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="107" value="Kafka&#10;topic: price-changes&#10;partitioned by productId" style="shape=process;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="820" y="3070" width="250" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="108" value="Persist Consumer&#10;(consumer group A)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="2990" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="109" value="Notify Consumer&#10;(consumer group B)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="3180" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="110" value="PriceChange store&#10;Cassandra / ClickHouse&#10;PK (productId, ts DESC)&#10;~500 GB total" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#D5E8D4;strokeColor=#82B366;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1540" y="2900" width="240" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="111" value="Rollup job (hourly/daily)&#10;-&gt; PriceRollup table" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1880" y="2930" width="240" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="112" value="Subscription store&#10;INDEX (productId, targetPrice)&#10;range: targetPrice &gt;= newPrice&#10;- wakes 20 users, not 1,000,000" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;html=1;whiteSpace=wrap;fillColor=#D5E8D4;strokeColor=#82B366;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1540" y="3160" width="300" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="113" value="Notification Service&#10;dedupe key (subId, changeId)&#10;set armed=false&#10;+ DLQ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1930" y="3170" width="250" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="114" value="READ PATH" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3360" width="400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="115" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3400" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="116" value="API Gateway&#10;auth, quota" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="300" y="3400" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="117" value="CDN / edge cache&#10;chart responses immutable per&#10;(productId, window, resolution)&#10;- absorbs the viral hot key" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="3380" width="260" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="118" value="Chart Service&#10;picks rollup granularity&#10;from window width" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="3385" width="230" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="119" value="Subscription Service&#10;CRUD on subscriptions" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="3560" width="260" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="120" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="102" target="103">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="120l" value="lease due products" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="120">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="121" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="103" target="104">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="122" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="104" target="105">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="122l" value="HTTP fetch" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="122">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="123" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="103" target="106">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="123l" value="price == lastKnown ? drop : emit" style="edgeLabel;html=1;align=left;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="123">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="8" y="0" as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="124" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="106" target="107">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="124l" value="PriceChange event (only on change)" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="124">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="125" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="107" target="108">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="126" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="107" target="109">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="127" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="108" target="110">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="128" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;" edge="1" parent="1" source="110" target="111">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="129" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="109" target="112">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="129l" value="range query + armed" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="129">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="130" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="112" target="113">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="131" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="115" target="116">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="132" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="116" target="117">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="133" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="117" target="118">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="133l" value="on miss" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="133">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="134" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="116" target="119">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="135" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;exitX=1;exitY=0.5;entryX=0.5;entryY=1;" edge="1" parent="1" source="118" target="110">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="135l" value="rollups / raw changes" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="135">
+          <mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="136" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=1;" edge="1" parent="1" source="119" target="112">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="140" value="4 - KEY TRADE-OFFS (each vs its NAMED alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3720" width="800" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="141" value="Store CHANGES, not SAMPLES&#10;   vs. 5-min samples (his choice): 550 TB -&gt; ~500 GB, and a 2-yr chart goes 220k rows -&gt; ~200.&#10;   Give up: cannot distinguish &quot;price unchanged&quot; from &quot;poller was down&quot; - fixed by a daily heartbeat row.&#10;   KEY INSIGHT: polling frequency and storage frequency are INDEPENDENT decisions. He collapsed them into one.&#10;&#10;Cassandra / ClickHouse  vs.  sharded SQL (his choice)&#10;   Append-only, never updated, always range-scanned by (productId, time). That is a time-series shape.&#10;   Give up: joins, cross-product transactions, strong consistency - all three already conceded by his own NFR3.&#10;&#10;Pre-computed daily rollups  vs.  raw scan + cursor pagination (his choice)&#10;   Pagination makes it WORSE: dozens of sequential round trips inside a 1 s p99 budget.&#10;   A chart is ~1000 px wide. Give up: exact intra-day detail on long windows - nobody can see it anyway.&#10;&#10;Lease-based work queue (nextPollAt ZSET)  vs.  static cron-instance assignment (his choice)&#10;   A dead instance holding 3M assignments stales them silently - which is exactly what breaks his own&#10;   99.99% DETECTION-availability NFR. Leases expire and get re-taken. Also buys adaptive polling free:&#10;   volatile products 5 min, dormant products daily -&gt; 167k fetch/s drops ~10x at no freshness cost.&#10;&#10;Index (productId, targetPrice) + range query  vs.  scan all subscriptions for the product (his choice)&#10;   A $500 -&gt; $499 drop wakes the 20 people who wanted $499, not the 1M who wanted $300.&#10;   Same &quot;shrink the candidate set instead of filtering a large one&quot; move as his DSA round the same morning.&#10;&#10;CDN in front of chart reads  vs.  read replicas only (his choice)&#10;   Chart responses are immutable per (productId, window, resolution) until the next change - near-100% hit&#10;   rate on exactly the viral products that cause the hot key. Read replicas alone still pay full query cost." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3760" width="1500" height="540" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="150" value="5 - DEEP DIVES" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;fontColor=#1F4E79;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="3720" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="151" value="A. THE CORE HARD PROBLEM - repeat notifications  (nobody raised this all round)&#10;   Poll every 5 min. Price drops below target and STAYS there.&#10;   The consumer fires a notification every 5 minutes. Forever.&#10;   This is the most user-visible bug the system can have, and the design ships it.&#10;   Fix: `armed` flag on the subscription, cleared on fire, re-armed only when the&#10;   price rises back above target. Plus dedupe key (subscriptionId, changeId) so&#10;   at-least-once Kafka delivery does not double-fire.&#10;   He raised idempotency OF THE CONSUMER. This is idempotency OF THE USER-VISIBLE&#10;   ACTION - harder, and the one that matters.&#10;&#10;B. THE EXACT SCALE BREAK - and where it dissolves&#10;   His numbers, correct: 220k points x 50B = 11 MB per full-window chart.&#10;   200 chart loads/s x 11 MB = 2.2 GB/s egress, with a p99 &lt; 1s promise on top.&#10;   His answer: cursor pagination. That makes it worse.&#10;   Real fix: change-points + rollups. 2-yr window -&gt; ~730 rows -&gt; ~30 KB -&gt; ~6 MB/s.&#10;   The break does not get MITIGATED, it stops existing.&#10;&#10;C. READ:WRITE - the inversion he never caught&#10;   He concluded 20:1 (requests). Measured in ROWS TOUCHED: 200/s x 220k = 4.4e7&#10;   rows/s read vs 1.67e5 writes/s = ~250:1. He designed for a write-heavy system.&#10;   It is one of the most read-heavy systems he has been given.&#10;&#10;D. HOT KEYS - two of them, he found one&#10;   Read side (found, after a probe): viral product chart reads -&gt; read replicas. OK,&#10;   but CDN is the real answer since the payload is immutable between changes.&#10;   Notify side (missed): 1M subscriptions scanned on every price point for a viral&#10;   product -&gt; (productId, targetPrice) range query.&#10;&#10;E. CONSISTENCY&#10;   NFR3 already grants eventual consistency on price points - spend it. The only&#10;   ordering that matters is per-product, which Kafka partitioning by productId gives.&#10;   Notification correctness needs read-your-writes on the `armed` flag ONLY, so keep&#10;   subscriptions in a strongly-consistent store and price history in an eventual one.&#10;&#10;F. OPERABILITY - none of this came up&#10;   The metric that matters is not QPS, it is STALENESS: max age of last successful&#10;   poll, per product and per retailer domain. A retailer changes their markup, the&#10;   parser silently returns nothing, prices freeze, and every dashboard stays green.&#10;   Also: consumer lag alert tied to the 5-min NFR; DLQ for unparseable pages with a&#10;   per-domain failure-rate alert; parser-version canary; and COST - 167k egress HTTP&#10;   requests/s is a real line item, and the strongest argument for adaptive polling.&#10;&#10;G. BLACK FRIDAY (20x change rate)&#10;   Polling rate is FIXED, so ingest QPS does not move - only the change-event rate&#10;   through Kafka does, 20x. That is the backpressure question: partitions and the&#10;   consumer fleet must be sized for peak, or lag blows the 5-min freshness NFR&#10;   precisely when the notifications matter most.&#10;   His push/webhook answer is the right long-term shape." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="3760" width="1100" height="920" as="geometry"/>
+        </mxCell>
+      </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
