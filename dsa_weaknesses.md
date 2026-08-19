@@ -1,5 +1,5 @@
 # DSA Weaknesses
-Last updated: 2026-08-17
+Last updated: 2026-08-18
 
 <!-- Sessions = lifetime count (never decreases). Active = current severity 0-10;
      -1 whenever a round gave the chance to exhibit it and he didn't. Row retires at Active 0. -->
@@ -7,45 +7,43 @@ Last updated: 2026-08-17
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't proactively ask about input semantics (empty, duplicates) | 21 | 10 | 2026-08-17 |
-| Asks for constraints but can't translate them to a budget | 16 | 10 | 2026-08-17 |
-| Misses free structural facts stated in the problem | 10 | 5 | 2026-08-17 |
+| Doesn't proactively ask about input semantics (empty, duplicates) | 22 | 10 | 2026-08-18 |
+| Asks for constraints but can't translate them to a budget | 17 | 10 | 2026-08-18 |
+| Misses free structural facts stated in the problem | 11 | 6 | 2026-08-18 |
 
 ## Approach & Thought Process
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Defaults to generic pattern over structure-exploiting one | 30 | 10 | 2026-08-17 |
-| Adopts an optimality principle without proving it | 8 | 4 | 2026-08-17 |
-| Commits to a DP state without testing it can distinguish cases | 1 | 1 | 2026-08-17 |
-| Proves monotonicity, then picks the weaker tool it licenses | 1 | 1 | 2026-08-17 |
+| Defaults to generic pattern over structure-exploiting one | 31 | 10 | 2026-08-18 |
+| Adopts an optimality principle without proving it | 9 | 5 | 2026-08-18 |
 | Proposes sliding window without checking predicate monotonicity | 3 | 1 | 2026-08-05 |
 
 ## Code Quality & Correctness
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't self-verify/dry-run before declaring done | 83 | 10 | 2026-08-17 |
-| Off-by-one / ordering bugs (update-before-shrink, mark-on-pop) | 20 | 6 | 2026-08-17 |
-| Tests only the given examples, never a self-made input | 4 | 4 | 2026-08-17 |
+| Doesn't self-verify/dry-run before declaring done | 84 | 10 | 2026-08-18 |
+| Off-by-one / ordering bugs (update-before-shrink, mark-on-pop) | 21 | 7 | 2026-08-18 |
+| Tests only the given examples, never a self-made input | 5 | 5 | 2026-08-18 |
 | Binary search: lo=mid paired with a down-biased mid | 1 | 4 | 2026-08-17 |
-| Ignores integer overflow implied by the given constraints | 3 | 3 | 2026-08-17 |
+| Inverts a derived inequality when translating it into code | 1 | 1 | 2026-08-18 |
 
 ## Complexity Analysis
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't state complexity unless explicitly asked | 13 | 9 | 2026-08-17 |
-| Doesn't check own complexity against the constraint budget | 7 | 7 | 2026-08-17 |
+| Doesn't check own complexity against the constraint budget | 8 | 8 | 2026-08-18 |
+| Doesn't state complexity unless explicitly asked | 13 | 8 | 2026-08-17 |
 
 ## Communication
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Defends/asserts instead of tracing when asked to dry-run | 26 | 10 | 2026-08-17 |
-| Long silence (7+ min) when stuck instead of thinking aloud | 18 | 10 | 2026-08-17 |
+| Long silence (7+ min) when stuck instead of thinking aloud | 19 | 10 | 2026-08-18 |
+| Defends/asserts instead of tracing when asked to dry-run | 26 | 9 | 2026-08-17 |
 
 ## Time Management
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Never reaches approach independently within budget | 18 | 10 | 2026-08-17 |
-| No code written within the coding-phase budget | 17 | 10 | 2026-08-17 |
+| Never reaches approach independently within budget | 19 | 10 | 2026-08-18 |
+| No code written within the coding-phase budget | 18 | 10 | 2026-08-18 |
 
 ## Derivation Questions
 <!-- Updated by /derive-optimal-algorithm. Ran = times he invoked the question unprompted
