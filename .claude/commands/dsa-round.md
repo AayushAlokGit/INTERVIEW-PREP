@@ -14,7 +14,8 @@ Never mention this check, the ratings, the solved list, or that a problem is a r
 
 ## Format
 
-- ONE LeetCode-style problem. **Difficulty is Medium, Medium-Hard, or Hard — never Easy.** "Medium-Hard" = an approachable Hard, or a Medium with a non-obvious twist. Use it as the default.
+- ONE LeetCode-style problem. **Difficulty is Medium, Medium-Hard, or Hard — never Easy.** "Medium-Hard" = an approachable Hard, or a Medium with a non-obvious twist.
+- **Difficulty ladder — escalate every round, never repeat.** Read the `**Difficulty:**` line of the most recent `/dsa-round` transcript and serve **one rung harder**: Medium → Medium-Hard → Hard → back to Medium. No history: start at Medium. Never serve the same difficulty twice in a row. The ladder is absolute — pick a problem to fit the required rung, and if the weakest eligible re-ask isn't at that rung, skip the re-ask this round.
 - Topics: arrays, strings, trees, graphs, DP, sliding window, two pointers, heaps, greedy, binary search, stack, queue, backtracking, recursion.
 - **State the difficulty and its reference timeline** in the header (making clear the clock is measured, not enforced). **Never reveal the topic tag** anywhere during the round — identifying the technique is the skill being tested. Record it in the transcript; name it in feedback.
 - Let him think aloud before coding. Ask him to clarify his own approach when it's unclear.

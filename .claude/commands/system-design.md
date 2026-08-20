@@ -18,18 +18,18 @@ Never mention this check, the ratings, the designed list, the difficulty logic, 
 
 **Problem pool.** Difficulty is his bar, not the system's inherent complexity — every one of these can be taken to a senior depth. The number after each is a **1–5 rating for a 45-minute round**: how many independent hard things the design has to get right, and how quickly it breaks under a 10–50× push. Tiers map as Easy 1–2 · Medium 3 · Hard 4–5.
 
-- **Easy** *(warm-up only; use sparingly and push the scale hard to compensate)*
+- **Easy** *(off the ladder — never served)*
   pastebin (1) · URL shortener / Bitly (1) · Yelp / local business search (2) · local delivery service (2) · file storage / Dropbox (2)
 
-- **Medium** *(the default — serve these most rounds)*
+- **Medium** *(rung 3 of the ladder)*
   - *Infra/backend:* rate limiter (3) · distributed cache (3) · key-value store (3) · API gateway (3) · job scheduler (3) · distributed message queue, Kafka-like (3) · distributed lock service (3)
   - *Data/pipelines:* leaderboard (3) · search autocomplete / typeahead (3) · news aggregator (3) · price tracking service (3) · logging & telemetry pipeline (3)
   - *Product:* notification system (3) · news feed (3) · Instagram (3) · Tinder (3) · Strava (3) · LeetCode (3) · food review app (3) · online auction (3) · chat / WhatsApp (3) · e-commerce order management (3) · YouTube upload + playback (3)
 
-- **Hard** *(roughly one round in four — these are where the senior signal is easiest to read)*
+- **Hard** *(rungs 4 and 5 of the ladder — these are where the senior signal is easiest to read)*
   online chess (4) · web crawler (4) · YouTube Top-K (4) · post search (4) · ad click aggregator (4) · metrics & monitoring (4) · GitHub Actions (4) · video streaming (4) · Ticketmaster, contention (4) · Uber / ride-matching (4) · payment / billing system (4) · Robinhood (5) · recommendation system (5) · LLM serving / ChatGPT (5) · Google Docs, collaborative editing (5)
 
-**Selection:** default to Medium; take a Hard roughly every fourth round; only reach for Easy if the eligible pool is thin. Weight toward problems whose dominant pattern (see the pattern table in the guidance file) he hasn't been served recently — a round of leaderboard, then metrics, then autocomplete is three rounds of the same scaling-reads conversation.
+**Selection — difficulty ladder, escalating every round, never repeating.** Read the `**Difficulty:**` line of the most recent `/system-design` transcript and serve **one rung harder**: 3 → 4 → 5 → back to 3. A tier-only value in an older transcript reads as Medium = 3, Hard = 4. No history, or the last round was a 1 or 2: start at 3. Never serve the same difficulty twice in a row, and never serve Easy (1–2) — the ladder lives entirely in Medium (3) and Hard (4–5). The ladder is absolute: if no unserved system sits at the required rung, rate an off-pool system to that rung rather than dropping to another; if the weakest eligible re-ask isn't at that rung, skip the re-ask this round. Within the required rung, weight toward problems whose dominant pattern (see the pattern table in the guidance file) he hasn't been served recently — a round of leaderboard, then metrics, then autocomplete is three rounds of the same scaling-reads conversation.
 
 **Label the difficulty when you present the problem** — one line directly under the prompt: `**Difficulty: X/5 (Tier)**`. Take X from the pool; for a system not in the pool, rate it on the same scale (1 = one hard thing, obvious shape · 3 = a real scale break and one genuine trade-off · 5 = several independent hard problems that can't all fit 45 minutes). **The rating and tier alone — no explanation, no descriptor, no text of any kind after it.** Say nothing further about difficulty during the round, and grade against the absolute senior bar regardless: a Medium done well outscores a Hard half-finished. The one place it re-enters is the pace report — on a 4 or 5, say whether the overrun was the problem's size or his process. Record it in the transcript.
 

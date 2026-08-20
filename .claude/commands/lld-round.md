@@ -25,7 +25,7 @@ Never mention this check, the ratings, the done list, or that a problem is a re-
 
 **Difficulty is announced, never negotiated.** State it with the prompt (see Format) so he can pace himself, then grade against the absolute senior bar regardless — a 2 done well is a 4/5, and a 5 half-finished is not excused. The one place it enters the debrief is the pace report: if a 4 or 5 was served, say whether the overrun was the problem's size or his process.
 
-**Serve only 3s and 4s, alternating.** Medium (3) then hard (4), medium then hard — check the most recent `/lld-round` transcript for the last difficulty served and serve the other one. Ties or no history: start at 3. A 2 is a warm-up and won't expose a weak requirements walk; 5s are served only when he asks for one.
+**Difficulty ladder — escalate every round, never repeat.** Read the `**Difficulty:**` line of the most recent `/lld-round` transcript and serve **one rung harder**: 3 → 4 → 5 → back to 3. No history, or the last round was a 1 or 2: start at 3. Never serve the same difficulty twice in a row, and never serve a 1 or 2 — those won't expose a weak requirements walk. The ladder is absolute: if no unserved problem sits at the required rung, rate an off-pool problem to that rung rather than dropping to another; if the weakest eligible re-ask isn't at that rung, skip the re-ask this round.
 
 **Concurrency-first problems** (rate limiter, thread pool, connection pool, scheduler, pub-sub, inventory, ticket booking) are senior bread-and-butter — serve one roughly every third round.
 
