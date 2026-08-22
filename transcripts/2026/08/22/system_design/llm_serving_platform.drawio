@@ -1,193 +1,226 @@
 <mxfile host="app.diagrams.net">
   <diagram name="System Design" id="system-design">
-    <mxGraphModel dx="1400" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="4200" math="0" shadow="0">
+    <mxGraphModel dx="1400" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="6000" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
-        <mxCell id="2" value="LLM Serving Platform (ChatGPT-style Inference Service)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=20;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="20" width="1000" height="40" as="geometry"/>
+        <mxCell id="2" value="LLM Serving Platform (ChatGPT-style Inference Service)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=22;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1200" height="44" as="geometry"/>
         </mxCell>
-        <mxCell id="3" value="Difficulty: 5/5 (Hard)  ·  2026-08-22" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="40" y="58" width="600" height="24" as="geometry"/>
+        <mxCell id="3" value="Difficulty: 5/5 (Hard)  ·  2026-08-22" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=13;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="66" width="700" height="26" as="geometry"/>
         </mxCell>
 
-        <!-- ================= CANDIDATE SECTION ================= -->
-        <mxCell id="10" value="CANDIDATE DESIGN (exactly as described in the round)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#1F5C99;" vertex="1" parent="1">
-          <mxGeometry x="40" y="110" width="900" height="30" as="geometry"/>
+        <!-- ============================== CANDIDATE SECTION ============================== -->
+        <mxCell id="10" value="CANDIDATE DESIGN  (exactly as described in the round)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=17;fontStyle=1;fontColor=#1F5C99;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="1000" height="32" as="geometry"/>
         </mxCell>
         <mxCell id="11" value="" style="line;strokeWidth=2;html=1;strokeColor=#1F5C99;" vertex="1" parent="1">
-          <mxGeometry x="40" y="140" width="2280" height="10" as="geometry"/>
+          <mxGeometry x="40" y="176" width="2480" height="10" as="geometry"/>
         </mxCell>
 
-        <mxCell id="12" value="Functional Requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="165" width="400" height="26" as="geometry"/>
+        <mxCell id="12" value="Functional Requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="216" width="400" height="28" as="geometry"/>
         </mxCell>
-        <mxCell id="13" value="1. A user sends a conversation (chat history + new message). The service runs it through a large language model and streams the generated tokens back to the user's browser as they are produced.&#10;&#10;2. Output tokens should be streamed to the user as they are generated.&#10;&#10;3. A ChatCompletion request is handled by models running on GPUs, which are expensive, scarce and slow to provision. The system must provision GPUs if needed and load model weights into GPUs for inference.&#10;&#10;4. Multiple model sizes offered; multiple tiers of service — paying tier gets better service than free tier." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#EAF2FA;strokeColor=#1F5C99;" vertex="1" parent="1">
-          <mxGeometry x="40" y="196" width="1100" height="190" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="14" value="Non-Functional Requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1200" y="165" width="400" height="26" as="geometry"/>
-        </mxCell>
-        <mxCell id="15" value="(not produced — round ended before NFRs)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontColor=#777777;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="1200" y="196" width="520" height="60" as="geometry"/>
+        <mxCell id="13" value="1. A user sends a conversation (chat history + new message). The service runs it through a large language&#10;    model and streams the generated tokens back to the user's browser as they are produced.&#10;&#10;2. Output tokens should be streamed to the user as they are generated.&#10;&#10;3. A ChatCompletion request is handled by models running on GPUs, which are expensive, scarce and slow to&#10;    provision. The system must provision GPUs if needed and load model weights into GPUs for inference.&#10;&#10;4. Multiple model sizes offered; multiple tiers of service — paying tier gets better service than free tier." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#EAF2FA;strokeColor=#1F5C99;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="252" width="1180" height="230" as="geometry"/>
         </mxCell>
 
-        <mxCell id="16" value="Core Entities · API Design · High-Level Design · Deep Dive&#10;&#10;(not reached — the round was abandoned inside the requirements phase)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontColor=#777777;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="410" width="1100" height="80" as="geometry"/>
+        <mxCell id="14" value="Non-Functional Requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="216" width="400" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="15" value="(not produced — the round ended before NFRs)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=14;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontColor=#777777;dashed=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="252" width="620" height="70" as="geometry"/>
         </mxCell>
 
-        <!-- ================= OPTIMAL SECTION ================= -->
-        <mxCell id="100" value="OPTIMAL REFERENCE (what a senior strong-hire would design)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;fontColor=#1A7F37;" vertex="1" parent="1">
-          <mxGeometry x="40" y="560" width="1000" height="30" as="geometry"/>
+        <mxCell id="16" value="Core Entities  ·  API Design  ·  High-Level Design  ·  Deep Dive&#10;&#10;(not reached — the round was abandoned inside the requirements phase)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=14;fillColor=#F5F5F5;strokeColor=#B3B3B3;fontColor=#777777;dashed=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="362" width="620" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- ============================== OPTIMAL SECTION ============================== -->
+        <mxCell id="100" value="OPTIMAL REFERENCE  (what a senior strong-hire would design)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=17;fontStyle=1;fontColor=#1A7F37;" vertex="1" parent="1">
+          <mxGeometry x="40" y="640" width="1100" height="32" as="geometry"/>
         </mxCell>
         <mxCell id="101" value="" style="line;strokeWidth=2;html=1;strokeColor=#1A7F37;" vertex="1" parent="1">
-          <mxGeometry x="40" y="590" width="2280" height="10" as="geometry"/>
+          <mxGeometry x="40" y="676" width="2480" height="10" as="geometry"/>
         </mxCell>
 
-        <!-- Optimal requirements -->
-        <mxCell id="110" value="1 · Requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="615" width="400" height="26" as="geometry"/>
+        <!--  Band 1: Requirements -->
+        <mxCell id="110" value="1 · Requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="730" width="400" height="28" as="geometry"/>
         </mxCell>
-        <mxCell id="111" value="&lt;b&gt;FRs (choices, not restatements)&lt;/b&gt;&#10;• Submit a conversation → receive a streamed completion&#10;• Cancel an in-flight generation (users hit stop constantly = live GPU spend)&#10;• Reconnect / resume a stream that dropped mid-generation&#10;• Route to a requested model (small / large)&#10;• Per-tier admission, priority and shedding under scarcity&#10;&#10;&lt;b&gt;Out of scope (say it aloud)&lt;/b&gt;&#10;training / fine-tuning · conversation persistence · the model itself&#10;safety filtering · billing &amp;amp; metering · auth" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;" vertex="1" parent="1">
-          <mxGeometry x="40" y="646" width="700" height="230" as="geometry"/>
+        <mxCell id="111" value="&lt;b&gt;FRs — choices, not restatements&lt;/b&gt;&#10;&#10;• Submit a conversation → receive a streamed completion&#10;&#10;• Cancel an in-flight generation&#10;   (users hit stop constantly = live GPU spend)&#10;&#10;• Reconnect / resume a stream that dropped mid-generation&#10;&#10;• Route to a requested model (small / large)&#10;&#10;• Per-tier admission, priority and shedding under scarcity&#10;&#10;&#10;&lt;b&gt;Out of scope — say it aloud&lt;/b&gt;&#10;&#10;training &amp;amp; fine-tuning · conversation persistence&#10;the model itself · safety filtering · billing &amp;amp; metering · auth" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="770" width="800" height="420" as="geometry"/>
         </mxCell>
-        <mxCell id="112" value="&lt;b&gt;NFRs — three distinct latencies, and they trade against each other&lt;/b&gt;&#10;• &lt;b&gt;TTFT&lt;/b&gt; (time to first token): p99 &amp;lt; 1s paid, &amp;lt; 5s free — perceived responsiveness&#10;• &lt;b&gt;TPOT&lt;/b&gt; (inter-token): ~50 ms/token, must beat reading speed or the stream stutters&#10;• &lt;b&gt;Total generation&lt;/b&gt;: 500 tokens x 50 ms = 25s of &lt;i&gt;held GPU&lt;/i&gt; per request&#10;• Availability 99.9% on submit; a dropped stream is resumable, not a data-loss event&#10;• Consistency: not a factor — no shared mutable state on the serving path&#10;&#10;&lt;b&gt;Scale (givens)&lt;/b&gt;  100M DAU · 10 msgs/user/day · 1,000 in / 500 out tokens&#10;peak 3x avg · 90% small model · large-model GPU ≈ 2,000 out-tok/s aggregate&#10;&#10;&lt;b&gt;THE TRAP: QPS is the wrong unit.&lt;/b&gt; Capacity is tokens/sec, and requests&#10;differ ~100x in cost. Sizing in req/s gives a fleet wrong by an order of magnitude.&#10;&#10;&lt;b&gt;Derivation&lt;/b&gt; (day = 10^5 s)&#10;1e9 msgs/day → 1e4 msgs/s avg → 3e4/s peak&#10;output tokens: 3e4/s x 500 = 1.5e7 out-tok/s at peak&#10;GPUs ≈ 1.5e7 / 2e3 ≈ &lt;b&gt;7,500 GPUs&lt;/b&gt; at peak for generation alone (+ prefill)&#10;&lt;b&gt;Conclusion:&lt;/b&gt; cost dominates every other concern → batching, tiering and&#10;KV-cache reuse are &lt;i&gt;necessary&lt;/i&gt;, not decorative. If the 2,000 tok/s figure is off&#10;by 10x, the fleet moves 10x and the whole business case moves with it." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;" vertex="1" parent="1">
-          <mxGeometry x="790" y="646" width="930" height="430" as="geometry"/>
-        </mxCell>
-
-        <!-- Optimal entities -->
-        <mxCell id="120" value="2 · Core Entities" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="900" width="400" height="26" as="geometry"/>
-        </mxCell>
-        <mxCell id="121" value="&lt;b&gt;Request&lt;/b&gt;&#10;requestId (idempotency key)&#10;userId, tier&#10;modelId&#10;messages[] (role, content)&#10;maxTokens, temperature&#10;promptTokenCount (est.)&#10;state: QUEUED | PREFILL |&#10;  DECODING | DONE | CANCELLED |&#10;  FAILED&#10;assignedWorkerId&#10;createdAt, firstTokenAt" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;" vertex="1" parent="1">
-          <mxGeometry x="40" y="931" width="330" height="220" as="geometry"/>
-        </mxCell>
-        <mxCell id="122" value="&lt;b&gt;Model&lt;/b&gt;&#10;modelId, version&#10;weightsUri (object store)&#10;paramCount, dtype&#10;gpuMemForWeights&#10;kvBytesPerToken&#10;  ← the field that decides&#10;     admission control&#10;maxContextLen&#10;warmPoolTarget" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;" vertex="1" parent="1">
-          <mxGeometry x="410" y="931" width="330" height="220" as="geometry"/>
-        </mxCell>
-        <mxCell id="123" value="&lt;b&gt;InferenceWorker&lt;/b&gt;  (NOT stateless)&#10;workerId, gpuType, zone&#10;loadedModelId (or null)&#10;state: PROVISIONING | LOADING |&#10;  READY | DRAINING | DEAD&#10;totalKvBytes / freeKvBytes&#10;activeRequestIds[]&#10;currentBatchSize&#10;observedTokensPerSec&#10;heartbeatAt" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;" vertex="1" parent="1">
-          <mxGeometry x="780" y="931" width="360" height="220" as="geometry"/>
-        </mxCell>
-        <mxCell id="124" value="&lt;b&gt;StreamSession&lt;/b&gt;&#10;requestId&#10;tokensEmitted (monotonic seq)&#10;lastAckedSeq&#10;  ← enables resume-from-offset&#10;bufferedTail (ring buffer)&#10;connectionState&#10;&#10;&lt;b&gt;QueueEntry&lt;/b&gt;&#10;requestId, priorityClass,&#10;enqueuedAt, deadline" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;" vertex="1" parent="1">
-          <mxGeometry x="1180" y="931" width="340" height="220" as="geometry"/>
+        <mxCell id="112" value="&lt;b&gt;NFRs — three distinct latencies, and they trade against each other&lt;/b&gt;&#10;&#10;• &lt;b&gt;TTFT&lt;/b&gt; (time to first token): p99 &amp;lt; 1s paid, &amp;lt; 5s free — perceived responsiveness&#10;• &lt;b&gt;TPOT&lt;/b&gt; (inter-token): ~50 ms/token — must beat reading speed or the stream stutters&#10;• &lt;b&gt;Total generation&lt;/b&gt;: 500 tokens x 50 ms = 25 s of &lt;i&gt;held GPU&lt;/i&gt; per request&#10;• Availability 99.9% on submit; a dropped stream is resumable, not a data-loss event&#10;• Consistency: not a factor — no shared mutable state on the serving path&#10;&#10;&#10;&lt;b&gt;Scale (givens)&lt;/b&gt;&#10;100M DAU · 10 msgs/user/day · 1,000 in / 500 out tokens per message&#10;peak 3x average · 90% of traffic to the small model&#10;a large-model GPU generates ~2,000 output tok/s aggregate across concurrent requests&#10;&#10;&#10;&lt;b&gt;THE TRAP:  QPS is the wrong unit.&lt;/b&gt;&#10;Capacity is tokens/second, and requests differ ~100x in cost.&#10;Sizing this fleet in requests/sec produces a fleet wrong by an order of magnitude.&#10;&#10;&#10;&lt;b&gt;Derivation&lt;/b&gt;  (day = 10^5 s)&#10;&#10;1e9 msgs/day  →  1e4 msgs/s average  →  3e4 msgs/s at peak&#10;output tokens at peak:  3e4/s x 500  =  1.5e7 output tok/s&#10;GPUs  ≈  1.5e7 / 2e3  ≈  &lt;b&gt;7,500 GPUs&lt;/b&gt; at peak for generation alone (prefill on top)&#10;&#10;&lt;b&gt;Conclusion:&lt;/b&gt; cost dominates every other concern → batching, tiering and KV-cache reuse&#10;are &lt;i&gt;necessary&lt;/i&gt;, not decorative. If the 2,000 tok/s figure is off by 10x, the fleet moves 10x&#10;and the entire business case moves with it." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="770" width="1160" height="620" as="geometry"/>
         </mxCell>
 
-        <!-- Optimal API -->
-        <mxCell id="130" value="3 · API Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1180" width="400" height="26" as="geometry"/>
+        <!--  Band 2: Core entities -->
+        <mxCell id="120" value="2 · Core Entities" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1500" width="400" height="28" as="geometry"/>
         </mxCell>
-        <mxCell id="131" value="&lt;b&gt;POST /v1/chat/completions&lt;/b&gt;    (SSE stream; Authorization: Bearer &amp;lt;jwt&amp;gt; → userId + tier)&#10;&lt;b&gt;Headers:&lt;/b&gt; Idempotency-Key: &amp;lt;uuid&amp;gt;   ← retry of a 25-second request must NOT double-charge a GPU&#10;&lt;b&gt;Request:&lt;/b&gt; { model, messages: [{role, content}], maxTokens, temperature, stream: true }&#10;&lt;b&gt;Response (200, text/event-stream):&lt;/b&gt;&#10;  event: meta   data: { requestId, model, queuePositionHint }        ← requestId is load-bearing: cancel + resume key&#10;  event: token  data: { seq, text }                                   ← seq is load-bearing: the resume offset&#10;  event: done   data: { finishReason: stop|length|cancelled|error, usage: {promptTokens, completionTokens} }&#10;&lt;b&gt;Errors:&lt;/b&gt; 400 bad request · 401 unauth · 413 context too long · 429 tier rate limit (Retry-After)&#10;        503 capacity exhausted — free tier sheds here first, paid queues instead&#10;&#10;&lt;b&gt;GET /v1/chat/completions/{requestId}/stream?fromSeq=N&lt;/b&gt;   → resume a dropped stream from seq N (SSE, same event shape)&#10;&lt;b&gt;DELETE /v1/chat/completions/{requestId}&lt;/b&gt;                 → cancel in flight; 202 + frees the KV cache immediately&#10;&lt;b&gt;GET /v1/models&lt;/b&gt;                                          → [{ modelId, maxContextLen, availableToTier }]&#10;&#10;&lt;b&gt;Why SSE over WebSocket:&lt;/b&gt; the stream is unidirectional server→client; SSE gets HTTP/2 multiplexing, proxy&#10;compatibility and automatic browser reconnect (Last-Event-ID maps straight onto fromSeq). Given up: no client→server&#10;channel, so cancel needs a separate DELETE rather than an in-band frame. &lt;b&gt;Why not long-poll:&lt;/b&gt; a token every 50 ms&#10;would mean 20 round-trips a second per user." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1211" width="1680" height="340" as="geometry"/>
+        <mxCell id="121" value="&lt;b&gt;Request&lt;/b&gt;&#10;&#10;requestId  (idempotency key)&#10;userId, tier&#10;modelId&#10;messages[]  (role, content)&#10;maxTokens, temperature&#10;promptTokenCount (est.)&#10;state:&#10;   QUEUED | PREFILL | DECODING&#10;   | DONE | CANCELLED | FAILED&#10;assignedWorkerId&#10;createdAt, firstTokenAt" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1540" width="440" height="300" as="geometry"/>
         </mxCell>
-
-        <!-- Optimal HLD -->
-        <mxCell id="140" value="4 · High-Level Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1590" width="400" height="26" as="geometry"/>
+        <mxCell id="122" value="&lt;b&gt;Model&lt;/b&gt;&#10;&#10;modelId, version&#10;weightsUri  (object store)&#10;paramCount, dtype&#10;gpuMemForWeights&#10;&lt;b&gt;kvBytesPerToken&lt;/b&gt;&#10;   ← the field that decides&#10;      admission control&#10;maxContextLen&#10;warmPoolTarget" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="1540" width="440" height="300" as="geometry"/>
         </mxCell>
-
-        <mxCell id="141" value="Browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="60" y="1660" width="140" height="60" as="geometry"/>
+        <mxCell id="123" value="&lt;b&gt;InferenceWorker&lt;/b&gt;   (NOT stateless)&#10;&#10;workerId, gpuType, zone&#10;loadedModelId  (or null)&#10;state:&#10;   PROVISIONING | LOADING&#10;   | READY | DRAINING | DEAD&#10;totalKvBytes / freeKvBytes&#10;activeRequestIds[]&#10;currentBatchSize&#10;observedTokensPerSec&#10;heartbeatAt" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="1540" width="460" height="300" as="geometry"/>
         </mxCell>
-        <mxCell id="142" value="API Gateway&#10;(auth, tier lookup,&#10;per-tier rate limit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="270" y="1650" width="170" height="80" as="geometry"/>
-        </mxCell>
-        <mxCell id="143" value="Stream Gateway&#10;(stateless SSE front;&#10;holds client conn,&#10;relays tokens,&#10;resume-from-seq)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF4E5;strokeColor=#B36B00;" vertex="1" parent="1">
-          <mxGeometry x="510" y="1640" width="180" height="100" as="geometry"/>
-        </mxCell>
-        <mxCell id="144" value="Priority Queue&#10;(Redis / Kafka)&#10;paid · free · batch&#10;+ deadline-aware" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF4E5;strokeColor=#B36B00;" vertex="1" parent="1">
-          <mxGeometry x="770" y="1645" width="170" height="90" as="geometry"/>
-        </mxCell>
-        <mxCell id="145" value="Scheduler / Router&#10;• picks worker with the right model&#10;  LOADED and enough FREE KV memory&#10;• admission = memory admission&#10;• prefix-affinity routing (cache hit)&#10;• emits shed / 503 when starved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE5E5;strokeColor=#C0392B;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
-          <mxGeometry x="1010" y="1620" width="290" height="140" as="geometry"/>
-        </mxCell>
-        <mxCell id="146" value="Inference Worker Fleet (GPU) — STATEFUL&#10;• continuous batching: every step decodes one token&#10;  for every request in the batch&#10;• KV cache per request resident in GPU RAM for the&#10;  whole generation (GBs) → cannot round-robin&#10;• paged KV blocks (vLLM-style) to stop fragmentation&#10;• streams tokens back over gRPC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE5E5;strokeColor=#C0392B;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
-          <mxGeometry x="1380" y="1610" width="340" height="160" as="geometry"/>
-        </mxCell>
-        <mxCell id="147" value="Prefix / KV Cache Store&#10;(shared system-prompt&#10;+ conversation prefix reuse&#10;→ cuts prefill cost + TTFT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5EEFF;strokeColor=#1F5C99;" vertex="1" parent="1">
-          <mxGeometry x="1400" y="1840" width="300" height="100" as="geometry"/>
-        </mxCell>
-        <mxCell id="148" value="Capacity Controller&#10;• warm pool per model&#10;• scales on queue depth &amp;amp; TTFT,&#10;  NOT on GPU utilisation&#10;• provisions node (minutes) →&#10;  loads weights (1–5 min)&#10;• predictive: diurnal pre-warm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5EEFF;strokeColor=#1F5C99;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;" vertex="1" parent="1">
-          <mxGeometry x="1010" y="1840" width="290" height="150" as="geometry"/>
-        </mxCell>
-        <mxCell id="149" value="Model Registry&#10;+ Weights in Object Storage&#10;(S3 / Blob, pulled to local NVMe,&#10;peer-to-peer seeded on scale-out)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5EEFF;strokeColor=#1F5C99;" vertex="1" parent="1">
-          <mxGeometry x="620" y="1850" width="300" height="100" as="geometry"/>
-        </mxCell>
-        <mxCell id="150" value="Worker Registry&#10;(etcd / Redis: heartbeat,&#10;loadedModel, freeKvBytes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5EEFF;strokeColor=#1F5C99;" vertex="1" parent="1">
-          <mxGeometry x="250" y="1850" width="280" height="100" as="geometry"/>
-        </mxCell>
-        <mxCell id="151" value="Metrics &amp;amp; Usage Sink&#10;(TTFT/TPOT per tier, queue depth,&#10;tokens billed, GPU $/M tokens)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0E5FF;strokeColor=#6B3FA0;" vertex="1" parent="1">
-          <mxGeometry x="60" y="2020" width="300" height="90" as="geometry"/>
+        <mxCell id="124" value="&lt;b&gt;StreamSession&lt;/b&gt;&#10;&#10;requestId&#10;tokensEmitted  (monotonic seq)&#10;lastAckedSeq&#10;   ← enables resume-from-offset&#10;bufferedTail  (ring buffer)&#10;connectionState&#10;&#10;&lt;b&gt;QueueEntry&lt;/b&gt;&#10;&#10;requestId, priorityClass&#10;enqueuedAt, deadline" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="1540" width="440" height="300" as="geometry"/>
         </mxCell>
 
-        <mxCell id="160" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="141" target="142">
+        <!--  Band 3: API -->
+        <mxCell id="130" value="3 · API Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1950" width="400" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="131" value="&lt;b&gt;POST /v1/chat/completions&lt;/b&gt;      (SSE stream · Authorization: Bearer &amp;lt;jwt&amp;gt;  →  userId + tier)&#10;&#10;&lt;b&gt;Headers:&lt;/b&gt;   Idempotency-Key: &amp;lt;uuid&amp;gt;      ← a retry of a 25-second request must NOT double-charge a GPU&#10;&lt;b&gt;Request:&lt;/b&gt;   { model, messages: [{ role, content }], maxTokens, temperature, stream: true }&#10;&#10;&lt;b&gt;Response 200 · text/event-stream:&lt;/b&gt;&#10;      event: meta     data: { requestId, model, queuePositionHint }&#10;                                              ← requestId is load-bearing: it is the cancel + resume key&#10;      event: token    data: { seq, text }     ← seq is load-bearing: it is the resume offset&#10;      event: done     data: { finishReason: stop | length | cancelled | error,&#10;                                          usage: { promptTokens, completionTokens } }&#10;&#10;&lt;b&gt;Errors:&lt;/b&gt;   400 bad request · 401 unauthenticated · 413 context too long · 429 tier rate limit (Retry-After)&#10;               503 capacity exhausted — free tier sheds here first, paid tier queues instead&#10;&#10;&#10;&lt;b&gt;GET /v1/chat/completions/{requestId}/stream?fromSeq=N&lt;/b&gt;     → resume a dropped stream from seq N (same event shape)&#10;&lt;b&gt;DELETE /v1/chat/completions/{requestId}&lt;/b&gt;                              → cancel in flight; 202, frees the KV cache immediately&#10;&lt;b&gt;GET /v1/models&lt;/b&gt;                                                                    → [{ modelId, maxContextLen, availableToTier }]&#10;&#10;&#10;&lt;b&gt;Why SSE over WebSocket&lt;/b&gt; — the stream is unidirectional server→client, so SSE gets HTTP/2 multiplexing, proxy&#10;compatibility and automatic browser reconnect (Last-Event-ID maps straight onto fromSeq). &lt;b&gt;Given up:&lt;/b&gt; no client→server&#10;channel, so cancel needs a separate DELETE rather than an in-band frame.&#10;&lt;b&gt;Why not long-polling&lt;/b&gt; — a token every 50 ms would mean 20 round-trips per second per user." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1990" width="1960" height="560" as="geometry"/>
+        </mxCell>
+
+        <!--  Band 4: HLD -->
+        <mxCell id="140" value="4 · High-Level Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2660" width="400" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="139" value="request path  ──▶            token path  ┈┈▶" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="480" y="2660" width="600" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="141" value="Browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="2910" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="142" value="API Gateway&#10;&#10;auth · tier lookup&#10;per-tier rate limit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="340" y="2885" width="220" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="143" value="Stream Gateway&#10;&#10;stateless SSE front&#10;holds the client conn&#10;relays tokens&#10;resume-from-seq buffer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF4E5;strokeColor=#B36B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="660" y="2870" width="260" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="144" value="Priority Queue&#10;(Redis / Kafka)&#10;&#10;paid · free · batch&#10;deadline-aware" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF4E5;strokeColor=#B36B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="2880" width="240" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="145" value="Scheduler / Router&#10;&#10;• picks a worker with the right model&#10;   LOADED and enough FREE KV memory&#10;• admission = memory admission&#10;• prefix-affinity routing (cache hit)&#10;• emits shed / 503 when starved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE5E5;strokeColor=#C0392B;align=left;spacingLeft=12;verticalAlign=top;spacingTop=12;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="2845" width="400" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="146" value="Inference Worker Fleet (GPU) — STATEFUL&#10;&#10;• continuous batching: every step decodes&#10;   one token for every request in the batch&#10;• KV cache per request stays resident in GPU&#10;   RAM for the whole generation (GBs)&#10;   → you cannot round-robin&#10;• paged KV blocks (vLLM-style) to stop&#10;   fragmentation stranding capacity&#10;• streams tokens back over gRPC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE5E5;strokeColor=#C0392B;align=left;spacingLeft=12;verticalAlign=top;spacingTop=12;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1860" y="2825" width="440" height="260" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="150" value="Worker Registry&#10;(etcd / Redis)&#10;&#10;heartbeat · loadedModel&#10;freeKvBytes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5EEFF;strokeColor=#1F5C99;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="3300" width="360" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="149" value="Model Registry&#10;+ Weights in Object Storage&#10;&#10;S3 / Blob → pulled to local NVMe,&#10;peer-to-peer seeded on scale-out" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5EEFF;strokeColor=#1F5C99;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="3300" width="400" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="148" value="Capacity Controller&#10;&#10;• warm pool per model&#10;• scales on queue depth &amp;amp; TTFT,&#10;   NOT on GPU utilisation&#10;• provisions node (minutes) →&#10;   loads weights (1–5 min)&#10;• predictive diurnal pre-warm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5EEFF;strokeColor=#1F5C99;align=left;spacingLeft=12;verticalAlign=top;spacingTop=12;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="3270" width="380" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="147" value="Prefix / KV Cache Store&#10;&#10;shared system-prompt and&#10;conversation-prefix reuse&#10;→ cuts prefill cost and TTFT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5EEFF;strokeColor=#1F5C99;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1860" y="3300" width="400" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="151" value="Metrics &amp;amp; Usage Sink&#10;&#10;TTFT / TPOT per tier · queue depth&#10;tokens billed · GPU $ per M tokens" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0E5FF;strokeColor=#6B3FA0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="3660" width="400" height="150" as="geometry"/>
+        </mxCell>
+
+        <!-- HLD edges: request path -->
+        <mxCell id="160" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1.5;" edge="1" parent="1" source="141" target="142">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="161" value="POST /chat/completions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=10;" edge="1" parent="1" source="142" target="143">
+        <mxCell id="161" value="POST /chat/completions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;verticalAlign=bottom;" edge="1" parent="1" source="142" target="143">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="162" value="enqueue (priority=tier)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=10;" edge="1" parent="1" source="143" target="144">
+        <mxCell id="162" value="enqueue (priority = tier)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;verticalAlign=bottom;" edge="1" parent="1" source="143" target="144">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="163" value="dequeue" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=10;" edge="1" parent="1" source="144" target="145">
+        <mxCell id="163" value="dequeue" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;verticalAlign=bottom;" edge="1" parent="1" source="144" target="145">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="164" value="dispatch if KV fits" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=10;" edge="1" parent="1" source="145" target="146">
+        <mxCell id="164" value="dispatch if KV fits" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;verticalAlign=bottom;" edge="1" parent="1" source="145" target="146">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="165" value="token stream (gRPC, seq-numbered)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;fontSize=10;dashed=1;strokeColor=#C0392B;" edge="1" parent="1" source="146" target="143">
+
+        <!-- HLD edges: token return path (own lane above the row) -->
+        <mxCell id="165" value="token stream (gRPC, seq-numbered)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;fontSize=11;dashed=1;strokeColor=#C0392B;strokeWidth=1.5;" edge="1" parent="1" source="146" target="143">
           <mxGeometry relative="1" as="geometry">
-            <Array as="points"><mxPoint x="1550" y="1570"/><mxPoint x="600" y="1570"/></Array>
+            <Array as="points"><mxPoint x="2080" y="2740"/><mxPoint x="855" y="2740"/></Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="166" value="SSE tokens" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;fontSize=10;dashed=1;strokeColor=#C0392B;" edge="1" parent="1" source="143" target="141">
+        <mxCell id="166" value="SSE tokens" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=11;dashed=1;strokeColor=#C0392B;strokeWidth=1.5;" edge="1" parent="1" source="143" target="141">
           <mxGeometry relative="1" as="geometry">
-            <Array as="points"><mxPoint x="600" y="1600"/><mxPoint x="130" y="1600"/></Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="167" value="prefix lookup / insert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=10;" edge="1" parent="1" source="146" target="147">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="168" value="queue depth + TTFT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=10;" edge="1" parent="1" source="145" target="148">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="169" value="provision + load weights" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=10;" edge="1" parent="1" source="148" target="147">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="170" value="pull weights" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;fontSize=10;" edge="1" parent="1" source="149" target="148">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="171" value="heartbeat / freeKvBytes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0;entryY=0.5;fontSize=10;" edge="1" parent="1" source="146" target="150">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points"><mxPoint x="1550" y="2130"/><mxPoint x="200" y="2130"/><mxPoint x="200" y="1900"/></Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="172" value="worker state" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0;entryY=1;fontSize=10;" edge="1" parent="1" source="150" target="145">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points"><mxPoint x="390" y="1800"/><mxPoint x="980" y="1800"/><mxPoint x="980" y="1760"/></Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="173" value="usage + latency events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=10;" edge="1" parent="1" source="143" target="151">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points"><mxPoint x="600" y="2000"/><mxPoint x="210" y="2000"/></Array>
+            <Array as="points"><mxPoint x="725" y="2800"/><mxPoint x="150" y="2800"/></Array>
           </mxGeometry>
         </mxCell>
 
-        <!-- Trade-offs -->
-        <mxCell id="180" value="5 · Key Trade-offs (each vs a NAMED alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="2170" width="600" height="26" as="geometry"/>
+        <!-- HLD edges: control plane -->
+        <mxCell id="167" value="prefix lookup / insert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;" edge="1" parent="1" source="146" target="147">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="181" value="&lt;b&gt;Continuous batching&lt;/b&gt; vs static batching vs no batching&#10;Static batching wastes the GPU: the whole batch waits for the longest generation. No batching wastes it worse —&#10;a single decode step underutilises the device by ~50x. Continuous batching admits and evicts per token step.&#10;&lt;b&gt;Given up:&lt;/b&gt; the scheduler is now on the critical path of every token, and per-request latency depends on&#10;who else is in the batch — a noisy-neighbour effect you must bound with a max batch size.&#10;&#10;&lt;b&gt;SSE&lt;/b&gt; vs WebSocket vs long-poll — see API section. Chosen for HTTP/2 + native browser reconnect.&#10;&#10;&lt;b&gt;Stateful workers + affinity routing&lt;/b&gt; vs stateless round-robin&#10;Round-robin is impossible mid-generation: the KV cache lives on one GPU. Affinity also buys prefix-cache hits.&#10;&lt;b&gt;Given up:&lt;/b&gt; load balancing gets hard, a node loss kills every in-flight stream on it, and drains take&#10;up to a full generation (~25s) to complete.&#10;&#10;&lt;b&gt;Warm pool&lt;/b&gt; vs pure on-demand scale-out&#10;Provisioning (minutes) + weight load (1–5 min) is far longer than any acceptable TTFT, so autoscaling cannot&#10;react to a spike — it must anticipate it. &lt;b&gt;Given up:&lt;/b&gt; you pay for idle GPUs. Quantify it: at ~7,500 peak&#10;GPUs, a 15% warm buffer is ~1,100 idle GPUs — a real line item, justified against a shed-traffic alternative.&#10;&#10;&lt;b&gt;Priority queue with shedding&lt;/b&gt; vs fair-share vs first-come-first-served&#10;FCFS lets free traffic starve paid SLOs. Fair-share protects nobody's p99. Strict priority + free-tier&#10;shedding meets the paid SLO. &lt;b&gt;Given up:&lt;/b&gt; free-tier starvation under sustained load — bound it with a&#10;reserved floor of capacity so free never goes to literally zero." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="40" y="2201" width="820" height="560" as="geometry"/>
+        <mxCell id="168" value="queue depth + TTFT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;" edge="1" parent="1" source="145" target="148">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="169" value="provision node + load weights" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;dashed=1;" edge="1" parent="1" source="148" target="146">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1610" y="3325"/><mxPoint x="1610" y="3170"/><mxPoint x="1800" y="3170"/><mxPoint x="1800" y="3020"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="170" value="pull weights" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;verticalAlign=bottom;" edge="1" parent="1" source="149" target="148">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="171" value="heartbeat / freeKvBytes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;" edge="1" parent="1" source="146" target="150">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="2080" y="3560"/><mxPoint x="480" y="3560"/><mxPoint x="480" y="3380"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="172" value="worker state" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;" edge="1" parent="1" source="150" target="145">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="240" y="3180"/><mxPoint x="1300" y="3180"/><mxPoint x="1300" y="3010"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="173" value="latency + usage events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=11;strokeWidth=1.5;dashed=1;" edge="1" parent="1" source="150" target="151">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
-        <!-- Deep dives -->
-        <mxCell id="190" value="6 · Deep Dives" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=14;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="910" y="2170" width="400" height="26" as="geometry"/>
+        <!--  Band 5: Trade-offs -->
+        <mxCell id="180" value="5 · Key Trade-offs  (each against a NAMED alternative)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="3960" width="800" height="28" as="geometry"/>
         </mxCell>
-        <mxCell id="191" value="&lt;b&gt;A. The core hard problem — GPU memory is the real scheduler&lt;/b&gt;&#10;Naive: route to the least-loaded worker by request count.&#10;&lt;b&gt;Break:&lt;/b&gt; requests are not equal. A 100k-context request's KV cache can be&#10;100x a short one's. Counting requests overcommits GPU RAM → OOM mid-&#10;generation → every stream on that worker dies at once.&#10;&lt;b&gt;Fix:&lt;/b&gt; admission control on &lt;i&gt;bytes&lt;/i&gt;: kvBytesPerToken x (promptLen + maxTokens)&#10;must fit in freeKvBytes before dispatch. Paged KV blocks so memory is allocated&#10;incrementally and fragmentation doesn't strand capacity. Preemption policy:&#10;evict/requeue the newest low-priority request rather than OOM the box.&#10;&lt;b&gt;Trade-off:&lt;/b&gt; reserving for maxTokens over-reserves for requests that stop early;&#10;incremental paging recovers that but risks a mid-flight allocation failure.&#10;&#10;&lt;b&gt;B. The scale break — 10x traffic, or one viral moment&lt;/b&gt;&#10;At 3e4 msg/s peak the fleet is ~7,500 GPUs. Push 10x and there is no fleet to&#10;buy: GPU supply is a hard external ceiling, unlike every other system where you&#10;add nodes. So the design must degrade instead of scale:&#10;  • shed free tier first (503 + Retry-After), then downgrade free traffic to the&#10;    small model, then cap maxTokens per request&#10;  • queue paid traffic with a deadline; surface honest queue position&#10;  • multi-region overflow routing to wherever capacity exists&#10;&lt;b&gt;This is the senior conversation: the fix is admission policy, not capacity.&lt;/b&gt;&#10;&#10;&lt;b&gt;C. Hot keys / hot partitions&lt;/b&gt;&#10;• Long-context requests are the hot key — they monopolise KV memory. Isolate&#10;  them onto a dedicated long-context pool so they can't starve short chats.&#10;• A single shared system prompt is a hot &lt;i&gt;prefix&lt;/i&gt; — that's a gift, not a problem:&#10;  cache its KV once per worker and skip prefill for it entirely.&#10;• Model skew: 90% small / 10% large means the fleet split must be dynamic, or&#10;  the large-model pool sits idle while small-model requests queue.&#10;&#10;&lt;b&gt;D. Failure of an in-flight stream&lt;/b&gt;&#10;Worker dies at token 300 of 500. The KV cache is gone and cannot be recovered.&#10;Options: (i) restart the generation from scratch on another worker — correct but&#10;the user sees a stutter and you pay twice; (ii) fail the request. Choose (i) for&#10;paid, (ii) for free. The client resumes via fromSeq and the gateway replays its&#10;buffered tail, so the user sees a pause, not a broken answer. Non-determinism&#10;means a restart may produce different text — pin the seed per requestId.&#10;&#10;&lt;b&gt;E. Operability — how do you know it's wrong?&lt;/b&gt;&#10;• Alert on &lt;b&gt;queue depth and TTFT p99 per tier&lt;/b&gt;, never on GPU utilisation —&#10;  a healthy batched GPU is pinned at 100% by design, so utilisation says nothing.&#10;• Track TPOT p99: a rising inter-token latency means batches are too large.&#10;• Track KV-memory headroom per worker and preemption rate.&#10;• Track $/M tokens as a first-class SLO — at this fleet size cost IS a health metric.&#10;• Watch weight-load time and warm-pool hit rate; a cold-start storm is invisible&#10;  in request metrics until TTFT has already blown through the SLO." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="910" y="2201" width="810" height="900" as="geometry"/>
+
+        <mxCell id="181" value="&lt;b&gt;Continuous batching&lt;/b&gt;   vs static batching   vs no batching&#10;&#10;Static batching wastes the GPU: the whole batch waits for the longest generation in it. No batching wastes it far worse — a single&#10;decode step underutilises the device by roughly 50x. Continuous batching admits and evicts requests per token step.&#10;&lt;b&gt;Given up:&lt;/b&gt; the scheduler is now on the critical path of every token, and per-request latency depends on who else is in the batch&#10;— a noisy-neighbour effect you must bound with a maximum batch size." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4000" width="1960" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="182" value="&lt;b&gt;Stateful workers + affinity routing&lt;/b&gt;   vs stateless round-robin&#10;&#10;Round-robin is impossible mid-generation: the KV cache lives on one specific GPU. Affinity also buys prefix-cache hits.&#10;&lt;b&gt;Given up:&lt;/b&gt; load balancing gets genuinely hard, a node loss kills every in-flight stream on it, and draining a worker takes&#10;up to a full generation (~25 s) to complete." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4210" width="1960" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="183" value="&lt;b&gt;Warm pool&lt;/b&gt;   vs pure on-demand scale-out&#10;&#10;Provisioning (minutes) plus weight loading (1–5 min) is far longer than any acceptable TTFT, so autoscaling cannot &lt;i&gt;react&lt;/i&gt; to a&#10;spike — it has to anticipate it. &lt;b&gt;Given up:&lt;/b&gt; you pay for idle GPUs. Quantify it: at ~7,500 peak GPUs a 15% warm buffer is&#10;~1,100 idle GPUs — a real line item, and one you justify explicitly against the alternative of shedding that traffic." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4400" width="1960" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="184" value="&lt;b&gt;Strict priority queue with shedding&lt;/b&gt;   vs fair-share   vs first-come-first-served&#10;&#10;FCFS lets free traffic starve the paid SLO. Fair-share protects nobody's p99. Strict priority plus free-tier shedding is what&#10;actually meets the paid TTFT target. &lt;b&gt;Given up:&lt;/b&gt; free-tier starvation under sustained load — bound it with a reserved floor of&#10;capacity so free never drops to literally zero.&#10;&#10;&lt;b&gt;SSE&lt;/b&gt; vs WebSocket vs long-polling — argued in the API section: HTTP/2 multiplexing and native browser reconnect, at the cost&#10;of no client→server channel." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4590" width="1960" height="200" as="geometry"/>
+        </mxCell>
+
+        <!--  Band 6: Deep dives -->
+        <mxCell id="190" value="6 · Deep Dives" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4900" width="400" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="191" value="&lt;b&gt;A. The core hard problem — GPU memory is the real scheduler&lt;/b&gt;&#10;&#10;&lt;b&gt;Naive:&lt;/b&gt; route to the least-loaded worker by request count.&#10;&lt;b&gt;Break:&lt;/b&gt; requests are not equal. A 100k-context request's KV cache can be 100x&#10;a short one's. Counting requests overcommits GPU RAM → OOM mid-generation&#10;→ every stream on that worker dies at once.&#10;&lt;b&gt;Fix:&lt;/b&gt; admit on &lt;i&gt;bytes&lt;/i&gt;: kvBytesPerToken x (promptLen + maxTokens) must fit in&#10;freeKvBytes before dispatch. Paged KV blocks so memory is allocated incrementally&#10;and fragmentation cannot strand capacity. Preemption policy: evict and requeue&#10;the newest low-priority request rather than OOM the box.&#10;&lt;b&gt;Trade-off:&lt;/b&gt; reserving for maxTokens over-reserves for requests that stop early;&#10;incremental paging recovers that but risks a mid-flight allocation failure." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="4940" width="960" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="192" value="&lt;b&gt;B. The scale break — 10x traffic, or one viral moment&lt;/b&gt;&#10;&#10;At 3e4 msg/s peak the fleet is ~7,500 GPUs. Push 10x and there is simply no fleet&#10;to buy: GPU supply is a &lt;b&gt;hard external ceiling&lt;/b&gt;, unlike every other system where&#10;you just add nodes. So the design must degrade rather than scale:&#10;&#10;   • shed free tier first (503 + Retry-After)&#10;   • then downgrade remaining free traffic to the small model&#10;   • then cap maxTokens per request&#10;   • queue paid traffic against a deadline; surface an honest queue position&#10;   • multi-region overflow routing to wherever capacity actually exists&#10;&#10;&lt;b&gt;This is the senior conversation: the fix is admission policy, not capacity.&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="4940" width="940" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="193" value="&lt;b&gt;C. Hot keys / hot partitions&lt;/b&gt;&#10;&#10;• &lt;b&gt;Long-context requests are the hot key&lt;/b&gt; — they monopolise KV memory. Isolate&#10;   them onto a dedicated long-context pool so they cannot starve short chats.&#10;&#10;• A single shared system prompt is a hot &lt;i&gt;prefix&lt;/i&gt; — that is a gift, not a problem:&#10;   cache its KV once per worker and skip prefill for it entirely.&#10;&#10;• Model skew: 90% small / 10% large means the fleet split must be dynamic, or the&#10;   large-model pool sits idle while small-model requests queue." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="5330" width="960" height="270" as="geometry"/>
+        </mxCell>
+        <mxCell id="194" value="&lt;b&gt;D. Failure of an in-flight stream&lt;/b&gt;&#10;&#10;A worker dies at token 300 of 500. The KV cache is gone and cannot be recovered.&#10;Options: (i) restart the generation from scratch on another worker — correct, but the&#10;user sees a stutter and you pay for the tokens twice; (ii) fail the request outright.&#10;Choose (i) for paid, (ii) for free. The client resumes via fromSeq and the gateway&#10;replays its buffered tail, so the user sees a pause rather than a broken answer.&#10;Non-determinism means a restart may produce different text — pin the sampling seed&#10;per requestId so the replayed continuation is coherent with what was already shown." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="5330" width="940" height="270" as="geometry"/>
+        </mxCell>
+        <mxCell id="195" value="&lt;b&gt;E. Operability — how do you know it is wrong?&lt;/b&gt;&#10;&#10;• Alert on &lt;b&gt;queue depth and TTFT p99 per tier&lt;/b&gt;, never on GPU utilisation — a healthy batched GPU is pinned at 100% by design,&#10;   so utilisation carries no signal at all.&#10;• Track &lt;b&gt;TPOT p99&lt;/b&gt;: a rising inter-token latency means batches have grown too large.&#10;• Track &lt;b&gt;KV-memory headroom&lt;/b&gt; per worker and the preemption rate.&#10;• Track &lt;b&gt;$ per million tokens&lt;/b&gt; as a first-class SLO — at this fleet size cost IS a health metric.&#10;• Watch weight-load time and warm-pool hit rate: a cold-start storm is invisible in request metrics until TTFT has already blown&#10;   through the SLO." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=14;spacingTop=12;fillColor=#E8F5EC;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="5660" width="1960" height="220" as="geometry"/>
         </mxCell>
 
       </root>
