@@ -7,16 +7,17 @@ Last updated: 2026-08-22
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Asks for constraints but can't translate them to a budget | 22 | 10 | 2026-08-22 |
-| Doesn't proactively ask about input semantics (empty, duplicates) | 26 | 10 | 2026-08-22 |
-| Misses free structural facts stated in the problem | 11 | 1 | 2026-08-18 |
+| Asks for constraints but can't translate them to a budget | 23 | 10 | 2026-08-22 |
+| Doesn't proactively ask about input semantics (empty, duplicates) | 27 | 10 | 2026-08-22 |
+| Never probes the tie-break / output-ordering rule | 1 | 1 | 2026-08-22 |
 
 ## Approach & Thought Process
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Defaults to generic pattern over structure-exploiting one | 34 | 10 | 2026-08-22 |
+| Defaults to generic pattern over structure-exploiting one | 35 | 10 | 2026-08-22 |
+| Adopts an optimality principle without proving it | 12 | 5 | 2026-08-20 |
+| Can't reduce a brute force without being told what to fix | 1 | 1 | 2026-08-22 |
 | Takes the problem's time-step phrasing as the algorithm | 1 | 1 | 2026-08-22 |
-| Adopts an optimality principle without proving it | 12 | 6 | 2026-08-20 |
 | Needs a prompt to turn max-k into a feasibility check | 1 | 1 | 2026-08-20 |
 
 ## Code Quality & Correctness
@@ -30,22 +31,24 @@ Last updated: 2026-08-22
 ## Complexity Analysis
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't check own complexity against the constraint budget | 13 | 10 | 2026-08-22 |
-| Doesn't state complexity unless explicitly asked | 14 | 5 | 2026-08-20 |
-| States a complexity contradicted by his own approach | 3 | 2 | 2026-08-20 |
+| Doesn't check own complexity against the constraint budget | 14 | 10 | 2026-08-22 |
+| Doesn't state complexity unless explicitly asked | 14 | 4 | 2026-08-20 |
+| States a complexity contradicted by his own approach | 3 | 1 | 2026-08-20 |
 | Declares "can't optimise" without checking auxiliary space | 1 | 1 | 2026-08-22 |
 
 ## Communication
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Long silence (7+ min) when stuck instead of thinking aloud | 22 | 10 | 2026-08-22 |
-| Defends/asserts instead of tracing when asked to dry-run | 28 | 8 | 2026-08-19 |
+| Long silence (7+ min) when stuck instead of thinking aloud | 23 | 10 | 2026-08-22 |
+| Defends/asserts instead of tracing when asked to dry-run | 28 | 7 | 2026-08-19 |
+| Asks for a hint instead of attempting the question posed | 1 | 1 | 2026-08-22 |
 
 ## Time Management
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Never reaches approach independently within budget | 23 | 10 | 2026-08-22 |
-| No code written within the coding-phase budget | 22 | 10 | 2026-08-22 |
+| Never reaches approach independently within budget | 24 | 10 | 2026-08-22 |
+| No code written within the coding-phase budget | 23 | 10 | 2026-08-22 |
+| Ends the round with nothing submitted | 1 | 1 | 2026-08-22 |
 | Correction lands after the round would have ended | 2 | 1 | 2026-08-20 |
 
 ## Derivation Questions
@@ -54,8 +57,8 @@ Last updated: 2026-08-22
 | # | Question | Ran | Missed | Last Missed |
 |---|---|---|---|---|
 | Q1 | Write the brute force as a function signature | 3 | 3 | 2026-08-04 |
-| Q2 | Name the repeated work | 8 | 1 | 2026-08-14 |
-| Q3 | Fix the most constrained variable | 1 | 1 | 2026-08-19 |
+| Q2 | Name the repeated work | 9 | 1 | 2026-08-14 |
+| Q3 | Fix the most constrained variable | 1 | 2 | 2026-08-22 |
 | Q4 | Is the predicate monotone? | 2 | 5 | 2026-08-20 |
 | Q5 | Which scan direction/order makes it known? | 3 | 1 | 2026-07-28 |
 | Q6 | Name the operation, match the structure | 3 | 5 | 2026-08-20 |
