@@ -1067,7 +1067,51 @@ long long largestRectangle(vector<int> h) {
 }
 ```
 
-Maximal Rectangle in a binary matrix is this, run once per row over a running heights array.
+#### Maximal Rectangle — the same routine, once per row
+
+**Problem.** Largest rectangle of all `'1'`s in a binary matrix.
+
+```
+Brute:   all (r1,c1,r2,c2), verify all-ones           O(R^3 C^3)
+Better:  2D prefix sums to verify in O(1)             O(R^2 C^2)
+Optimal: treat each row as a histogram floor, reuse   O(R·C)
+         7b per row
+```
+
+**Unlock:** every rectangle has **some bottom row**. Fix that row as the floor, and
+`h[c]` = the run of consecutive `1`s ending there — now the answer for all rectangles bottoming out
+on this row is exactly Largest Rectangle in Histogram. Take the max over the `R` rows.
+
+The heights carry forward between rows; a `0` resets that column to the floor, because the run is
+broken:
+
+```cpp
+int maximalRectangle(const vector<vector<char>>& m) {
+    if (m.empty()) return 0;
+    int C = m[0].size();
+    vector<int> h(C, 0);
+    long long best = 0;
+    for (const auto& row : m) {
+        for (int c = 0; c < C; ++c)
+            h[c] = (row[c] == '1') ? h[c] + 1 : 0;   // a 0 resets the column
+        best = max(best, largestRectangle(h));       // 7b verbatim, no changes
+    }
+    return (int)best;
+}
+```
+
+Traced on the classic input — note row 2 is where the `2 x 3` block surfaces:
+
+```
+1 0 1 0 0      row 0   heights 1 0 1 0 0   -> 1
+1 0 1 1 1      row 1   heights 2 0 2 1 1   -> 3
+1 1 1 1 1      row 2   heights 3 1 3 2 2   -> 6   <- answer
+1 0 0 1 0      row 3   heights 4 0 0 3 0   -> 4
+```
+
+`R` histogram passes at O(C) each → **O(R·C)**, and the O(C) heights array is the only extra space.
+Same row-as-histogram reduction: Count Submatrices With All Ones. (*Maximal **Square*** is easier —
+plain DP, `dp[i][j] = 1 + min` of three neighbours — no stack needed.)
 
 ### 7c. Trapping Rain Water
 
