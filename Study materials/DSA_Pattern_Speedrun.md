@@ -699,9 +699,11 @@ int splitArray(const vector<int>& nums, int k) {     // min possible largest sub
 }
 ```
 
-The identical shape solves Koko Eating Bananas, Capacity to Ship Packages in D Days, Minimum Days to
-Make M Bouquets, Kth Smallest Element in a Sorted Matrix and Kth Smallest Pair Distance. Only `ok()`
-and the bounds change.
+The identical shape solves the family below — **only `ok()` and the bounds change**:
+*Koko Eating Bananas* `ok(rate)` = `sum(ceil(pile/rate)) <= h` · *Capacity to Ship Packages* `ok(cap)`
+= greedy day count `<= D` · *Min Days to Make M Bouquets* `ok(day)` = scan runs of already-bloomed
+flowers, count `>= m` · *Kth Smallest in a Sorted Matrix* `ok(v)` = staircase-count of cells `<= v` is
+`>= k` · *Kth Smallest Pair Distance* `ok(d)` = two-pointer count of pairs within `d` is `>= k`.
 
 **Traps:** derive both bounds out loud, and prove `ok()` is monotone. If you ever write `lo = mid`,
 you must use `mid = lo + (hi - lo + 1) / 2` or you infinite-loop. `accumulate(..., 0)` deduces `int`
@@ -1176,9 +1178,15 @@ vector<int> maxWindow(const vector<int>& a, int k) {
 }
 ```
 
-**Also stack-shaped:** Remove K Digits, Remove Duplicate Letters, Basic Calculator, Asteroid
-Collision, Valid Parentheses, Decode String. In all of them the pop guard is a problem-specific
-feasibility question — *getting the guard right is the correctness argument.*
+**Also stack-shaped** — the same push/pop loop, only the **guard** changes:
+*Valid Parentheses* push openers, pop on a matching closer, stack must end empty · *Asteroid
+Collision* pop while the top moves right and is smaller · *Remove K Digits* pop while `top > cur` and
+budget remains · *Remove Duplicate Letters* the same, but only pop a letter that occurs **again
+later**, and never one already placed · *Decode String* push `(count, prefix)` on `[`, pop and expand
+on `]` · *Basic Calculator II* push terms, resolving `*` and `/` against the top immediately.
+
+In all of them the pop guard is a problem-specific feasibility question — *getting the guard right is
+the correctness argument.*
 
 **C++ note:** `std::stack` cannot be iterated. If you need to inspect below the top, use a
 `vector<int>` as your stack (`back()` / `pop_back()`).
@@ -1425,8 +1433,12 @@ int diameterDfs(TreeNode* node) {
 }
 ```
 
-This one move also solves Binary Tree Maximum Path Sum, House Robber III, Balanced Binary Tree and
-Longest Univalue Path. Max Path Sum adds one twist — clamp negative arms to zero:
+This one move also solves the family below — **each returns something different upward**:
+*Binary Tree Maximum Path Sum* the best single arm, negatives clamped to 0 · *House Robber III* a
+`{robbed, skipped}` pair · *Balanced Binary Tree* the height, or `-1` to propagate failure without
+unwinding · *Longest Univalue Path* the arm length, but only if the child's value matches.
+
+Max Path Sum shows the clamp:
 
 ```cpp
 long long maxPathBest = LLONG_MIN;
@@ -1513,9 +1525,15 @@ vector<vector<int>> levelOrder(TreeNode* root) {
 }
 ```
 
-Also worth having ready: serialize/deserialize via preorder with explicit `#` null markers, and
-building from preorder + inorder using an `unordered_map<int,int>` of inorder positions → O(n) not
-O(n²).
+**The reconstruct family** — every one asks *identify the root, then find the split*:
+*Serialize/deserialize* preorder + a `#` for **both** children of every leaf; the markers make the
+recursion self-delimiting (preorder works, **inorder + markers is ambiguous**) · *Serialize a BST*
+needs no markers — pass `(lo, hi)` down and refuse to consume an out-of-range value, so the bounds
+supply the split; `n` tokens instead of `2n+1` · *Build from preorder + inorder* preorder front is the
+root, its `unordered_map` position in inorder is the split, and you must **recurse left first**
+because the cursor marches forward → O(n), not the O(n²) of rescanning · *inorder + postorder* mirror
+it: cursor from the back, **recurse right first** · *preorder + postorder* is **ambiguous** (both give
+the root, neither gives the split) unless the tree is full.
 
 ---
 
@@ -1706,7 +1724,9 @@ struct DSU {
 ```
 
 `unite` returning `false` is the answer to Redundant Connection and the filter in Kruskal's MST.
-Also: Accounts Merge, Number of Islands II.
+Also: *Accounts Merge* union any two accounts sharing an email, then group by root · *Number of
+Islands II* union each added cell with its `'1'` neighbours, decrementing a running component count
+on every successful merge.
 
 ### 11f. Dijkstra
 
@@ -1886,8 +1906,11 @@ int solveNQueens(int n, int row, vector<char>& col,
 }
 ```
 
-Family: Palindrome Partitioning, Word Search, Letter Combinations, Restore IP Addresses, Sudoku
-Solver — all the same three moves with a different feasibility test.
+Family — all the same three moves, **only the feasibility test differs**:
+*Palindrome Partitioning* cut at `i` if `s[start..i]` is a palindrome · *Word Search* the next grid
+cell matches and is unvisited · *Letter Combinations* no test at all, just the digit's letter set ·
+*Restore IP Addresses* segment `<= 255`, no leading zero, exactly 4 segments · *Sudoku Solver* the
+digit is unused in its row, column and 3x3 box.
 
 ---
 
@@ -2025,8 +2048,9 @@ long long coinChangeWays(const vector<int>& coins, int amount) {
 Swap them and you count **permutations** (`1+2` and `2+1` as distinct). Both are legitimate answers
 to different questions — know which one you were asked.
 
-Also here: Partition Equal Subset Sum (subset-sum to `total / 2`), Target Sum (reduces to
-subset-sum).
+Also here: *Partition Equal Subset Sum* subset-sum to `total / 2` (odd total → immediately false) ·
+*Target Sum* with `P` the positives, `P - N = target` and `P + N = sum` give `P = (sum + target) / 2`,
+so count subsets summing to `P` — reject if that is odd or negative.
 
 ### 13c. Two-sequence and grid DP — the `(i, j)` table
 
@@ -2073,8 +2097,13 @@ int lcs(const string& a, const string& b) {                // same table, differ
 ```
 
 `min({a, b, c})` with braces is the initializer-list overload — the three-argument form does not
-exist. The same table shape covers Distinct Subsequences, Regex and Wildcard Matching, Interleaving
-String, Unique Paths, Minimum Path Sum. Each row depends only on the previous → two rolling
+exist. The same table shape covers the family below — **only the transition changes**:
+*Distinct Subsequences* `dp[i][j] = dp[i-1][j] + (match ? dp[i-1][j-1] : 0)` · *Regex / Wildcard
+Matching* add a branch where `*` consumes zero or more · *Interleaving String* `dp[i][j]` = can
+`a[0..i)` and `b[0..j)` interleave into `c[0..i+j)` · *Unique Paths* `dp[i][j] = dp[i-1][j] +
+dp[i][j-1]` · *Minimum Path Sum* the same with `min` plus the cell's cost.
+
+Each row depends only on the previous → two rolling
 `vector<int>`s give **O(min(m, n)) space** if asked.
 
 ### 13d. Interval DP — `n ≤ 500` and "the last thing you do"
@@ -2111,8 +2140,10 @@ int burstBalloons(const vector<int>& nums) {
 }
 ```
 
-Same shape: Matrix Chain Multiplication, Minimum Cost to Cut a Stick, Longest Palindromic
-Subsequence.
+Same shape, `k` splitting `[i, j]`: *Matrix Chain Multiplication* cost `p[i-1]*p[k]*p[j]` ·
+*Minimum Cost to Cut a Stick* cost = the segment's length, with the cut positions as split points ·
+*Longest Palindromic Subsequence* not a split at all — `dp[i][j] = dp[i+1][j-1] + 2` on a match, else
+`max(dp[i+1][j], dp[i][j-1])`.
 
 ### 13e. Bitmask DP — `n ≤ 20`
 
@@ -2150,7 +2181,9 @@ int tsp(const vector<vector<int>>& d) {
 }
 ```
 
-Also: Assignment Problem, Partition to K Equal Sum Subsets, Shortest Path Visiting All Nodes.
+Also: *Assignment Problem* `dp[mask]` = cost of assigning the first `popcount(mask)` workers ·
+*Partition to K Equal Sum Subsets* `dp[mask]` = the running remainder, filling one bucket at a time ·
+*Shortest Path Visiting All Nodes* BFS over `(node, mask)` states, not DP — it is unweighted.
 `1 << n` is an `int` — use `1LL << n` if `n ≥ 31`.
 
 ### 13f. State-machine DP — the stock problems
@@ -2231,7 +2264,8 @@ The fixed `Trie* kids[26]` array is faster than a map and fine for lowercase-onl
 
 **Word Search II** is the payoff case: trie of the dictionary + DFS over the grid, pruning the
 instant the current path leaves the trie — that inverts an O(words · cells) search into one grid
-walk. Also: maximum XOR pair, via a binary trie over 32 bits.
+walk. Also: *Maximum XOR of Two Numbers* — insert every value into a binary trie over its 32 bits,
+then for each value walk down greedily taking the **opposite** bit wherever that child exists.
 
 ---
 
