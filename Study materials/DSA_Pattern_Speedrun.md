@@ -402,18 +402,67 @@ Brute:   apply each range update elementwise           O(q·n)
 Optimal: mark the two endpoints, prefix-sum once       O(q + n)
 ```
 
-**Unlock:** prefix sums answer range *queries* in O(1); difference arrays apply range *updates* in
-O(1). They are each other's inverse — recognise which side of the problem you are on.
+**Core idea:** define `d[i] = a[i] - a[i-1]`. Then `prefixSum(d) == a` — difference and prefix sum
+are inverse operations, like differentiating and integrating.
+
+| | Range **query** | Range **update** |
+|---|---|---|
+| Prefix sum `P` | O(1) | O(n) — rebuild |
+| Difference array `d` | O(n) — rebuild | O(1) |
+
+Prefix sums make *reads* cheap; difference arrays make *writes* cheap. Recognise which side of the
+problem you are on.
+
+**Unlock:** adding `v` across `[l, r]` raises a flat plateau. Inside the plateau, consecutive
+elements both rose by `v`, so their *difference* is unchanged — only the **edges** move: a step up
+at `l`, a step down at `r+1`. That collapses `r - l + 1` writes into exactly 2.
+
+**Worked example** — `n = 5`, all zeros; add 3 to `[0..2]`, 2 to `[1..4]`, 5 to `[3..3]`:
+
+```
+                       idx:   0    1    2    3    4  | 5      <- the n+1 dump slot
+start                      [  0    0    0    0    0  | 0 ]
++3 on [0..2]  d[0]+=3, d[3]-=3
+                           [  3    0    0   -3    0  | 0 ]
++2 on [1..4]  d[1]+=2, d[5]-=2
+                           [  3    2    0   -3    0  |-2 ]
++5 on [3..3]  d[3]+=5, d[4]-=5
+                           [  3    2    0    2   -5  |-2 ]
+
+prefix-sum once:   3    5    5    7    2
+                   ^    ^^^^^^    ^    ^  idx4: only update 2      -> 2
+                   |    |         └── idx3: updates 2+3 = 2+5      -> 7
+                   |    └── idx1,2: updates 1+2 = 3+2              -> 5
+                   └── idx0: update 1 only                         -> 3
+```
+
+Three updates cost six writes total, no matter how wide the ranges were.
 
 ```cpp
 vector<long long> applyRangeUpdates(int n, const vector<array<int,3>>& upd) {
-    vector<long long> d(n + 1, 0);
+    vector<long long> d(n + 1, 0);                                  // n+1, not n
     for (auto& u : upd) { d[u[0]] += u[2]; d[u[1] + 1] -= u[2]; }   // {l, r, v}
-    for (int i = 1; i < n; ++i) d[i] += d[i - 1];
+    for (int i = 1; i < n; ++i) d[i] += d[i - 1];                   // one pass -> a
     d.pop_back();
     return d;
 }
 ```
+
+**The `n+1` slot** exists so `d[r+1]` has somewhere to land when `r == n-1`. It is written but never
+read — a dump. Sizing `d` as `n` is an out-of-bounds bug that only fires on updates touching the
+last index.
+
+**Cost:** `O(q·n)` → `O(q + n)`. With `q = n = 10^5` that is `10^10` → `2×10^5`.
+
+**Where it shows up:** Corporate Flight Bookings, Range Addition, Car Pooling — often over a *time*
+axis rather than an index axis. **Minimum Meeting Rooms (§6c) is this trick in disguise:** `+1` at
+each start, `-1` at each end, prefix-sum the timeline, take the running max. That is a difference
+array with `v = 1`.
+
+**The one constraint — say this out loud:** it only works if you can **batch every update first,
+then read**. If updates and queries interleave, each query forces a rebuild and you are back to
+`O(q·n)` — that is when you reach for a Fenwick or segment tree. It is the natural follow-up
+question, so volunteer it.
 
 ---
 
