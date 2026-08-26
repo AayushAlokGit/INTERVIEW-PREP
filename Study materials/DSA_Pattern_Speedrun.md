@@ -82,6 +82,8 @@ candidate matrix per step, not one cell.
 
 ### 1a. Two Sum on a sorted array
 
+**Problem.** Sorted array `a` and target `t`; return the indices of the two values that sum to `t`.
+
 ```
 Brute:   for i, for j>i: a[i]+a[j]==t                  O(n^2)
 Better:  for i: binary search t-a[i]                   O(n log n)
@@ -105,6 +107,10 @@ pair<int,int> twoSumSorted(const vector<int>& a, long long t) {
 ```
 
 ### 1b. Container With Most Water
+
+**Problem.** `h[i]` is the height of a vertical line at position `i`. Pick two lines that with the
+x-axis hold the most water: `area = (j - i) · min(h[i], h[j])`. Lines in between are ignored — the
+water spans over them.
 
 ```
 Brute:   all pairs, area = (j-i)*min(h[i],h[j])        O(n^2)
@@ -131,6 +137,9 @@ Note this is a two-pointer walk on **unsorted** data — legal only because of t
 State that argument; do not let it pass as "two pointers usually works here".
 
 ### 1c. 3Sum
+
+**Problem.** Return every **unique** triplet summing to zero. The input may contain duplicate
+values; the output may not contain duplicate triplets.
 
 ```
 Brute:   triple loop                                   O(n^3)
@@ -179,6 +188,8 @@ one. Negatives kill it; go to §3.
 
 ### 2a. Fixed window
 
+**Problem.** Largest sum of a contiguous subarray of exactly length `k`.
+
 **Unlock:** consecutive windows share all but two elements, so the O(n·k) recompute is waste.
 
 ```cpp
@@ -195,6 +206,9 @@ long long maxSumFixed(const vector<int>& a, int k) {
 ```
 
 ### 2b. Variable window — longest valid
+
+**Problem.** *Longest Substring Without Repeating Characters* — length of the longest substring in
+which no character occurs twice.
 
 ```
 Brute:   all substrings, validate each                 O(n^3)
@@ -217,6 +231,9 @@ int longestNoRepeat(const string& s) {
 ```
 
 ### 2c. Variable window — shortest valid (Minimum Window Substring)
+
+**Problem.** Shortest substring of `s` containing every character of `t`, counting multiplicity.
+Order does not matter; extra characters are allowed.
 
 **Unlock:** same window, opposite recording point. Record *inside* the shrink loop, not after
 expanding.
@@ -241,6 +258,9 @@ string minWindow(const string& s, const string& t) {
 ```
 
 ### 2d. Counting windows, and the "exactly k" trick
+
+**Problem.** *Subarrays with K Different Integers* — count the contiguous subarrays containing
+exactly `k` distinct values.
 
 ```
 Brute:   enumerate every subarray, count distinct      O(n^2)
@@ -286,6 +306,9 @@ two *points* — and "does a matching point exist" is a hash lookup, not a scan.
 
 ### 3a. Subarray Sum Equals K
 
+**Problem.** Count the contiguous subarrays summing to `k`. Values may be **negative**, which is
+what rules out a sliding window.
+
 ```
 Brute:   all (i,j), sum the inner range                O(n^3)
 Better:  running sum in the inner loop                 O(n^2)
@@ -314,6 +337,8 @@ with `[]` also inserts, which is why the lookup uses `find`.
 
 ### 3b. Longest subarray with sum k
 
+**Problem.** Length of the longest contiguous subarray summing to `k`.
+
 **Unlock:** counting → store a **count**. Measuring the longest → store the **first** index only.
 Same skeleton, different payload.
 
@@ -337,6 +362,9 @@ int longestSubarraySumK(const vector<int>& a, int k) {
 - Equal 0s and 1s → map `0 -> -1`, then it is "longest subarray with sum 0".
 
 ### 3c. 2D range sum — inclusion–exclusion
+
+**Problem.** *Range Sum Query 2D* — preprocess a matrix so that any query "sum of the rectangle
+from `(r1,c1)` to `(r2,c2)`" is answered in O(1). Many queries, no updates.
 
 ```
 Brute:   sum the rectangle per query                   O(mn) per query
@@ -396,6 +424,9 @@ The same four-corner shape generalises: a 2D **difference** array (§3d) marks `
 four corners of an update rectangle, then two prefix-sum passes apply them all.
 
 ### 3d. Difference array — the inverse trick
+
+**Problem.** *Range Addition* — apply `q` updates of the form "add `v` to every index in `[l, r]`",
+then read the final array. All updates arrive before any read.
 
 ```
 Brute:   apply each range update elementwise           O(q·n)
@@ -473,6 +504,8 @@ Any "for each x, search the rest for y" becomes "for each x, look up y".
 
 ### 4a. Two Sum (unsorted)
 
+**Problem.** Same as §1a but the array is **unsorted**, so the two-pointer invariant is gone.
+
 ```
 Brute:   all pairs                                     O(n^2)
 Optimal: seen map; if (t - x) in seen: hit             O(n)
@@ -491,6 +524,9 @@ vector<int> twoSum(const vector<int>& a, int t) {
 ```
 
 ### 4b. Longest Consecutive Sequence
+
+**Problem.** Length of the longest run of consecutive integers present in an unsorted array
+(`[100,4,200,1,3,2]` → `4`, for `1,2,3,4`). **Required in O(n)** — which bans sorting.
 
 ```
 Brute:   sort, then scan runs                          O(n log n)
@@ -516,6 +552,9 @@ int longestConsecutive(const vector<int>& a) {
 ```
 
 ### 4c. Group Anagrams — designing the key
+
+**Problem.** Partition a word list so that words which are anagrams of one another land in the same
+group.
 
 ```
 Brute:   compare every pair for anagram-ness           O(n^2 · L)
@@ -552,6 +591,9 @@ Two distinct uses. Recognising the second is the higher-value skill and the more
 
 ### 5a. Binary search on an index
 
+**Problem shape.** Not one problem — the single template behind lower bound, upper bound, and
+"first index where some property holds".
+
 **Core idea:** one template — *find the first index where a monotone predicate turns true.* Every
 lower/upper bound question is a rephrasing of that.
 
@@ -573,6 +615,9 @@ The STL gives you the common cases free: `lower_bound` is the first element `>= 
 the first `> x`. Say you would use them, then hand-roll if asked.
 
 ### 5b. Rotated sorted array
+
+**Problem.** A sorted array rotated at an unknown pivot (`[0,1,2,4,5,6,7]` → `[4,5,6,7,0,1,2]`).
+Find a target, or find the minimum, in O(log n).
 
 ```
 Brute:   linear scan                                   O(n)
@@ -616,6 +661,9 @@ With duplicates the predicate goes uninformative on ties — handle `a[mid] == a
 expect to lose the log bound in the worst case. Say that rather than pretending it is still O(log n).
 
 ### 5c. Binary search on the answer
+
+**Problem.** *Split Array Largest Sum* — split the array into `k` **contiguous** parts so that the
+largest part-sum is as small as possible; return that sum.
 
 **Core idea:** stop *constructing* the answer and start *testing* it. If `ok(v)` is monotone —
 once true, true forever — the answer is a boundary you can bisect.
@@ -676,6 +724,8 @@ is **which key you sort by**, because sorting is how you *freeze* one of two com
 
 ### 6a. Merge intervals — sort by start
 
+**Problem.** Merge all overlapping intervals and return the disjoint set covering the same points.
+
 ```
 Brute:   repeatedly rescan for any overlapping pair    O(n^2)
 Optimal: sort by start; only the last kept interval    O(n log n)
@@ -701,6 +751,9 @@ A custom key is a lambda comparator:
 
 ### 6b. Max non-overlapping intervals — sort by **end**
 
+**Problem.** *Non-overlapping Intervals* — keep as many intervals as possible with no two
+overlapping. (Equivalently: remove the fewest to make the rest disjoint.)
+
 ```
 Brute:   try every subset, check pairwise disjoint     O(2^n · n)
 Optimal: sort by end, take greedily                    O(n log n)
@@ -722,6 +775,9 @@ int maxNonOverlapping(vector<vector<int>>& iv) {
 ```
 
 ### 6c. Sweep line — Minimum Meeting Rooms
+
+**Problem.** *Meeting Rooms II* — fewest rooms so that no two meetings share a room at the same
+time. Equivalently: the maximum number of meetings live at any instant.
 
 ```
 Brute:   for each meeting, count overlaps              O(n^2)
@@ -748,6 +804,9 @@ int minMeetingRooms(vector<vector<int>>& iv) {
 ```
 
 ### 6d. Greedy + regret heap — the one that catches people
+
+**Problem.** *Course Schedule III* — each course has a duration and a deadline (must **finish** by
+day `d`), taken one at a time starting day 1. Maximise how many you take.
 
 **Core idea:** when you only learn a choice was wrong *after* you have passed it, **take everything,
 then undo the worst commitment.** A plain greedy has too small a *move set*; adding `pop` fixes it.
@@ -819,6 +878,8 @@ only with their nearest surviving neighbour, or a lexicographically-smallest con
 
 ### 7a. Next Greater Element
 
+**Problem.** For each element, the first strictly greater value to its right, or `-1` if none.
+
 ```
 Brute:   for each i, scan right                        O(n^2)
 Optimal: stack of indices with decreasing values       O(n)
@@ -846,6 +907,8 @@ vector<int> nextGreater(const vector<int>& a) {
 Daily Temperatures is this, storing `i - st.top()` instead of the value.
 
 ### 7b. Largest Rectangle in Histogram
+
+**Problem.** Largest axis-aligned rectangle that fits entirely under a histogram of bar heights.
 
 ```
 Brute:   for each bar, expand both directions          O(n^2)
@@ -877,6 +940,9 @@ long long largestRectangle(vector<int> h) {
 Maximal Rectangle in a binary matrix is this, run once per row over a running heights array.
 
 ### 7c. Trapping Rain Water
+
+**Problem.** Same height array as §1b — but here the bars **do** hold water. How much collects in
+the dips after rain?
 
 ```
 Brute:   for each bar, scan both ways for the walls    O(n^2)
@@ -910,6 +976,8 @@ long long trap(const vector<int>& h) {
 Know two of the three approaches — the stack version also works and is worth naming.
 
 ### 7d. Monotonic deque — Sliding Window Maximum
+
+**Problem.** The maximum of every contiguous window of size `k`, as the window slides across.
 
 ```
 Brute:   max() per window                              O(n·k)
@@ -951,6 +1019,9 @@ cannot.
 
 ### 8a. Kth Largest Element
 
+**Problem.** The kth largest value by **rank**, not by distinct value — in `[3,3,1]`, the 2nd
+largest is `3`.
+
 ```
 Brute:   sort, index                                   O(n log n)
 Optimal: min-heap of size k                            O(n log k), O(k) space
@@ -978,6 +1049,8 @@ int kthLargestFast(vector<int> a, int k) {                 // one-shot, mutable 
 ```
 
 ### 8b. Merge K Sorted Lists
+
+**Problem.** Merge `k` sorted linked lists into one sorted list. `N` = total nodes across all lists.
 
 ```
 Brute:   concatenate and sort                          O(N log N)
@@ -1009,6 +1082,9 @@ The comparator is **inverted**: `priority_queue` puts the largest-by-comparator 
 `a->val > b->val` yields a min-heap.
 
 ### 8c. Two heaps — median of a data stream
+
+**Problem.** *Find Median from Data Stream* — support `add(x)` on an unbounded stream and
+`median()` at any point.
 
 ```
 Brute:   keep a sorted vector, insert each element     O(n) per add
@@ -1047,6 +1123,9 @@ structure powers Sliding Window Median (plus lazy deletion, or a `multiset` with
 **Core idea:** you cannot index a list, so you manufacture position with a second pointer moving at
 a different speed. Three primitives compose into nearly every list problem.
 
+**Problems these three cover.** *Reverse Linked List*; *Middle of the Linked List*; *Linked List
+Cycle* (does it loop?). Everything below composes them.
+
 ```cpp
 ListNode* reverseList(ListNode* head) {
     ListNode* prev = nullptr;
@@ -1078,6 +1157,9 @@ bool hasCycle(ListNode* head) {                    // Floyd
 
 ### 9a. Cycle entry point
 
+**Problem.** *Linked List Cycle II* — a list may end in a cycle; return the node where the cycle
+begins, in O(1) space.
+
 ```
 Brute:   hash set of visited nodes                     O(n) time, O(n) space
 Optimal: Floyd, then reset one pointer to head         O(n) time, O(1) space
@@ -1103,6 +1185,9 @@ ListNode* cycleStart(ListNode* head) {
 ```
 
 ### 9b. Find the Duplicate Number — the same math on an array
+
+**Problem.** `n + 1` values in the range `[1..n]`, exactly one repeated. Find it **without
+modifying the array** and in O(1) space.
 
 ```
 Brute:   sort, or a seen-set                           O(n log n) / O(n) space
@@ -1143,6 +1228,9 @@ int depth(TreeNode* root) {                        // returns a scalar upward
 
 ### 10a. Diameter — the return-value split
 
+**Problem.** Longest path (counted in edges) between any two nodes. It need not pass through the
+root — that is the whole difficulty.
+
 ```
 Brute:   at each node, depth(left) + depth(right)      O(n^2)
 Optimal: one post-order pass — return what the PARENT  O(n)
@@ -1181,6 +1269,9 @@ Prefer passing the accumulator by reference (`int& best`) or as a member over a 
 
 ### 10b. Validate BST — bounds go **down**, not up
 
+**Problem.** Is every node greater than **everything** in its left subtree and less than everything
+in its right? (Not just greater than its immediate left child.)
+
 ```
 Brute:   for each node, scan its whole subtree          O(n^2)
 Wrong:   compare each node only to its parent           FAILS on a grandchild violation
@@ -1205,6 +1296,9 @@ recover BST, and "convert to sorted list".
 
 ### 10c. Lowest Common Ancestor
 
+**Problem.** Deepest node having both `p` and `q` as descendants, where a node counts as a
+descendant of itself.
+
 **Unlock:** you do not need paths. Ask each subtree "did you find either target?" — the node where
 both answers come back non-null is the LCA.
 
@@ -1219,6 +1313,8 @@ TreeNode* lca(TreeNode* r, TreeNode* p, TreeNode* q) {
 ```
 
 ### 10d. BFS by level
+
+**Problem.** Return node values grouped level by level, top down.
 
 **Unlock:** snapshot the queue size at the top of each round — that count *is* the level boundary.
 
@@ -1267,6 +1363,9 @@ lookup. Grids are implicit graphs with 4 or 8 neighbours.
 
 ### 11a. Flood fill / connected components
 
+**Problem.** *Number of Islands* — count maximal groups of `'1'` cells connected horizontally or
+vertically.
+
 ```
 Brute:   for each cell, BFS the whole grid to test     O((mn)^2)
 Optimal: one DFS per unvisited cell, sinking as        O(mn)
@@ -1294,6 +1393,9 @@ Ask whether you may mutate the input — if yes, the grid *is* your visited arra
 space. If not, carry a `vector<vector<bool>>`.
 
 ### 11b. BFS on a grid, and multi-source BFS
+
+**Problem.** Fewest steps through an open grid. Multi-source version — *Rotting Oranges*: every
+rotten orange infects its neighbours each minute; how many minutes until none are fresh?
 
 ```
 Brute:   DFS every path, keep the shortest             exponential
@@ -1340,6 +1442,9 @@ wants the distance. Say which one you are returning.
 
 ### 11c. Topological sort (Kahn)
 
+**Problem.** Order nodes so every edge points forward. *Course Schedule* — given prerequisite
+pairs, can all courses be finished, and in what order?
+
 ```
 Brute:   repeatedly scan for a zero-indegree node      O(V^2)
 Optimal: queue the zero-indegree frontier, decrement   O(V+E)
@@ -1372,6 +1477,8 @@ A short output *is* the cycle detector — Course Schedule I is `topo(...).size(
 
 ### 11d. Directed cycle detection via DFS — three colours
 
+**Problem.** Does a **directed** graph contain a cycle?
+
 **Unlock:** in a directed graph, meeting a visited node is not a cycle — it may be a cross edge to a
 finished branch. Only an edge back to a node **on the current recursion stack** is a cycle, so
 `visited` must distinguish "in progress" from "done".
@@ -1391,6 +1498,9 @@ bool hasCycleDFS(int u, const vector<vector<int>>& g, vector<int>& color) {
 A plain boolean `visited` is only correct for **undirected** graphs.
 
 ### 11e. Union-Find
+
+**Problem.** Support "merge these two" and "are these connected?" **interleaved**, arriving one at
+a time.
 
 ```
 Brute:   BFS after every merge to test connectivity    O(q · (V+E))
@@ -1425,6 +1535,8 @@ struct DSU {
 Also: Accounts Merge, Number of Islands II.
 
 ### 11f. Dijkstra
+
+**Problem.** Shortest path from a source, with non-negative edge weights.
 
 ```
 Brute:   BFS ignoring weights                          WRONG on weighted graphs
@@ -1463,6 +1575,9 @@ The `if (d > dist[u]) continue;` line is not optional — it is what keeps this 
 
 ### 11g. 0-1 BFS
 
+**Problem.** Shortest path where every edge weight is 0 or 1 — e.g. a grid where some moves are
+free and others cost one.
+
 **Unlock:** when weights are only 0 or 1, a deque replaces the heap — a 0-edge keeps the same
 distance so it goes to the **front**, a 1-edge goes to the back. Drops the log factor entirely.
 
@@ -1497,6 +1612,8 @@ in the pruning and in how you suppress duplicate branches.
 
 ### 12a. Subsets
 
+**Problem.** Every subset of a set of distinct integers (the power set) — `2^n` of them.
+
 ```
 Brute:   enumerate 0..2^n-1, decode each bitmask       O(2^n · n)
 Optimal: recursion sharing the prefix across branches  O(2^n · n) but with
@@ -1520,6 +1637,8 @@ bug.
 
 ### 12b. Permutations
 
+**Problem.** Every ordering of the input — `n!` of them.
+
 **Unlock:** swap-in-place rather than tracking a `used[]` array — position `i` gets each remaining
 candidate in turn, and the swap back restores the state.
 
@@ -1535,6 +1654,9 @@ void btPermute(int i, vector<int>& a, vector<vector<int>>& res) {
 ```
 
 ### 12c. Combination Sum — pruning is the whole game
+
+**Problem.** Every multiset of candidates summing to `target`; each candidate may be reused
+unlimited times.
 
 ```
 Brute:   enumerate all multisets, filter by sum        astronomically wasteful
@@ -1567,6 +1689,9 @@ vector<vector<int>> combinationSum(vector<int>& c, int target) {
 while still allowing the same value to appear deeper.
 
 ### 12d. N-Queens — carry the constraint, don't rescan
+
+**Problem.** Place `n` queens on an `n × n` board with no two sharing a row, column or diagonal;
+count (or list) the arrangements.
 
 **Unlock:** three boolean arrays keyed on `col`, `row - col + n` and `row + col` make every conflict
 check O(1). Rescanning the board per placement is the brute force.
@@ -1610,7 +1735,8 @@ legal answer; otherwise carry a separate `seen` array.
 
 ### 13a. Linear DP
 
-**House Robber** — `dp[i] = max(dp[i-1], dp[i-2] + a[i])`.
+**House Robber** — *rob houses along a street for the maximum total, but you may never rob two
+adjacent houses.* → `dp[i] = max(dp[i-1], dp[i-2] + a[i])`.
 
 ```
 Brute:   recurse take/skip at every index              O(2^n)
@@ -1630,7 +1756,8 @@ int rob(const vector<int>& a) {
 }
 ```
 
-**Kadane (maximum subarray)** — the decision at each index is *extend or restart*.
+**Kadane (maximum subarray)** — *largest sum of any non-empty contiguous subarray; values may be
+negative.* The decision at each index is *extend or restart*.
 
 ```
 Brute:   all (i,j), sum each                           O(n^3) / O(n^2)
@@ -1653,7 +1780,8 @@ long long kadane(const vector<int>& a) {
 
 Circular variant: `max(kadane, total - minKadane)`, with an all-negative special case.
 
-**Longest Increasing Subsequence**
+**Longest Increasing Subsequence** — *length of the longest strictly increasing subsequence.
+Subsequence, not subarray: elements need not be adjacent, but order must be preserved.*
 
 ```
 Brute:   enumerate all subsequences                    O(2^n)
@@ -1677,6 +1805,10 @@ int lis(const vector<int>& a) {
 ```
 
 ### 13b. Knapsack family
+
+**Problem.** *0/1 knapsack* — items with weight and value, capacity `C`, maximise value taking each
+item at most once. *Unbounded* — the same, but each item may be taken any number of times.
+*Coin Change* — fewest coins summing to `amount`; *Coin Change II* — how many distinct ways.
 
 **Unlock:** the loop *direction* is the entire difference between the two variants. Descending
 guarantees `dp[c - w]` still refers to the previous item's row (each item used once); ascending lets
@@ -1730,6 +1862,10 @@ Memo:    cache on (i, j)                               O(mn)
 Optimal: bottom-up table, rows rolled                  O(mn) time, O(min(m,n)) space
 ```
 
+**Problem.** *Edit Distance* — fewest single-character inserts, deletes or replaces to turn `a` into
+`b`. *Longest Common Subsequence* — length of the longest sequence appearing in both, in order but
+not necessarily contiguously.
+
 **Unlock:** the state is "how much of each string have I consumed" — two indices, nothing more. The
 transition is the three edit operations.
 
@@ -1769,6 +1905,9 @@ String, Unique Paths, Minimum Path Sum. Each row depends only on the previous �
 
 ### 13d. Interval DP — `n ≤ 500` and "the last thing you do"
 
+**Problem.** *Burst Balloons* — bursting balloon `i` earns `v[i-1] · v[i] · v[i+1]` using the
+neighbours it has **at that moment**; the array then closes up. Maximise total coins.
+
 ```
 Brute:   try every order of operations                 O(n!)
 Optimal: dp[i][j] over ranges, split on the last       O(n^3)
@@ -1802,6 +1941,9 @@ Same shape: Matrix Chain Multiplication, Minimum Cost to Cut a Stick, Longest Pa
 Subsequence.
 
 ### 13e. Bitmask DP — `n ≤ 20`
+
+**Problem.** *Travelling Salesman* — visit every node exactly once and return to the start, at
+minimum total cost.
 
 ```
 Brute:   all n! orderings                              O(n!)
@@ -1839,6 +1981,9 @@ Also: Assignment Problem, Partition to K Equal Sum Subsets, Shortest Path Visiti
 
 ### 13f. State-machine DP — the stock problems
 
+**Problem.** *Best Time to Buy and Sell Stock with Cooldown* — unlimited transactions, one share
+at a time, and you must sit out one full day after every sale.
+
 **Unlock:** name the states you can be in, draw the arrows, and the whole
 Best-Time-to-Buy-and-Sell family collapses to four lines.
 
@@ -1870,6 +2015,9 @@ every time.
 
 **Core idea:** share prefixes across a dictionary so a query costs O(L) regardless of how many words
 you stored. A hash set matches whole strings only; a trie is the structure for *prefix* questions.
+
+**Problem.** *Implement Trie* — support `insert(word)`, `search(word)` (exact) and
+`startsWith(prefix)` over a dictionary of `N` words of length up to `L`.
 
 ```
 Brute:   scan all N words per query                    O(N · L) per query
@@ -1931,6 +2079,8 @@ set operations into single instructions and a subset-enumeration into an arithme
 
 ### 15a. Single Number
 
+**Problem.** Every value appears exactly twice except one. Find it in O(1) space.
+
 ```
 Brute:   count occurrences in a hash map               O(n) time, O(n) space
 Optimal: XOR everything                                O(n) time, O(1) space
@@ -1948,6 +2098,8 @@ int singleNumber(const vector<int>& a) {
 ```
 
 ### 15b. Single Number II — every other element appears three times
+
+**Problem.** Every value appears exactly three times except one. XOR no longer cancels.
 
 **Unlock:** XOR only cancels in pairs. Generalise it: count each bit position independently and take
 the count mod 3. The bounded universe here is *32 bit positions*, not the array.
@@ -1982,6 +2134,10 @@ Brute:   sort, then scan                               O(n log n)
 Better:  hash set of seen values                       O(n) time, O(n) space
 Optimal: swap each value to its home index             O(n) time, O(1) space
 ```
+
+**Problem.** *First Missing Positive* — smallest positive integer **not** present, in O(n) time and
+O(1) extra space. Related: *Find All Duplicates* — with values in `[1..n]` each appearing once or
+twice, report the repeated ones.
 
 **Unlock:** the O(1)-space demand in the statement is the hint. Ask whether you may mutate the
 input — if yes, the input *is* the auxiliary structure you were told you could not allocate.
@@ -2031,6 +2187,8 @@ transform in words before you write indices.
 
 ### 17a. Rotate 90° in place
 
+**Problem.** *Rotate Image* — rotate an `n × n` matrix 90° clockwise, **in place**.
+
 **Unlock:** rotation = transpose, then reverse each row. Two simple passes beat one confusing
 four-way cycle swap.
 
@@ -2045,6 +2203,8 @@ void rotate(vector<vector<int>>& m) {
 ```
 
 ### 17b. Set Matrix Zeroes in O(1) space
+
+**Problem.** If any cell is 0, zero its entire row and column — using O(1) extra space.
 
 ```
 Brute:   copy the matrix, write zeros into the copy     O(mn) space
@@ -2076,6 +2236,9 @@ void setZeroes(vector<vector<int>>& m) {
 The second loop must run bottom-up, or you overwrite the markers in row 0 before reading them.
 
 ### 17c. Search a matrix with sorted rows and columns
+
+**Problem.** *Search a 2D Matrix II* — each row increases left-to-right and each column increases
+top-to-bottom, but rows are **not** globally ordered. Is `target` present?
 
 ```
 Brute:   scan every cell                               O(mn)
