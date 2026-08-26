@@ -942,7 +942,7 @@ only with their nearest surviving neighbour, or a lexicographically-smallest con
 
 ```
 Brute:   for each i, scan right                        O(n^2)
-Optimal: stack of indices with decreasing values       O(n)
+Optimal: stack of indices, values non-increasing       O(n)
 ```
 
 **Unlock:** invert the question. Instead of "what is the answer for `i`", ask "who is `a[i]` the
@@ -952,9 +952,9 @@ answer *for*" — everything it pops.
 vector<int> nextGreater(const vector<int>& a) {
     int n = a.size();
     vector<int> res(n, -1);
-    stack<int> st;                                 // indices, values decreasing
-    for (int i = 0; i < n; ++i) {
-        while (!st.empty() && a[st.top()] < a[i]) {
+    stack<int> st;                                 // indices; values NON-INCREASING
+    for (int i = 0; i < n; ++i) {                  // (equal values are not popped)
+        while (!st.empty() && a[st.top()] < a[i]) {   // strict < : see below
             res[st.top()] = a[i];                  // a[i] answers everything it beats
             st.pop();
         }
@@ -963,6 +963,20 @@ vector<int> nextGreater(const vector<int>& a) {
     return res;
 }
 ```
+
+**The pop guard's strictness is the spec.** `<` pops only what `a[i]` *strictly* beats, so equal
+values survive on the stack — the invariant is **non-increasing**, not decreasing. Change it to
+`<=` and you have silently solved a different problem, "next greater **or equal**":
+
+```
+a = [5, 5, 5]     with <   ->  [-1, -1, -1]   correct for "strictly greater"
+                  with <=  ->  [ 5,  5, -1]   answers a different question
+```
+
+So pick the strictness from the wording — *"next greater"* → `<`, *"next greater or equal"* → `<=` —
+and state which one you are building. Every monotonic-stack problem hinges on this one character,
+and the sheet's own neighbours disagree on purpose: §7b pops on `>=` (strictly increasing stack) and
+§7d pops on `<=` (strictly decreasing deque), because each needs the opposite tie-breaking.
 
 Daily Temperatures is this, storing `i - st.top()` instead of the value.
 
