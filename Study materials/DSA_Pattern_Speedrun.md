@@ -2366,14 +2366,52 @@ neighbours it has **at that moment**; the array then closes up. Maximise total c
 
 ```
 Brute:   try every order of operations                 O(n!)
-Optimal: dp[i][j] over ranges, split on the last       O(n^3)
+Memo:    recurse on (i, j), split on the LAST          O(n^3)   <- write this one
          operation performed inside the range
+Optimal: same recurrence bottom-up, ranges by length   O(n^3), no recursion
 ```
 
 **Unlock for Burst Balloons:** reason about the **last** balloon burst in a range, not the first.
 Under "first", the two sides are still coupled through the removed balloon; under "last", both
 neighbours are the range's fixed boundaries, so the sides become independent. *Reversing the
 decision order is the entire trick.*
+
+**Write the recursion first.** `solve(i, j)` = the most coins obtainable by clearing the range
+`[i, j]` while `v[i-1]` and `v[j+1]` are still standing:
+
+```cpp
+int solve(int i, int j, const vector<int>& v, vector<vector<int>>& memo) {
+    if (i > j) return 0;                               // empty range earns nothing
+    int& best = memo[i][j];
+    if (best != -1) return best;
+    best = 0;
+    for (int k = i; k <= j; ++k)                       // k = LAST balloon burst in [i,j]
+        best = max(best, solve(i, k-1, v, memo)        // left side, already cleared
+                       + v[i-1] * v[k] * v[j+1]        // k's neighbours ARE the walls
+                       + solve(k+1, j, v, memo));      // right side
+    return best;
+}
+
+int burstBalloonsMemo(const vector<int>& nums) {
+    int n = nums.size();
+    vector<int> v(n + 2, 1);                           // pad with virtual 1s
+    for (int i = 0; i < n; ++i) v[i + 1] = nums[i];
+    vector<vector<int>> memo(n + 2, vector<int>(n + 2, -1));
+    return solve(1, n, v, memo);
+}
+```
+
+**Why `k` last makes the memo legal.** Everything in `[i, k-1]` and `[k+1, j]` is already gone when
+`k` pops, so `k`'s neighbours are `v[i-1]` and `v[j+1]` — both **outside** the range, therefore
+fixed. The two sides stop influencing each other, which is exactly the condition for `(i, j)` to be
+a sufficient state. Under "first burst" it is not: the removed balloon would sit between the two
+halves and change both.
+
+Note `memo` is `(n+2)²` — the padding shifts every index by one, and `solve` reads `v[j+1]` at
+`j = n`.
+
+**Bottom-up is the same recurrence, ranges ordered by length**, since `solve(i, j)` only ever reads
+strictly shorter ranges:
 
 ```cpp
 int burstBalloons(const vector<int>& nums) {
@@ -2393,10 +2431,50 @@ int burstBalloons(const vector<int>& nums) {
 }
 ```
 
-Same shape, `k` splitting `[i, j]`: *Matrix Chain Multiplication* cost `p[i-1]*p[k]*p[j]` ·
-*Minimum Cost to Cut a Stick* cost = the segment's length, with the cut positions as split points ·
-*Longest Palindromic Subsequence* not a split at all — `dp[i][j] = dp[i+1][j-1] + 2` on a match, else
-`max(dp[i+1][j], dp[i][j-1])`.
+**The family — same skeleton, only the body of the `k` loop changes.** All three memoise on
+`(i, j)` exactly as above; signatures elided below.
+
+***Matrix Chain Multiplication*** — cheapest parenthesisation of `A_i ··· A_j`, where matrix `i` is
+`p[i-1] × p[i]`. `k` is the **last multiplication**, so you pay for multiplying the two finished
+halves:
+
+```cpp
+if (i == j) return 0;                                  // one matrix: nothing to multiply
+best = INT_MAX;
+for (int k = i; k < j; ++k)                            // k = the final split point
+    best = min(best, solve(i, k) + solve(k+1, j) + p[i-1] * p[k] * p[j]);
+```
+
+***Minimum Cost to Cut a Stick*** — push `0` and `n` into `cuts` and **sort**, then `i, j` index that
+array. Cutting a piece costs its whole length no matter which cut you make, so the length is paid
+once per range and the loop only picks which cut comes **first**:
+
+```cpp
+if (j - i <= 1) return 0;                              // no cut position strictly inside
+best = INT_MAX;
+for (int k = i + 1; k < j; ++k)
+    best = min(best, solve(i, k) + solve(k, j));
+best += c[j] - c[i];                                   // this piece's length -- fold it in
+return best;                                           // BEFORE memoising, or cache hits lose it
+```
+
+> That last line is the bug to avoid: `return best + (c[j] - c[i])` computes the right answer on the
+> first visit and the wrong one on every cache hit, because the memo stored the sum without the
+> length. Add it to `best`, then return.
+
+***Longest Palindromic Subsequence*** — **not a split DP at all.** There is no `k` loop; the two ends
+decide everything:
+
+```cpp
+if (i > j)  return 0;
+if (i == j) return 1;
+if (s[i] == s[j]) best = solve(i+1, j-1) + 2;                 // both ends join the palindrome
+else              best = max(solve(i+1, j), solve(i, j-1));   // drop one end or the other
+```
+
+No `k` loop means **O(n²)**, not O(n³) — worth saying out loud, since it is the one member of the
+family that is not a split. (It is also just `LCS(s, reverse(s))`, which is the one-line answer if
+you blank on the recurrence.)
 
 ### 13e. Bitmask DP — `n ≤ 20`
 
