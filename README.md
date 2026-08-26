@@ -13,7 +13,7 @@ A personal workspace for software engineering interview preparation — behavior
 | `system_design_weaknesses.md` | Tracked weak spots for system design rounds |
 | `lld_senior_guidance.md` | Senior-level LLD guidance, including the 8-item requirements walk |
 | `lld_weaknesses.md` | Tracked weak spots for LLD rounds |
-| `Study materials/` | Crash-course refreshers (Python, Node.js, React, SQL) |
+| `Study materials/` | Crash-course refreshers (Python, Node.js, React, SQL) and `DSA_Pattern_Speedrun.md`, a pattern-by-pattern brute-force-to-optimal cram sheet |
 | `.claude/commands/` | Claude Code slash commands for running mock interview rounds |
 
 ## Mock interview commands
