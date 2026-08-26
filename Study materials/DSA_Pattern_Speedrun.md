@@ -774,15 +774,45 @@ int maxNonOverlapping(vector<vector<int>>& iv) {
 }
 ```
 
-### 6c. Sweep line — Minimum Meeting Rooms
+### 6c. Minimum Meeting Rooms — heap or sweep
 
 **Problem.** *Meeting Rooms II* — fewest rooms so that no two meetings share a room at the same
 time. Equivalently: the maximum number of meetings live at any instant.
 
 ```
 Brute:   for each meeting, count overlaps              O(n^2)
-Optimal: sort starts and ends separately, +1/-1 sweep  O(n log n)
+Heap:    sort by start, min-heap of end times          O(n log n)  <- lead with this
+Sweep:   sort starts and ends separately, +1/-1        O(n log n)
 ```
+
+**Two solutions, and the choice matters.** Know both — the follow-up question decides which one you
+needed.
+
+#### Heap — simulate the rooms
+
+**Unlock:** process meetings in arrival order, so the only question per meeting is *"has any room
+freed up by now?"* A min-heap of end times puts the soonest-freeing room at `top()`, answering that
+in O(1).
+
+```cpp
+int minMeetingRoomsHeap(vector<vector<int>> iv) {
+    sort(iv.begin(), iv.end());                              // by START
+    priority_queue<int, vector<int>, greater<int>> ends;     // MIN-heap of end times
+    for (auto& m : iv) {
+        if (!ends.empty() && ends.top() <= m[0]) ends.pop(); // earliest room free -> reuse it
+        ends.push(m[1]);                                     // occupy a room until m[1]
+    }
+    return ends.size();                                      // rooms still held = rooms needed
+}
+```
+
+**`if`, not `while`.** You are seating one meeting, so freeing more than one room buys nothing. And
+because each iteration pushes exactly once and pops at most once, the heap size **never decreases** —
+so the final size *is* the maximum and no running `best` is needed. Write `while` instead and the
+size can drop, so you must then track `best = max(best, ends.size())` yourself. `while` paired with
+`return ends.size()` is the bug.
+
+#### Sweep — count concurrency
 
 **Unlock:** you do not care *which* meetings overlap, only *how many* — so decouple the endpoints
 from their intervals entirely and sweep a running counter.
@@ -802,6 +832,36 @@ int minMeetingRooms(vector<vector<int>>& iv) {
     return best;
 }
 ```
+
+This is a **difference array (§3d) with `v = 1`** — `+1` at each start, `-1` at each end, prefix-sum
+the timeline, take the running max.
+
+#### Choosing between them
+
+| | Heap | Sweep |
+|---|---|---|
+| Mental model | simulate rooms | count concurrency |
+| Sorts | 1 (by start) | 2 (starts, ends separately) |
+| Knows **which** room | **yes** | no — endpoints are decoupled |
+| Generalises to | resource assignment | any "max concurrent" question |
+
+**The deciding row is "which room".** The sweep is fast *precisely because* it throws away the
+pairing between a start and its end — which is also why it cannot tell you where anything goes. So
+when the follow-up is *"now assign each meeting to a specific room"*, the sweep is a dead end and
+the heap extends by carrying the room id:
+
+```cpp
+priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> ends;   // {endTime, roomId}
+int nextRoom = 0, r;
+// ... for each meeting in start order:
+if (!ends.empty() && ends.top().first <= start) { r = ends.top().second; ends.pop(); }
+else                                              r = nextRoom++;      // open a new room
+ends.push({end, r});
+```
+
+**Lead with the heap** — it survives the assignment follow-up and needs one sort. Mention the sweep
+as the tighter alternative when only the count is wanted. Offering both *with the reason to prefer
+each* scores better than either alone.
 
 ### 6d. Greedy + regret heap — the one that catches people
 
