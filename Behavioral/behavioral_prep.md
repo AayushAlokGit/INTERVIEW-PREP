@@ -1,5 +1,5 @@
 # Behavioral Prep — Aayush Alok
-Last updated: 2026-07-17
+Last updated: 2026-08-10
 
 > Index + quick-reference. Full STAR, technical-depth Q&A, and follow-ups live in each `S00x_*_prep.md` file.
 
@@ -34,7 +34,7 @@ Last updated: 2026-07-17
 | System reliability / zero-downtime design | S001 |
 | Prioritization / sequencing under pressure | S001 (blast-radius sequencing), S003 (parallelizing under deadline) |
 | Receiving feedback | S001 (manager's corrective guidance), S002 (peer's feedback → changed course) |
-| Disagreement with a senior / peer | S002 (primary), S003 (challenged security decision) |
+| Disagreement with a senior / peer | **S002 only** — Version B for backbone stems, Version A for changed-my-mind stems. *No second story exists; S003 is not one (the senior engineer there was a collaborator, not a challenger).* |
 | Changing your mind on new information | S002 |
 | Asking "why" / curiosity before defending | S002 |
 | Conceding gracefully / ego vs. right answer | S002 |
@@ -84,7 +84,7 @@ S001, S003 and S004 fit almost everything, which is exactly the trap. **Cap any 
 
 ### Angle Bank — same story, different lead sentence
 
-> **What this is and isn't.** Repurposing does **not** expand capacity — the binding constraint is the 2-use cap, which is about *story count*, not category count. What it buys is **routing**: when a story gets pulled for a dimension you didn't rehearse it for, lead with the right beat so it lands on the thing you're being asked about. Every beat below is already in the story; none of it is new material, and none of it fixes the genuine gaps (developing others, outside-my-scope ownership, a miss).
+> **What this is and isn't.** Repurposing does **not** expand capacity — the binding constraint is the 2-use cap, which is about *story count*, not category count. What it buys is **routing**: when a story gets pulled for a dimension you didn't rehearse it for, lead with the right beat so it lands on the thing you're being asked about. Every beat below is already in the story; none of it is new material, and none of it fixes the genuine gaps (developing others, outside-my-scope ownership, a miss, **a second disagreement story**).
 >
 > **The rule:** the repurposed beat goes **first**, and the story's usual centre of gravity shrinks to one sentence of context. If you open on the rehearsed spine, you get scored on the dimension you rehearsed — not the one they asked about.
 
@@ -104,7 +104,7 @@ S001, S003 and S004 fit almost everything, which is exactly the trap. **Cap any 
 
 ### The three honest caveats
 
-**"Scope beyond what you were handed" is level-calibrated.** At 3.5 years the bar is "proposed scope past your assignment," not "redirected strategy." S003 is your best shot — company-wide initiative, 23 subscriptions, and two other teams picked up your documented approach. S007 is adjacent: nobody had sized the leak, and quantifying it created the workstream. Neither is a moonshot; don't inflate them. But *"I don't have one"* scores worse than an honest mid-level answer.
+**"Scope beyond what you were handed" is level-calibrated.** At 3.5 years the bar is "proposed scope past your assignment," not "redirected strategy." S003 is your best shot — company-wide initiative, 23 subscriptions, and engineers from two other teams reached out for the approach you documented. S007 is adjacent: nobody had sized the leak, and quantifying it created the workstream. Neither is a moonshot; don't inflate them. But *"I don't have one"* scores worse than an honest mid-level answer.
 
 **Developing others is a bridge, not a story.** The real evidence is a new grad ramping and adding tests using documentation you wrote — enabling someone else, which is the substance at your level. Pair with the giving-feedback script. Don't claim mentoring you haven't done.
 
@@ -172,14 +172,13 @@ Cover the middle column. For each story, say **only the customer-forward first s
 **Opener:** *"Someone recommended deleting a service I'd built. I disagreed — and what resolved it wasn't an argument, it was a question I asked him."*
 **Closer:** *"I was evaluating a technical event; he was living its operational cost. Understand the operational constraints before you defend the technical decision."*
 
-- Tell me about a disagreement with a teammate / peer / senior engineer
 - Tell me about a time you changed your mind
 - Tell me about a time you were wrong about something technical
-- Tell me about a time you pushed back on someone
 - Tell me about a time you had to kill your own work
 - Tell me about a time you got new information that changed a decision
-- How do you handle conflict on a team?
 - **Tell me about a time you couldn't meet a commitment** *(you committed a test runner into the shared pipeline, then retracted the coverage when you couldn't keep it disruption-free — stay on the commitment you dropped, not the peer dynamic)*
+
+> **Neutral stems go to Version B, not here.** "A disagreement with a teammate / peer / senior engineer," "a time you pushed back on someone," and "how do you handle conflict on a team?" are scored against Backbone — open with Version B and let the follow-ups pull Version A's reflection.
 
 #### ⚔️ Version B — Backbone
 > ✅ **Answers:** disagree and commit · held your ground · pushed back on a senior person · disagreed but supported it anyway · strongest disagreement at work · *neutral* "a disagreement with a teammate" → **start here**
@@ -215,7 +214,7 @@ Cover the middle column. For each story, say **only the customer-forward first s
 - Tell me about a time you got blocked and what you did *(the Azure quota block — parallelized into unblocked geos, cost zero calendar time)*
 - Tell me about a security or compliance trade-off
 - Tell me about a time you rejected the obvious solution
-- Tell me about work of yours that had impact beyond your team *(two other teams picked up the doc)*
+- Tell me about work of yours that had impact beyond your team *(engineers from two other teams reached out for the doc — say "two engineers reached out," not "two teams adopted it")*
 - Tell me about a time you investigated before building
 
 ### S004 — LLM Agent Regression Testing
@@ -273,6 +272,20 @@ Cover the middle column. For each story, say **only the customer-forward first s
 - Tell me about a time you improved someone else's experience of a system
 - Tell me about a time you simplified something *(one registry, one source of truth — rather than a second copy of the checks)*
 
+### S008 — BCDR Drill ⚠️ **Cap relief only — never lead a round with it. 90 seconds.**
+**Opener:** *"The on-call runbook said to provision the test environment one day before the drill. The problem I hit took three days to clear."*
+**Closer:** *"A documented prep timeline is only safe if its buffer is bigger than the time to recover from the most likely failure inside it. Here it was one-third the size."*
+
+- Tell me about a time you prevented a problem before it happened
+- Tell me about a time being proactive paid off
+- Tell me about a time you didn't follow the documented process
+- Tell me about a time you escalated to another team *(the incident with provisioning failure logs attached — why it was accepted on first contact)*
+- Tell me about a time you found a problem in a process
+- Tell me about your on-call experience
+- Tell me about a time you tested disaster recovery / worked on resilience
+
+> ⚠️ **Volunteer the documentation gap unprompted** — you never fixed the runbook. It's the strongest beat in the story; held back it becomes a hole. **Not** an outside-my-scope story: you were the on-call and the drill was assigned.
+
 ---
 
 ### Collisions — who wins when two stories fit
@@ -280,18 +293,23 @@ Cover the middle column. For each story, say **only the customer-forward first s
 | Question | Primary | Backup | Never |
 |---|---|---|---|
 | Receiving feedback | S001 | S002 | — |
-| Disagreement / conflict | S002 | S003 | — |
+| Disagreement / conflict | S002 (Version B) | S002 (Version A) on follow-up | **S003** — *no conflict beat exists in it; the senior engineer held access, he didn't challenge you* |
 | Ambiguity | S004 | S005 (requirements), S003 (design) | — |
 | Decision under uncertainty | **S003** | — | S004 — *ambiguity ≠ uncertainty; you resolved that one by asking* |
 | Ownership end-to-end | S004 | S005, S003 | — |
 | Prioritization | S001 (blast radius) | S003 (parallelizing) | — |
 | Hands-on GenAI | S004 | MCP side project | S005 — *analytics about Copilot, not building it* |
 
-### The two genuine gaps — bridge, never dead-end
+### The three genuine gaps — bridge, never dead-end
 
 **Giving feedback to a peer.** No story exists. Say: *"I haven't been in a formal position to give feedback yet — most of mine has been peer code review. My principle is specific and actionable over vague: I'd rather say 'this will fail on null input, here's the fix' than 'this needs improvement.'"* Then give a real code-review example. **Never** say "I've never had to tell someone they were wrong" — it reads as either no reflection or stonewalling.
 
 **Prioritizing between competing projects.** Say: *"At my stage I've mostly executed on a defined backlog — my judgment has been sequencing within a problem, not between projects. That's something I want to develop at the next level."* Then immediately pivot to the S001 blast-radius sequencing so the interviewer still gets evidence. **Never** go hypothetical.
+
+**Disagreement has one story, not two — this is a *capacity* gap, not a coverage gap.** S002 is your only conflict material, and S003 is **not** a backup (no conflict beat exists in it). Its two versions buy you two probes: Version B for backbone stems, Version A for changed-my-mind stems. A third conflict-flavoured probe in the same loop has nowhere to go, and the 2-use cap is already spent.
+- **Route first.** Before reaching for a third telling, check whether the probe is actually about conflict or about something adjacent you *do* have: *feedback received* → S001 (manager's corrective guidance). *Cross-team friction* → S005 (drove the Power BI team with data) or S008 (escalated an incident to the BCDR team). *Convincing someone* → S007 (took retroactive invoicing to PMs). None are conflict stories, but several conflict-shaped stems are answerable from them without stretching.
+- **If it's genuinely a third conflict probe,** don't tell S002 a third time and don't inflate S003. Say it plainly: *"I've given you my strongest one already — I'd rather not stretch a weaker example into a disagreement it wasn't. What I can tell you is how I approach it generally,"* then give your principle (make them show you the cost; concede to evidence, not to title) and offer the adjacent example you routed to. Naming the limit costs less than a manufactured conflict.
+- **Fixing this needs new material, not new framing.** No angle in the Angle Bank creates a second conflict beat.
 
 ### ⛔ Do-not-use memories — true, but they lose the question
 
@@ -354,7 +372,7 @@ Cover the middle column. For each story, say **only the customer-forward first s
 
 **Situation**: Mid-level on D365 Sales Hub Premium; manager assigned me to lead a company-wide security initiative — associate every cloud resource across 23 global Azure subscriptions with Network Security Perimeters to close a data-exfiltration risk. Hard 2-month deadline, no flex.
 **Task**: Design the NSP profile architecture and roll out across 100+ resources / 23 subscriptions with least-privilege rules, breaking nothing.
-**Action**: Refused to design until I'd read the codebase to map real traffic per resource type (Key Vaults, storage, Spark-accessed resources — all distinct paths). Rejected both extremes (one profile = too coarse; one-per-resource = unsustainable); designed profiles grouped by traffic pattern. Validated end-to-end in a test subscription, deployed in learning mode, wrote precise rules from live traffic. Daily loop with a senior engineer who held subscription access. Hit an Azure quota block on a few subscriptions — raised requests and parallelized into unblocked geos so it cost zero calendar time. Documented the decision-making and shared it; two other teams picked it up.
+**Action**: Refused to design until I'd read the codebase to map real traffic per resource type (Key Vaults, storage, Spark-accessed resources — all distinct paths). Rejected both extremes (one profile = too coarse; one-per-resource = unsustainable); designed profiles grouped by traffic pattern. Validated end-to-end in a test subscription, deployed in learning mode, wrote precise rules from live traffic. Daily loop with a senior engineer who held subscription access. Hit an Azure quota block on a few subscriptions — raised requests and parallelized into unblocked geos so it cost zero calendar time. Documented the decision-making and shared it proactively; two engineers from other teams reached out for it.
 **Result**: 100+ resources secured across all 23 subscriptions within the deadline; no legitimate traffic disrupted, no features broken.
 
 **Earned Secret**: Read actual system behavior before making architectural decisions. (Callback: later reused an existing entity-field injection mechanism for an LLM feature instead of building a new path.)
@@ -419,7 +437,7 @@ Cover the middle column. For each story, say **only the customer-forward first s
 - **Derive the $45K, don't recite it.** 45 eligible customers × $1,000 flat = $45,000, from queries you ran yourself. If asked, walk the arithmetic. This is the one number in your entire set that survives arbitrary drilling — use it, and let it do the work the $156K currently can't.
 - **Be precise on "recovered."** $45K is a one-time recovery of backdated invoices, **not** an annual figure. And be honest that customers who had already fully churned were *unrecoverable* — that money was permanently lost. Volunteering that is stronger than being caught by "so you got all of it back?"
 - **You didn't charge anyone automatically.** Your code generated an invoice; the customer paid it. If an interviewer starts probing "you retroactively charged customers?", the answer is invoices with PM sign-off, no automatic card charges.
-- **No failure beat exists here.** Nothing broke. If pushed for what went wrong, don't invent — pivot to the honest limitation (the unrecoverable cohort) or the safety design you'd have to defend if it *had* gone wrong.
+- **No failure beat exists here.** Nothing broke. If pushed for what went wrong, don't invent — pivot to the honest limitations (the unrecoverable cohort, and never measuring ongoing prevented leakage) or the safety design you'd have to defend if it *had* gone wrong.
 - **Don't oversell the UI.** It was the invoice breakdown for the filing-fee charge, not an admin console. The resume says "admin-facing UI" — keep the spoken version accurate to what it was.
 
 ---
@@ -494,7 +512,9 @@ Cover the middle column. For each story, say **only the customer-forward first s
 
 ## Gap-Handling Scripts
 
-> **Disagreement / conflict is no longer a gap.** You now have S002 (peer disagreement, changed your mind, conceded) and S003 (senior challenged a security decision, defended with due diligence). Use S002 as the primary "disagreement / conflict" story and S003 as the backup. The old "I haven't had a real disagreement" script is retired — don't use it.
+> **Disagreement / conflict is covered, but by one story only.** S002 is it — and its two rehearsed versions are what give it range: Version B (held ground, made him prove the cost, then committed) for backbone stems, Version A (asked why, updated) for changed-my-mind stems. The old "I haven't had a real disagreement" script is retired — don't use it.
+>
+> ⚠️ **S003 is not a disagreement story.** An earlier version of this file listed it as the backup. It isn't one: there is no conflict beat anywhere in `S003_nsp_compliance_prep.md` — the senior engineer held subscription access and ran the pipeline with you daily. He never challenged the design. If a second disagreement probe lands in the same loop, tell S002 from the *other* version rather than reaching for S003.
 
 ### Giving Feedback *(still a genuine gap)*
 > "I haven't been in a formal position to give feedback yet — most of mine has been peer code-review comments. My principle is specific and actionable over vague: I'd rather say 'this function will fail on null input — here's the fix' than 'the code needs improvement.'"

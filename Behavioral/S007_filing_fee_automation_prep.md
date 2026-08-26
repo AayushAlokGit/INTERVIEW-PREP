@@ -113,7 +113,7 @@ Say this out loud. The hero move is the query, not the automation.
 ## Watch Out For
 
 - **Lead with the number and the fact that you went and got it.** Not "I automated a manual billing process." The interviewer's interest is that you converted a vague suspicion into 45 × $1,000 and a closing window.
-- **Derive the number, don't recite it.** 45 eligible customers × $1,000 flat fee = $45,000, from queries you ran. Walk the arithmetic if asked. This is the one number in your whole story set that survives arbitrary drilling — contrast it deliberately with the $156K in S001, which still needs auditing before you quote it anywhere.
+- **Derive the number, don't recite it.** 45 eligible customers × $1,000 flat fee = $45,000, from queries you ran. Walk the arithmetic if asked. This is the one number in your whole story set that survives arbitrary drilling — contrast it deliberately with the $156K in S001 — that one was audited 2026-08-08 and is your manager's forecast, so it always needs attributing before you quote it.
 - **Concede the discovery, immediately and unprompted.** "My mentor raised it; I quantified it." Costs you nothing, and volunteering it reads as Earn Trust. Do **not** deploy this story for "a problem nobody asked me to look at" or "work outside your assigned scope" — those stems will pull the discovery question straight out of you.
 - **One-time, not annual.** And volunteer that the fully-churned customers were unrecoverable. "So did you get all of it back?" should never be a question that catches you.
 - **You never auto-charged anyone.** Code generated invoices; customers paid them. Have this ready, because "you retroactively charged 45 departing customers" is a natural place for an interviewer to press on judgment.
