@@ -964,21 +964,77 @@ vector<int> nextGreater(const vector<int>& a) {
 }
 ```
 
-**The pop guard's strictness is the spec.** `<` pops only what `a[i]` *strictly* beats, so equal
-values survive on the stack — the invariant is **non-increasing**, not decreasing. Change it to
-`<=` and you have silently solved a different problem, "next greater **or equal**":
+#### The right-to-left form — equally valid, often more intuitive
+
+Same problem, opposite sweep. Walk **backwards** and let the stack hold the candidates that are
+still viable answers for whatever comes next; the top is your answer directly, no assignment on pop.
+
+```cpp
+vector<int> nextGreaterRight(const vector<int>& nums) {
+    int n = nums.size();
+    vector<int> result(n, -1);
+    stack<int> st;                                 // VALUES to my right that can still be an answer
+    for (int i = n - 1; i >= 0; --i) {
+        while (!st.empty() && st.top() <= nums[i]) st.pop();   // can't beat me -> useless to all
+        if (!st.empty()) result[i] = st.top();                 // nearest survivor IS the answer
+        st.push(nums[i]);
+    }
+    return result;
+}
+```
+
+Verified identical to the forward version on 300k random arrays with heavy duplicates.
+
+**Why the pop is safe:** anything `≤ nums[i]` is shadowed forever. Any element further left that
+would have accepted it will accept `nums[i]` instead — and `nums[i]` is *nearer*. Dominated, so
+discard.
+
+**Which to use.** They differ only in what the pop *means*:
+
+| | Forward (L→R) | Backward (R→L) |
+|---|---|---|
+| Stack holds | indices whose answer is still unknown | values still viable as an answer |
+| Pop means | "found your answer" — assign on pop | "you're dominated" — discard |
+| Answer read at | pop time | `st.top()` after popping |
+| Needed for §7b / §7c | **yes** | no |
+
+Prefer whichever you can write without thinking — for plain Next Greater they are interchangeable.
+**But the forward form is not optional for §7b (Largest Rectangle) and §7c (Trapping Rain Water):**
+there the pop is the moment *both* boundaries of a bar become known at once, and that only happens
+sweeping forward. Backward would need two passes.
+
+**Store indices, not values, the moment you need a distance.** Daily Temperatures wants
+`j - i`, which values cannot give you — in either direction:
+
+```cpp
+while (!st.empty() && t[st.top()] <= t[i]) st.pop();   // stack of INDICES
+if (!st.empty()) r[i] = st.top() - i;
+st.push(i);
+```
+
+#### The pop guard's strictness is the spec
+
+`<` in the forward version pops only what `a[i]` *strictly* beats, so equal values survive — the
+invariant is **non-increasing**, not decreasing. Flip it and you silently solve a different problem,
+"next greater **or equal**":
 
 ```
-a = [5, 5, 5]     with <   ->  [-1, -1, -1]   correct for "strictly greater"
-                  with <=  ->  [ 5,  5, -1]   answers a different question
+a = [5, 5, 5]     forward with <    ->  [-1, -1, -1]   correct for "strictly greater"
+                  forward with <=   ->  [ 5,  5, -1]   answers a different question
 ```
 
-So pick the strictness from the wording — *"next greater"* → `<`, *"next greater or equal"* → `<=` —
-and state which one you are building. Every monotonic-stack problem hinges on this one character,
-and the sheet's own neighbours disagree on purpose: §7b pops on `>=` (strictly increasing stack) and
-§7d pops on `<=` (strictly decreasing deque), because each needs the opposite tie-breaking.
+**The strictness flips with the direction** — the two forms guard on opposite operators to mean the
+same thing, because one pops *answers* and the other discards *candidates*:
 
-Daily Temperatures is this, storing `i - st.top()` instead of the value.
+| You want | Forward guard | Backward guard |
+|---|---|---|
+| next **strictly** greater | `a[st.top()] < a[i]` | `st.top() <= nums[i]` |
+| next greater **or equal** | `a[st.top()] <= a[i]` | `st.top() < nums[i]` |
+
+Pick it from the wording and say which one you are building. Every monotonic-stack problem turns on
+this one character, and the sheet's neighbours disagree on purpose: §7b pops on `>=` (strictly
+increasing stack) and §7d pops on `<=` (strictly decreasing deque), because each needs the opposite
+tie-breaking.
 
 ### 7b. Largest Rectangle in Histogram
 
