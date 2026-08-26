@@ -335,9 +335,67 @@ int longestSubarraySumK(const vector<int>& a, int k) {
 
 - Sum divisible by k → key on `p % k`, normalising negatives with `((p % k) + k) % k`.
 - Equal 0s and 1s → map `0 -> -1`, then it is "longest subarray with sum 0".
-- 2D range sum → `P[i][j]` plus inclusion–exclusion.
 
-### 3c. Difference array — the inverse trick
+### 3c. 2D range sum — inclusion–exclusion
+
+```
+Brute:   sum the rectangle per query                   O(mn) per query
+Optimal: build P once, answer each query in O(1)       O(mn) build, O(1) query
+```
+
+**Core idea:** the 1D identity `sum(i..j) = P[j] - P[i-1]` needs *two* points. In 2D it needs
+**four**, because a rectangle has four corners.
+
+Define `P[i][j]` = sum of everything **above and to the left** of `(i, j)`, inclusive — one
+"upper-left block" per cell. Then the sum of the rectangle from `(r1, c1)` to `(r2, c2)`:
+
+```
+    c1      c2                 target = big block
+  ┌────┬─────────┐                    − the strip ABOVE it
+r1│ A  │    B    │                    − the strip LEFT of it
+  ├────┼─────────┤                    + the corner (added back)
+  │ C  │ TARGET  │
+r2└────┴─────────┘
+
+P[r2][c2]  = A + B + C + TARGET      the whole upper-left block
+P[r1-1][c2] = A + B                   everything above the target
+P[r2][c1-1] = A + C                   everything left of the target
+
+TARGET = P[r2][c2] - P[r1-1][c2] - P[r2][c1-1] + P[r1-1][c1-1]
+                                                  ^ A was subtracted TWICE
+```
+
+**Unlock:** subtracting the two strips double-removes their overlap `A`, so you add it back once.
+That "+ corner" term is the whole trick, and it's the part people drop.
+
+The build uses the *same* identity in reverse — each cell is its two neighbouring blocks, minus
+their shared overlap, plus itself:
+
+```cpp
+struct Sum2D {
+    vector<vector<long long>> P;                   // 1-indexed: row/col 0 are zeros,
+                                                   // so r1-1 and c1-1 need no guard
+    Sum2D(const vector<vector<int>>& m)
+        : P(m.size() + 1, vector<long long>(m[0].size() + 1, 0)) {
+        for (int i = 1; i <= (int)m.size(); ++i)
+            for (int j = 1; j <= (int)m[0].size(); ++j)
+                P[i][j] = m[i-1][j-1] + P[i-1][j] + P[i][j-1] - P[i-1][j-1];
+    }                                              //                  ^ overlap, once
+
+    long long query(int r1, int c1, int r2, int c2) const {      // 0-indexed, inclusive
+        ++r1; ++c1; ++r2; ++c2;                    // shift into the padded frame
+        return P[r2][c2] - P[r1-1][c2] - P[r2][c1-1] + P[r1-1][c1-1];
+    }
+};
+```
+
+**Pad the table by one row and column.** Without it, every query needs `r1 == 0` and `c1 == 0`
+special cases; with it, the zero row and column absorb them.
+
+The same four-corner shape generalises: a 2D **difference** array (§3d) marks `+v` and `-v` at the
+four corners of an update rectangle, then two prefix-sum passes apply them all.
+
+### 3d. Difference array — the inverse trick
 
 ```
 Brute:   apply each range update elementwise           O(q·n)
