@@ -2273,6 +2273,47 @@ permutation one, and it genuinely wants amount outer. The one-line test:
 > **Coins outer = "for each coin type, how many do I use?" → combinations.
 > Amount outer = "for each amount, which coin came last?" → permutations.**
 
+**The 2D form of the permutation version — note the second dimension changes.** You *cannot* write
+a coin-type-indexed table that counts permutations, because that dimension is exactly what forces a
+canonical order. The permutation table is indexed by **sequence position** instead:
+`dp[k][x]` = ordered sequences of **exactly `k` coins** summing to `x`.
+
+```cpp
+long long permWays2D(const vector<int>& c, int amount) {
+    int maxLen = amount;                            // coins >= 1, so at most `amount` of them
+    vector<vector<long long>> dp(maxLen + 1, vector<long long>(amount + 1, 0));
+    dp[0][0] = 1;                                   // the empty sequence
+    for (int k = 1; k <= maxLen; ++k)
+        for (int x = 1; x <= amount; ++x)
+            for (int coin : c)                      // which coin sits at POSITION k
+                if (coin <= x) dp[k][x] += dp[k-1][x - coin];
+    long long total = 0;
+    for (int k = 1; k <= maxLen; ++k) total += dp[k][amount];   // any length counts
+    return total;
+}
+```
+
+```
+coins {1,2}:   x =  0  1  2  3
+       k = 0        1  0  0  0     the empty sequence
+       k = 1        0  1  1  0
+       k = 2        0  0  1  2
+       k = 3        0  0  0  1
+       column x=3 sums to 3  ->  1+2, 2+1, 1+1+1
+```
+
+Put the two tables side by side and the whole distinction is one axis: **combinations index rows by
+*which coin types are admitted*; permutations index rows by *how many coins have been placed*.** The
+first can never revisit a coin type, so order is impossible; the second re-offers every coin at
+every position, so order is everything.
+
+It costs O(amount² · n) versus the 1D version's O(amount · n), so **collapse it** — summing over `k`
+is exactly the amount-outer one-liner above. But keep the `k` dimension when the problem **bounds
+the number of coins** ("at most `K` coins"): then cap the loop at `K` and it stops being optional.
+That is also the answer to Combination Sum IV's own follow-up — *"what if negative numbers are
+allowed?"* Sequences become unbounded and the count is infinite, so you must bound the length, which
+means you need this table.
+
 **This trap only applies to *counting*.** `coinChange` (fewest coins) is **immune** — `min` does not
 care in what order the coins were picked, so both loop orders give identical results. *(Verified: the
 two orders agreed on all 40k random cases.)* So if you find yourself worrying about loop order,
