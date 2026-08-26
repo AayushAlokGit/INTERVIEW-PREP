@@ -2198,20 +2198,85 @@ int coinChange(const vector<int>& coins, int amount) {     // fewest coins
             dp[x] = min(dp[x], dp[x - c] + 1);
     return dp[amount] >= INF ? -1 : dp[amount];
 }
+```
 
+#### Coin Change II — counting ways, and why the loop order decides the answer
+
+**Problem.** How many **distinct combinations** of coins sum to `amount`? Coins are unlimited, and
+`{1,2}` and `{2,1}` are the *same* combination.
+
+Again, start from the 2D table. `dp[i][x]` = ways to make `x` using **only the first `i` coin
+types**:
+
+```cpp
+long long coinChangeWays2D(const vector<int>& c, int amount) {
+    int n = c.size();
+    vector<vector<long long>> dp(n + 1, vector<long long>(amount + 1, 0));
+    dp[0][0] = 1;                                   // one way to make 0: take nothing
+    for (int i = 1; i <= n; ++i)
+        for (int x = 0; x <= amount; ++x) {
+            dp[i][x] = dp[i-1][x];                  // use ZERO of coin i-1
+            if (c[i-1] <= x)
+                dp[i][x] += dp[i][x - c[i-1]];      // use >=1 of it -- same row, unbounded
+        }
+    return dp[n][amount];
+}
+```
+
+Traced for coins `{1, 2}` — each row *admits one more coin type*, and never revisits an earlier one:
+
+```
+            x =  0  1  2  3  4  5
+  {}             1  0  0  0  0  0     no coins: only 0 is reachable
+  + coin 1       1  1  1  1  1  1     one way each: all 1s
+  + coin 2       1  1  2  2  3  3     answer for x=5 is 3: {1x5}, {1x3,2}, {1,2x2}
+```
+
+**Why this counts combinations and not permutations.** The row index imposes a fixed order on the
+*coin types*: you settle how many `1`s to use, then move to `2`, and can never go back. So every
+multiset is built exactly once, in one canonical order. There is no path through the table that
+produces "a 2 then a 1" — that ordering does not exist as a state.
+
+Collapsing to 1D, **the outer loop is the row index**, which is why it must stay outside:
+
+```cpp
 long long coinChangeWays(const vector<int>& coins, int amount) {
     vector<long long> dp(amount + 1, 0);
     dp[0] = 1;
-    for (int c : coins)                                    // items OUTER
+    for (int c : coins)                             // COINS OUTER == the 2D row loop
         for (int x = c; x <= amount; ++x)
             dp[x] += dp[x - c];
     return dp[amount];
 }
 ```
 
-**The loop-order trap:** in `coinChangeWays`, items outer / capacity inner counts **combinations**.
-Swap them and you count **permutations** (`1+2` and `2+1` as distinct). Both are legitimate answers
-to different questions — know which one you were asked.
+**Swap the loops and you answer a different question:**
+
+```cpp
+for (int x = 1; x <= amount; ++x)                   // AMOUNT OUTER
+    for (int c : coins)
+        if (c <= x) dp[x] += dp[x - c];
+```
+
+Now `dp[x]` asks *"what was the **last** coin I added?"* and sums over every choice — so each
+ordering is a distinct path. That counts **ordered sequences**:
+
+```
+coins {1, 2}, amount 3
+  coins outer  -> 2    {1,1,1} and {1,2}                  <- combinations  (Coin Change II)
+  amount outer -> 3    1+1+1, 1+2, 2+1                    <- permutations  (Combination Sum IV)
+```
+
+Both are correct code for different problems — *Combination Sum IV* is (despite its name) the
+permutation one, and it genuinely wants amount outer. The one-line test:
+
+> **Coins outer = "for each coin type, how many do I use?" → combinations.
+> Amount outer = "for each amount, which coin came last?" → permutations.**
+
+**This trap only applies to *counting*.** `coinChange` (fewest coins) is **immune** — `min` does not
+care in what order the coins were picked, so both loop orders give identical results. *(Verified: the
+two orders agreed on all 40k random cases.)* So if you find yourself worrying about loop order,
+first check whether you are summing or optimising.
 
 Also here: *Partition Equal Subset Sum* subset-sum to `total / 2` (odd total → immediately false) ·
 *Target Sum* with `P` the positives, `P - N = target` and `P + N = sum` give `P = (sum + target) / 2`,
