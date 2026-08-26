@@ -2135,21 +2135,58 @@ int lis(const vector<int>& a) {
 item at most once. *Unbounded* — the same, but each item may be taken any number of times.
 *Coin Change* — fewest coins summing to `amount`; *Coin Change II* — how many distinct ways.
 
-**Unlock:** the loop *direction* is the entire difference between the two variants. Descending
-guarantees `dp[c - w]` still refers to the previous item's row (each item used once); ascending lets
-it refer to the current row (reuse allowed).
+```
+Brute:   take/skip each item, recurse                  O(2^n)
+DP:      dp[i][c] over items x capacity                O(nC) time, O(nC) space  <- think here
+Optimal: collapse to one rolling row                   O(nC) time, O(C) space
+```
+
+**Think in the 2D table.** `dp[i][c]` = the best value using **the first `i` items** within capacity
+`c`. Every cell is one decision — skip item `i`, or take it:
 
 ```cpp
-// 0/1 knapsack — each item once -> iterate capacity DESCENDING
-for (auto& it : items)
-    for (int c = C; c >= it.w; --c)
-        dp[c] = max(dp[c], dp[c - it.w] + it.v);
-
-// Unbounded knapsack — reuse allowed -> iterate capacity ASCENDING
-for (auto& it : items)
-    for (int c = it.w; c <= C; ++c)
-        dp[c] = max(dp[c], dp[c - it.w] + it.v);
+int knapsack01(const vector<int>& w, const vector<int>& v, int C) {
+    int n = w.size();
+    vector<vector<int>> dp(n + 1, vector<int>(C + 1, 0));   // row 0 = no items = all zeros
+    for (int i = 1; i <= n; ++i)
+        for (int c = 0; c <= C; ++c) {
+            dp[i][c] = dp[i-1][c];                          // skip item i-1
+            if (w[i-1] <= c)                                // or take it, if it fits
+                dp[i][c] = max(dp[i][c], dp[i-1][c - w[i-1]] + v[i-1]);
+        }                                //      ^^^ i-1: item i-1 is now SPENT
+    return dp[n][C];
+}
 ```
+
+**Unbounded is a one-character change** — and in 2D you can *see* it:
+
+```cpp
+            if (w[i-1] <= c)
+                dp[i][c] = max(dp[i][c], dp[i][c - w[i-1]] + v[i-1]);
+                                //      ^^^ i: stay on the SAME row -> take it again
+```
+
+That is the whole distinction. **0/1 reads the row above** (each item consumed once); **unbounded
+reads its own row** (the item is still available). Nothing else differs — same loops, same order.
+
+**Then collapse to 1D.** Each row reads only the row above (0/1) or itself (unbounded), so one
+array suffices — and the loop *direction* is what decides which row `dp[c - w]` still holds:
+
+```cpp
+// 0/1 — DESCENDING, so dp[c - w] has not been touched yet this round == the row ABOVE
+for (int i = 0; i < n; ++i)
+    for (int c = C; c >= w[i]; --c)
+        dp[c] = max(dp[c], dp[c - w[i]] + v[i]);
+
+// Unbounded — ASCENDING, so dp[c - w] was already updated this round == the SAME row
+for (int i = 0; i < n; ++i)
+    for (int c = w[i]; c <= C; ++c)
+        dp[c] = max(dp[c], dp[c - w[i]] + v[i]);
+```
+
+Derive the direction from the 2D form rather than memorising it: *"0/1 needs the row above, so I
+must not have overwritten `dp[c - w]` yet → go descending."* Write the 2D version in an interview
+unless space is raised; it is easier to explain and easier to get right.
 
 ```cpp
 int coinChange(const vector<int>& coins, int amount) {     // fewest coins
