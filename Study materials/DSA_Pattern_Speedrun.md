@@ -53,8 +53,8 @@ and `(lo + hi) / 2` inside a binary search all need `long long` or a subtraction
 | "subarray sum = k" with **negatives** | Prefix sum + hash map | 3 |
 | "k distinct" / "at most k" over a window | Variable window + counter map | 2 |
 | Sorted input, or "pair/triplet summing to X" | Two pointers from both ends | 1 |
-| "minimise the maximum" / "maximise the minimum" | Binary search on the answer | 5b |
-| "kth smallest/largest", counting `≤ v` is easy | Binary search on value space | 5b |
+| "minimise the maximum" / "maximise the minimum" | Binary search on the answer | 5c |
+| "kth smallest/largest", counting `≤ v` is easy | Binary search on value space | 5c |
 | "top k" / "k closest" / streaming | Heap of size k | 8 |
 | "next greater / previous smaller / span" | Monotonic stack | 7 |
 | "max/min of every window of size k" | Monotonic deque | 7 |
@@ -483,8 +483,6 @@ vector<long long> applyRangeUpdates(int n, const vector<array<int,3>>& upd) {
 read — a dump. Sizing `d` as `n` is an out-of-bounds bug that only fires on updates touching the
 last index.
 
-**Cost:** `O(q·n)` → `O(q + n)`. With `q = n = 10^5` that is `10^10` → `2×10^5`.
-
 **Where it shows up:** Corporate Flight Bookings, Range Addition, Car Pooling — often over a *time*
 axis rather than an index axis. **Minimum Meeting Rooms (§6c) is this trick in disguise:** `+1` at
 each start, `-1` at each end, prefix-sum the timeline, take the running max. That is a difference
@@ -579,9 +577,8 @@ vector<vector<string>> groupAnagrams(const vector<string>& ws) {
 }
 ```
 
-**Traps:** claiming O(n) while rebuilding a frequency map inside a loop over the same n — that is
-O(n²). `unordered_map` with a `pair`/`vector` key does not compile without a custom hash; encode the
-key into a single integer or use `map` instead of writing one under time pressure.
+**Trap:** claiming O(n) while rebuilding a frequency map inside a loop over the same n — that is
+O(n²).
 
 ---
 
@@ -706,8 +703,7 @@ flowers, count `>= m` · *Kth Smallest in a Sorted Matrix* `ok(v)` = staircase-c
 `>= k` · *Kth Smallest Pair Distance* `ok(d)` = two-pointer count of pairs within `d` is `>= k`.
 
 **Traps:** derive both bounds out loud, and prove `ok()` is monotone. If you ever write `lo = mid`,
-you must use `mid = lo + (hi - lo + 1) / 2` or you infinite-loop. `accumulate(..., 0)` deduces `int`
-and overflows.
+you must use `mid = lo + (hi - lo + 1) / 2` or you infinite-loop.
 
 ---
 
@@ -835,8 +831,7 @@ int minMeetingRooms(vector<vector<int>>& iv) {
 }
 ```
 
-This is a **difference array (§3d) with `v = 1`** — `+1` at each start, `-1` at each end, prefix-sum
-the timeline, take the running max.
+This is a **difference array (§3d) with `v = 1`** over the time axis.
 
 #### Choosing between them
 
@@ -847,10 +842,9 @@ the timeline, take the running max.
 | Knows **which** room | **yes** | no — endpoints are decoupled |
 | Generalises to | resource assignment | any "max concurrent" question |
 
-**The deciding row is "which room".** The sweep is fast *precisely because* it throws away the
-pairing between a start and its end — which is also why it cannot tell you where anything goes. So
-when the follow-up is *"now assign each meeting to a specific room"*, the sweep is a dead end and
-the heap extends by carrying the room id:
+**The deciding row is "which room".** The sweep is fast *precisely because* it discards the pairing
+between a start and its end — which is why it cannot say where anything goes. When the follow-up is
+*"assign each meeting to a specific room"*, the heap extends by carrying the room id:
 
 ```cpp
 priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> ends;   // {endTime, roomId}
@@ -924,9 +918,6 @@ Move set too small → add an undo (a heap or a stack). Candidate set too small 
 consider. **Fails when** retraction is not legal, because an earlier commitment irreversibly changed
 the world. Then it is DP, not greedy.
 
-**C++ note:** `priority_queue<int>` is a **max**-heap. Min-heap is
-`priority_queue<int, vector<int>, greater<int>>`. Say which one you want before you type it.
-
 ---
 
 ## 7. Monotonic stack and deque
@@ -985,8 +976,6 @@ vector<int> nextGreaterRight(const vector<int>& nums) {
 }
 ```
 
-Verified identical to the forward version on 300k random arrays with heavy duplicates.
-
 **Why the pop is safe:** anything `≤ nums[i]` is shadowed forever. Any element further left that
 would have accepted it will accept `nums[i]` instead — and `nums[i]` is *nearer*. Dominated, so
 discard.
@@ -1000,10 +989,9 @@ discard.
 | Answer read at | pop time | `st.top()` after popping |
 | Needed for §7b / §7c | **yes** | no |
 
-Prefer whichever you can write without thinking — for plain Next Greater they are interchangeable.
-**But the forward form is not optional for §7b (Largest Rectangle) and §7c (Trapping Rain Water):**
-there the pop is the moment *both* boundaries of a bar become known at once, and that only happens
-sweeping forward. Backward would need two passes.
+Interchangeable for plain Next Greater — write whichever comes out without thinking. **But §7b and
+§7c need the forward form:** there the pop is the moment *both* boundaries of a bar become known at
+once, and that only happens sweeping forward.
 
 **Store indices, not values, the moment you need a distance.** Daily Temperatures wants
 `j - i`, which values cannot give you — in either direction:
@@ -1111,8 +1099,7 @@ Traced on the classic input — note row 2 is where the `2 x 3` block surfaces:
 1 0 0 1 0      row 3   heights 4 0 0 3 0   -> 4
 ```
 
-`R` histogram passes at O(C) each → **O(R·C)**, and the O(C) heights array is the only extra space.
-Same row-as-histogram reduction: Count Submatrices With All Ones. (*Maximal **Square*** is easier —
+The O(C) heights array is the only extra space. Same row-as-histogram reduction: Count Submatrices With All Ones. (*Maximal **Square*** is easier —
 plain DP, `dp[i][j] = 1 + min` of three neighbours — no stack needed.)
 
 ### 7c. Trapping Rain Water
@@ -1188,9 +1175,6 @@ on `]` · *Basic Calculator II* push terms, resolving `*` and `/` against the to
 In all of them the pop guard is a problem-specific feasibility question — *getting the guard right is
 the correctness argument.*
 
-**C++ note:** `std::stack` cannot be iterated. If you need to inspect below the top, use a
-`vector<int>` as your stack (`back()` / `pop_back()`).
-
 ---
 
 ## 8. Heaps and top-K
@@ -1207,7 +1191,7 @@ largest is `3`.
 ```
 Brute:   sort, index                                   O(n log n)
 Optimal: min-heap of size k                            O(n log k), O(k) space
-Better:  nth_element (quickselect), one-shot only      O(n) average
+Faster:  nth_element (quickselect), one-shot only      O(n) average, mutates input
 Stream:  min-heap of size k is the ONLY option         O(log k) per element
 ```
 
@@ -1791,8 +1775,6 @@ many distinct distances. But with weights in `{0, 1}` the frontier *still* only 
 
 **The invariant:** distances in the deque are non-decreasing front to back and span at most 1. Both
 pushes preserve it, and that is exactly why popping the front always yields a settled node.
-*(Instrumented on a 300-node random graph: live distances were non-decreasing at every step and the
-max spread was exactly 1.)*
 
 ```cpp
 vector<int> zeroOneBFS(const vector<vector<pair<int,int>>>& g, int src, int n) {
@@ -1815,7 +1797,7 @@ vector<int> zeroOneBFS(const vector<vector<pair<int,int>>>& g, int src, int n) {
 ```
 
 Dropping the stale guard still returns correct answers — a node can be re-pushed after improving —
-but measured ~1.24x more pops on dense random graphs. Keep it: one line, and it mirrors Dijkstra.
+but does noticeably more pops. Keep it: one line, and it mirrors Dijkstra.
 
 **Where it shows up:** *Minimum Obstacle Removal to Reach Corner* (stepping onto an obstacle costs
 1, everything else 0) · *Minimum Cost to Make at Least One Valid Path in a Grid* (following a
@@ -1898,6 +1880,7 @@ iteration, `d[i][j]` is the shortest `i -> j` path whose **intermediate** vertic
 
 ```cpp
 void floydWarshall(vector<vector<long long>>& d) {   // d[i][j] = weight or INF; d[i][i] = 0
+    const long long INF = LLONG_MAX / 4;
     int n = d.size();
     for (int k = 0; k < n; ++k)                      // k OUTERMOST -- non-negotiable
         for (int i = 0; i < n; ++i) {
@@ -1911,9 +1894,8 @@ void floydWarshall(vector<vector<long long>>& d) {   // d[i][j] = weight or INF;
 ```
 
 **`k` must be the outermost loop.** It is the DP dimension: the whole table must finish level `k`
-before anything reads level `k+1`. Put `k` innermost and it silently returns wrong answers —
-measured at 4054 disagreeing cells across random graphs. If you remember one thing about
-Floyd-Warshall, remember the loop order.
+before anything reads level `k+1`. Put `k` innermost and it silently returns wrong answers — no
+crash, no warning. If you remember one thing about Floyd-Warshall, remember the loop order.
 
 **Negative cycles:** `d[i][i] < 0` for some `i`. Unlike Bellman-Ford this finds *every* cycle, not
 just those reachable from one source.
@@ -2188,6 +2170,9 @@ Derive the direction from the 2D form rather than memorising it: *"0/1 needs the
 must not have overwritten `dp[c - w]` yet → go descending."* Write the 2D version in an interview
 unless space is raised; it is easier to explain and easier to get right.
 
+**Coin Change (fewest coins)** is unbounded knapsack with `min` instead of `max` and a cost of 1 per
+item, so it takes the ascending 1D form directly:
+
 ```cpp
 int coinChange(const vector<int>& coins, int amount) {     // fewest coins
     const int INF = INT_MAX / 2;                           // /2 so +1 cannot overflow
@@ -2302,22 +2287,19 @@ coins {1,2}:   x =  0  1  2  3
        column x=3 sums to 3  ->  1+2, 2+1, 1+1+1
 ```
 
-Put the two tables side by side and the whole distinction is one axis: **combinations index rows by
-*which coin types are admitted*; permutations index rows by *how many coins have been placed*.** The
-first can never revisit a coin type, so order is impossible; the second re-offers every coin at
-every position, so order is everything.
+The whole distinction is one axis: **combinations index rows by *which coin types are admitted*;
+permutations index rows by *how many coins have been placed*.** The first can never revisit a coin
+type, so order is impossible; the second re-offers every coin at every position, so order is
+everything.
 
-It costs O(amount² · n) versus the 1D version's O(amount · n), so **collapse it** — summing over `k`
-is exactly the amount-outer one-liner above. But keep the `k` dimension when the problem **bounds
-the number of coins** ("at most `K` coins"): then cap the loop at `K` and it stops being optional.
-That is also the answer to Combination Sum IV's own follow-up — *"what if negative numbers are
-allowed?"* Sequences become unbounded and the count is infinite, so you must bound the length, which
-means you need this table.
+At O(amount² · n) versus the 1D O(amount · n), **collapse it** — summing over `k` *is* the
+amount-outer one-liner. Keep the `k` dimension only when the problem **bounds the coin count** ("at
+most `K` coins") — which is also the answer to Combination Sum IV's follow-up: with negatives
+allowed, sequences are unbounded and the count is infinite, so you must bound the length.
 
 **This trap only applies to *counting*.** `coinChange` (fewest coins) is **immune** — `min` does not
-care in what order the coins were picked, so both loop orders give identical results. *(Verified: the
-two orders agreed on all 40k random cases.)* So if you find yourself worrying about loop order,
-first check whether you are summing or optimising.
+care in what order the coins were picked, so both loop orders give identical results. If you find
+yourself worrying about loop order, first check whether you are summing or optimising.
 
 Also here: *Partition Equal Subset Sum* subset-sum to `total / 2` (odd total → immediately false) ·
 *Target Sum* with `P` the positives, `P - N = target` and `P + N = sum` give `P = (sum + target) / 2`,
@@ -2325,15 +2307,15 @@ so count subsets summing to `P` — reject if that is odd or negative.
 
 ### 13c. Two-sequence and grid DP — the `(i, j)` table
 
+**Problem.** *Edit Distance* — fewest single-character inserts, deletes or replaces to turn `a` into
+`b`. *Longest Common Subsequence* — length of the longest sequence appearing in both, in order but
+not necessarily contiguously.
+
 ```
 Brute:   recurse on both suffixes                      O(3^(m+n)) for edit distance
 Memo:    cache on (i, j)                               O(mn)
 Optimal: bottom-up table, rows rolled                  O(mn) time, O(min(m,n)) space
 ```
-
-**Problem.** *Edit Distance* — fewest single-character inserts, deletes or replaces to turn `a` into
-`b`. *Longest Common Subsequence* — length of the longest sequence appearing in both, in order but
-not necessarily contiguously.
 
 **Unlock:** the state is "how much of each string have I consumed" — two indices, nothing more. The
 transition is the three edit operations.
@@ -2608,15 +2590,15 @@ implementation-defined; use `unsigned` when you mean a logical shift.
 **Core idea:** when values live in `[1..n]` or `[0..n-1]`, **the array is your hash table** — value
 `v` belongs at index `v - 1`. That is how you hit O(1) extra space.
 
+**Problem.** *First Missing Positive* — smallest positive integer **not** present, in O(n) time and
+O(1) extra space. Related: *Find All Duplicates* — with values in `[1..n]` each appearing once or
+twice, report the repeated ones.
+
 ```
 Brute:   sort, then scan                               O(n log n)
 Better:  hash set of seen values                       O(n) time, O(n) space
 Optimal: swap each value to its home index             O(n) time, O(1) space
 ```
-
-**Problem.** *First Missing Positive* — smallest positive integer **not** present, in O(n) time and
-O(1) extra space. Related: *Find All Duplicates* — with values in `[1..n]` each appearing once or
-twice, report the repeated ones.
 
 **Unlock:** the O(1)-space demand in the statement is the hint. Ask whether you may mutate the
 input — if yes, the input *is* the auxiliary structure you were told you could not allocate.
