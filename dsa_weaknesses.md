@@ -1,5 +1,5 @@
 # DSA Weaknesses
-Last updated: 2026-08-24
+Last updated: 2026-09-29
 
 <!-- Sessions = lifetime count (never decreases). Active = current severity 0-10;
      -1 whenever a round gave the chance to exhibit it and he didn't. Row retires at Active 0. -->
@@ -7,47 +7,43 @@ Last updated: 2026-08-24
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't proactively ask about input semantics (sorted, duplicates) | 32 | 10 | 2026-08-24 |
-| Asks for constraints but can't translate them to a budget | 27 | 9 | 2026-08-24 |
-| Never probes the tie-break / output-ordering rule | 1 | 1 | 2026-08-22 |
+| Asks for constraints but can't translate them to a budget | 28 | 10 | 2026-09-29 |
+| Doesn't proactively ask about input semantics (sorted, duplicates) | 32 | 9 | 2026-08-24 |
 
 ## Approach & Thought Process
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Defaults to generic pattern over structure-exploiting one | 40 | 9 | 2026-08-24 |
-| Adopts an optimality principle without proving it | 17 | 9 | 2026-08-24 |
-| Takes the problem's operation phrasing as the algorithm axis | 4 | 3 | 2026-08-24 |
-| Can't reduce a brute force without being told what to fix | 5 | 3 | 2026-08-24 |
-| Rejects a complexity without deriving what must replace it | 1 | 1 | 2026-08-24 |
+| Defaults to generic pattern over structure-exploiting one | 41 | 10 | 2026-09-29 |
+| Adopts an optimality principle without proving it | 18 | 10 | 2026-09-29 |
+| Takes the problem's operation phrasing as the algorithm axis | 5 | 4 | 2026-09-29 |
+| Can't reduce a brute force without being told what to fix | 6 | 4 | 2026-09-29 |
 
 ## Code Quality & Correctness
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Tests only the given examples, never a self-made input | 14 | 10 | 2026-08-24 |
-| Doesn't self-verify/dry-run before declaring done | 91 | 9 | 2026-08-24 |
-| Binary search: lo=mid paired with a down-biased mid | 1 | 2 | 2026-08-17 |
-| Guards a boundary on one line, forgets it on the next | 1 | 1 | 2026-08-24 |
+| Tests only the given examples, never a self-made input | 15 | 10 | 2026-09-29 |
+| Doesn't self-verify/dry-run before declaring done | 92 | 10 | 2026-09-29 |
 | Declares a modulus but never reduces the accumulator/return | 1 | 1 | 2026-08-24 |
 
 ## Complexity Analysis
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't check own complexity against the constraint budget | 18 | 9 | 2026-08-24 |
-| Declares "can't optimise" without checking auxiliary space | 6 | 5 | 2026-08-24 |
-| Misstates own complexity (ignores sort / map log factors) | 2 | 1 | 2026-08-24 |
+| Doesn't check own complexity against the constraint budget | 19 | 10 | 2026-09-29 |
+| Declares "can't optimise" without checking auxiliary space | 7 | 6 | 2026-09-29 |
+| States a loose space bound instead of the tight one | 1 | 1 | 2026-09-29 |
 
 ## Communication
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Long silence (7+ min) when stuck instead of thinking aloud | 29 | 10 | 2026-08-24 |
-| Defends/asserts instead of tracing when asked to dry-run | 31 | 7 | 2026-08-24 |
-| Asks for a hint instead of attempting the question posed | 4 | 1 | 2026-08-24 |
+| Long silence (7+ min) when stuck instead of thinking aloud | 30 | 10 | 2026-09-29 |
+| Defends/asserts instead of tracing when asked to dry-run | 32 | 8 | 2026-09-29 |
+| Asks for a hint instead of attempting the question posed | 5 | 2 | 2026-09-29 |
 
 ## Time Management
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Never reaches approach independently within budget | 29 | 10 | 2026-08-24 |
-| No code written within the coding-phase budget | 28 | 10 | 2026-08-24 |
+| Never reaches approach independently within budget | 30 | 10 | 2026-09-29 |
+| No code written within the coding-phase budget | 29 | 10 | 2026-09-29 |
 
 ## Derivation Questions
 <!-- Updated by /derive-optimal-algorithm. Ran = times he invoked the question unprompted
