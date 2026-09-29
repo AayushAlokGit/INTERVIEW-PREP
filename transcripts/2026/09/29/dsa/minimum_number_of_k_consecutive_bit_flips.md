@@ -174,3 +174,24 @@ The hint ceiling of 3 is not the binding reason. The code is correct and optimal
 **3. Generalization:** commuting, self-inverse operations on windows or neighbourhoods → "each operation used 0/1 times" → the extreme element has a single controller → a forced left-to-right sweep plus a difference array for the lazy effect. The same family includes LC 2772 (Apply Operations to Make All Array Elements Equal to Zero), LC 3191/3192 (Min Operations to Make Binary Array All Ones I/II), Lights Out / Flip Game grid (the first row determines the rest), and LC 1526 (Minimum Number of Increments on Subarrays). **Tell:** "choose a window/segment and apply an invertible op; minimise count".
 
 **4. Drill:** Solve LC 2772 and LC 3191 cold, with a 15-min cap to the approach. Before any approach, write two lines on paper: *"Does the order of operations matter? Can one be applied twice usefully?"* and *"Which element has the fewest operations able to touch it?"* Then redo LC 995 in O(1) extra space from memory and dry-run it on [0,1,1,0,1], k=2 before saying "done".
+
+---
+
+## Drill Follow-up (2026-09-29, same day, unscored — rating above unchanged)
+Prescribed drills: LC 2772 and LC 3191 cold with a 15-min approach cap (write the two lines first), then LC 995 in O(1) space with a trace on [0,1,1,0,1], k=2.
+
+| Drill | Start → End | Duration | Approach reached | Constraints → budget | Code correct? | Trace |
+|---|---|---|---|---|---|---|
+| LC 2772 Apply Ops to Make Array Zero | 12:28:05 → 12:50:09 | 22 min | +11m, no hint (forced leftmost choice unprompted) | Yes ("O(n) or O(n log n)") | **No.** The first version had no bounds check, which he found by tracing [0,0,1] himself. The fix used `i+k >= n` (off by one), and his trace of [1,1], k=2 claimed `true`, but the code returns `false` at i=0. | Found one bug by tracing, then traced from memory, skipping the line he had just added |
+| LC 3191 Min Ops to Make Binary Array All Ones I | 12:53:29 → 13:03:59 | 11 min | +3m, no hint | Yes | **Yes** (3 and −1 verified) | Skipped after two requests ("done with trace") |
+| LC 995 in O(1) space | — | — | — | — | — | **Skipped by user; still pending** |
+
+**Compared with the round (+69m approach after a hint, O(n) space, no trace):**
+- **The pattern has transferred.** He spotted the forced leftmost choice on his own in both drills, within 11 and 3 minutes.
+- **Budget:** he turned the constraints into an O(n) target at once in both drills. In the round he never did.
+- **Space:** Drill 1 gave O(n) first and corrected to O(k) when asked to justify it. Drill 2 gave O(k) on the first try, but needed a prompt to see that k=3 makes it O(1).
+- **Still open:**
+  - Boundary conditions: `i+k<n` or `i+k>=n` vs the correct `i+k>n`.
+  - Traces that follow memory instead of the code as written.
+  - Skipping traces when asked.
+  - Drill 1: the "does order matter?" line was never written until asked.
