@@ -148,6 +148,18 @@ Evaluate: requirements clarification (FRs + NFRs with numbers) · core entities 
    - **1 Poor** — no coherent design, or the architecture had to be led out of him. Eligible.
 3. **"What a senior strong-hire would have done on THIS problem"** — concrete, never generic: the traps he should have self-raised, the alternative-justifications he skipped, the exact point where pushing scale breaks his design and how a senior handles it, the operability concerns he missed.
 4. Point him to the checklist in `system_design_senior_guidance.md`.
+5. **Drill Prescription (required on every round)** — 1–3 drills, each fixing a gap he showed THIS round. Pick the most costly ones: the weakest signals, the biggest time sink, the structural probe he missed. Never generic. Order them by impact, since the first drill is the one to do before the next round. Each drill states:
+   - **Gap:** the signal or weakness it targets, tied to the moment in this round where it showed.
+   - **Exercise:** one isolated skill on a named system. Never "do another full round". Shapes that work:
+     - *Numbers:* redo only the NFRs and back-of-envelope for <system> in 8 min. Write out every arithmetic step with day = 10^5 s, and end on the one sentence that should decide the architecture.
+     - *Trade-offs:* write the trade-off table for <his choice> vs two named alternatives, showing what each gives up and which breaks first at 10×.
+     - *Scale break:* push <his design> 10×, name the first component to run out of room, and give the fix in 3 bullets.
+     - *Operability:* list the failure modes for <system> (lag, loss, hot partition, overload, cost), each with the metric or alert that detects it.
+     - *Pace / front half / API contract:* `/design-sprint`, naming the system if one fits.
+   - **Timebox:** in minutes, usually 8–20.
+   - **Pass criterion:** observable and checkable on a later attempt. For example: "every derived number within 2× of the reference, write- vs read-heavy stated correctly, done in ≤ 8 min", or "two named alternatives plus a 10× verdict, no prompting".
+
+   On a 5/5, prescribe one stretch drill on the weakest remaining signal. Record the drills in the transcript's `## Drill Prescription` table. If he does them later, append a `## Drill Follow-up (<date>)` section that scores each drill against its pass criterion and compares it with the round, as the DSA transcripts do.
 
 ## Transcript
 
@@ -207,6 +219,14 @@ Evaluate: requirements clarification (FRs + NFRs with numbers) · core entities 
 
 ## Feedback Given
 <full feedback verbatim>
+
+---
+
+## Drill Prescription
+| # | Gap targeted (signal / weakness) | Exercise (on which system) | Timebox | Pass criterion |
+|---|---|---|---|---|
+| 1 | | | | |
+<!-- A later "## Drill Follow-up (<date>)" section scores each row against its pass criterion -->
 ```
 
 ## Weaknesses file

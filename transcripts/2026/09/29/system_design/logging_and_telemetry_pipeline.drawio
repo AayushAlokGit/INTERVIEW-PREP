@@ -1,0 +1,214 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Logging &amp; Telemetry Pipeline" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="fr" value="&lt;b&gt;Functional Requirements&lt;/b&gt;&lt;br&gt;1. Collect logs from fleet of machine hosts.&lt;br&gt;2. Store collected logs.&lt;br&gt;3. Query logs within a time range, and by content string matching.&lt;br&gt;4. Alerts based on logs." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="560" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfr" value="&lt;b&gt;Non-Functional Requirements&lt;/b&gt;&lt;br&gt;1. Highly available for log ingestion; lower availability for querying acceptable.&lt;br&gt;2. Log query latency p99 &amp;lt; 5s.&lt;br&gt;3. Durably store logs up to 1 year; past 30 days queryable (older moved to cold storage).&lt;br&gt;4. Scale: 100,000 hosts × 1M lines/host/day (10 lines/host/s) → write 1M lines/s avg, 3M peak.&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;Read: 500 engg × 100 searches/day × 100 lines/search → 50M lines/s, later stated 5M lines/s → read:write 5:1, read heavy.&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;Ingest 1500 MB/s peak; 3M lines/s × 500 B × 10^5 s ≈ 150 TB/day.&lt;br&gt;5. Alert SLA: within 2 min of the alert-trigger event." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="240" width="760" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent" value="&lt;b&gt;Core Entities&lt;/b&gt;&lt;br&gt;1. Log (machineHostId, logMsg, createdAt)&lt;br&gt;2. AlertRule (conditionsToFireAlert, notificationSubscribers)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="460" width="560" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="api" value="&lt;b&gt;API Design&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;POST /logs&lt;/b&gt; (batch endpoint) · Idempotency-Key header&lt;br&gt;Request: {machineId, logs: [{createdAt, msg}, ...]}&lt;br&gt;Response: 2xx = logs accepted&lt;br&gt;&lt;br&gt;&lt;b&gt;POST /alerts&lt;/b&gt; · Idempotency-Key header&lt;br&gt;Request: {notificationSubscribers: [], alertRules: {logQuery (must produce a number), threshold, comparisonOperator}}&lt;br&gt;Response: alert object&lt;br&gt;&lt;br&gt;&lt;b&gt;PATCH&lt;/b&gt; (path not given): update a particular alert rule&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /logs?from=&amp;amp;to=&amp;amp;query=&amp;amp;cursor=&amp;amp;limit=&lt;/b&gt;&lt;br&gt;Response: {logs: [Log(createdAt, msg, machineId)], nextCursor}&lt;br&gt;Cursor pagination, because log lines are inserted dynamically." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="580" width="760" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="hld-title" value="High-Level Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="910" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-agent" value="&lt;b&gt;Host agent&lt;/b&gt;&lt;br&gt;(process on each machine host; collects logs, batches them)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="970" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-api" value="&lt;b&gt;API Server&lt;/b&gt;&lt;br&gt;(returns success immediately after enqueue)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="970" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-kafka" value="&lt;b&gt;Kafka&lt;/b&gt;&lt;br&gt;(partitioned by machineHostId; per-machine ordering, durability)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="960" width="170" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-cons" value="&lt;b&gt;Consumers&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="770" y="970" width="150" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-cass" value="&lt;b&gt;Cassandra&lt;/b&gt;&lt;br&gt;(partitioned by createdAt; on high-load days write load dynamically spread across shards, at a read-cost)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="950" width="210" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-alertw" value="&lt;b&gt;Alerting workers&lt;/b&gt;&lt;br&gt;(background; run each rule's logQuery every 2 min)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="1160" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-subs" value="&lt;b&gt;Subscribers&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="1170" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-read" value="&lt;b&gt;Read API&lt;/b&gt;&lt;br&gt;(serves GET /logs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="1170" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h-cass-note" value="Cassandra also stores AlertRules (no special querying needed).&lt;br&gt;Chosen over SQL (can't handle the write load); gives up richer querying; createdAt ordering via sort key." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=11;fontStyle=2;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="950" width="260" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="query log lines" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="h-read" target="h-cass">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-title" value="Deep Dive: query path (revised storage)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1300" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-break" value="&lt;b&gt;Break:&lt;/b&gt; 7-day content query on Cassandra (partitioned by createdAt) touches ~150 TB × 7 → misses 5 s p99.&lt;br&gt;&lt;b&gt;Fix:&lt;/b&gt; inverted text index mapping keywords → log lines they appear in. Considered ClickHouse (text indices + high write throughput), then settled on Elasticsearch.&lt;br&gt;&lt;b&gt;Now:&lt;/b&gt; Elasticsearch replaces Cassandra/ClickHouse as the log store, holds up to 30 days, serves GET /logs; kept up to date by the Kafka consumers. Consumers also write logs to S3 for durable storage. AlertRules move to PostgreSQL." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#fafafa;strokeColor=#999999;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1340" width="1190" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-cons" value="&lt;b&gt;Kafka consumers&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="1520" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-es" value="&lt;b&gt;Elasticsearch&lt;/b&gt;&lt;br&gt;(up to 30 days; inverted index keyword → log lines)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1500" width="200" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-s3" value="&lt;b&gt;S3&lt;/b&gt;&lt;br&gt;(durable / cold storage)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="1680" width="170" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-read" value="&lt;b&gt;Read API&lt;/b&gt;&lt;br&gt;(serves GET /logs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="880" y="1520" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-pg" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;(AlertRules)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="880" y="1680" width="170" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-e1" value="index log lines" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="dd-cons" target="dd-es">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-e2" value="write log messages" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="dd-cons" target="dd-s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd-e3" value="search" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="dd-read" target="dd-es">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="POST /logs (batch, periodic)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="h-agent" target="h-api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="log message" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="h-api" target="h-kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="pull" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="h-kafka" target="h-cons">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="write" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="h-cons" target="h-cass">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="notify (if alert fires)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="h-alertw" target="h-subs">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-sep" value="" style="line;strokeWidth=3;html=1;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1850" width="1700" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-title" value="Optimal Reference (what a senior strong-hire would design)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;fontColor=#1a5fb4;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1875" width="900" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-nums" value="&lt;b&gt;Numbers (day = 10^5 s)&lt;/b&gt;&lt;br&gt;Writes 10^6 lines/s avg, 3×10^6 peak · 500 MB/s avg, 1.5 GB/s peak · &lt;b&gt;50 TB/day&lt;/b&gt; raw&lt;br&gt;30-day hot = 1.5 PB raw (~3 PB with replica + index) · 1 year ≈ 18 PB raw ≈ 2 PB compressed in S3&lt;br&gt;Reads: 5,000 × 100 = 5×10^5 searches/day ≈ &lt;b&gt;5 searches/s&lt;/b&gt; · Alerts: 10^4 rules / 120 s ≈ &lt;b&gt;83 evals/s&lt;/b&gt;&lt;br&gt;&lt;b&gt;→ Overwhelmingly write-heavy by count; each read is expensive.&lt;/b&gt; Optimise ingest for throughput + cost; make each search scan as little as possible.&lt;br&gt;Out of scope: metrics/time-series, tracing, PII scrubbing, billing." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1930" width="1200" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-ent" value="&lt;b&gt;Optimal Core Entities&lt;/b&gt;&lt;br&gt;LogLine (ts, service, host, level, labels{}, msg, ingestTs)&lt;br&gt;Chunk (chunkId, service, labelsHash, tMin, tMax, s3Key, bloomFilter)&lt;br&gt;AlertRule (ruleId, service, matcher, window, aggregation, comparator, threshold, groupBy, subscribers, version)&lt;br&gt;AlertInstance (ruleId, groupKey, state: pending | firing | resolved, since, lastNotifiedAt)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2070" width="820" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-api" value="&lt;b&gt;Optimal API&lt;/b&gt;&lt;br&gt;POST /v1/logs · headers: Idempotency-Key (batchId), Content-Encoding: gzip&lt;br&gt;&amp;nbsp;&amp;nbsp;{host, service, lines:[{ts, level, labels, msg}]} → 202 {acceptedCount} · 429 + Retry-After (agent buffers to disk) · 413 if batch too big&lt;br&gt;GET /v1/logs?service=&amp;amp;from=&amp;amp;to=&amp;amp;q=&amp;amp;level=&amp;amp;limit=&amp;amp;cursor= → {lines[], nextCursor, partial: bool}&lt;br&gt;&amp;nbsp;&amp;nbsp;service + bounded time range REQUIRED; cursor = (ts, chunkId, offset) so it's stable under inserts&lt;br&gt;POST /v1/alert-rules {service, matcher, window, aggregation, comparator, threshold, groupBy, subscribers} → 201 {ruleId, version}&lt;br&gt;PATCH /v1/alert-rules/{ruleId} (If-Match: version) · DELETE /v1/alert-rules/{ruleId} · GET /v1/alerts?state=firing&amp;amp;cursor=" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="860" y="2070" width="860" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-hld-title" value="Optimal HLD" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2280" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-agent" value="&lt;b&gt;Host agent&lt;/b&gt;&lt;br&gt;(Fluent Bit / Vector)&lt;br&gt;batch + gzip, local disk buffer, backoff" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2360" width="170" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-gw" value="&lt;b&gt;Ingest gateway&lt;/b&gt;&lt;br&gt;stateless · auth · per-service quotas · 429" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2360" width="170" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-kafka" value="&lt;b&gt;Kafka&lt;/b&gt;&lt;br&gt;hash-partitioned (not per-host), 3-day retention = replay buffer" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="2350" width="180" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-idx" value="&lt;b&gt;Indexer / chunk builder&lt;/b&gt;&lt;br&gt;dedupe on (batchId, offset); build compressed chunks per (service, labels, time)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="780" y="2360" width="190" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-hot" value="&lt;b&gt;Label / time index&lt;/b&gt;&lt;br&gt;(small: service, host, level, time → chunk ids + bloom filters)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="2340" width="200" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-s3" value="&lt;b&gt;S3 chunk store&lt;/b&gt;&lt;br&gt;hot 30 d (+ SSD cache) → archive 1 yr (lifecycle)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="2540" width="200" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-qapi" value="&lt;b&gt;Query API&lt;/b&gt;&lt;br&gt;requires service + time range; per-user concurrency limits" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="2360" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-querier" value="&lt;b&gt;Querier fleet&lt;/b&gt;&lt;br&gt;parallel scan of matching chunks, merge by ts, early-terminate at limit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="2550" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-eng" value="&lt;b&gt;Engineer&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="2375" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-rules" value="&lt;b&gt;Rules DB&lt;/b&gt;&lt;br&gt;(PostgreSQL)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2740" width="170" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-eval" value="&lt;b&gt;Stream alert evaluator&lt;/b&gt;&lt;br&gt;separate consumer group (or Flink); route line → rules for its service; windowed counters" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="2740" width="190" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-astate" value="&lt;b&gt;Alert state store&lt;/b&gt;&lt;br&gt;pending → firing → resolved (dedupe)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="780" y="2740" width="190" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-notif" value="&lt;b&gt;Notification service&lt;/b&gt;&lt;br&gt;idempotent key (ruleId, groupKey, firingSince)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="2745" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-pager" value="&lt;b&gt;PagerDuty / Slack / email&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="2760" width="180" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-mon" value="&lt;b&gt;Monitoring&lt;/b&gt;&lt;br&gt;consumer lag per partition · canary line per region → alert if not searchable in N s · agent-dropped vs ingested vs indexed counts per host · DLQ depth · $/TB-month per tier" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2530" width="420" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e1" value="batched gzip; retry on 429" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-agent" target="o-gw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e2" value="produce (acks=all)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-gw" target="o-kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e3" value="consume" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-kafka" target="o-idx">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e4" value="label index entries" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-idx" target="o-hot">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e5" value="compressed chunks" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-idx" target="o-s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e6" value="GET /v1/logs" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="o-eng" target="o-qapi">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e7" value="plan" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o-qapi" target="o-querier">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e8" value="find chunks (service, time, bloom)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=0;exitY=0.25;entryX=1;entryY=0.7;" edge="1" parent="1" source="o-querier" target="o-hot">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e9" value="parallel chunk scan" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=0;exitY=0.75;entryX=1;entryY=0.5;" edge="1" parent="1" source="o-querier" target="o-s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e10" value="same stream, own consumer group" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="o-kafka" target="o-eval">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e11" value="rules (cached, refreshed)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-rules" target="o-eval">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e12" value="threshold crossings" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-eval" target="o-astate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e13" value="on → firing" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-astate" target="o-notif">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-e14" value="notify" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="o-notif" target="o-pager">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-trade" value="&lt;b&gt;Key Trade-offs&lt;/b&gt;&lt;br&gt;• &lt;b&gt;Label index + S3 chunks (Loki-style) vs full-text Elasticsearch:&lt;/b&gt; ES gives fast arbitrary search, but its index is ~raw size and indexing CPU dominates at 1.5 PB/month; label-only indexing is an order of magnitude cheaper and survives 10×, at the cost of slower unscoped content search → make service + time mandatory. (ClickHouse with bloom-filter skip indexes is the middle ground.)&lt;br&gt;• &lt;b&gt;Kafka hash partitioning vs per-host:&lt;/b&gt; per-host ordering buys nothing (queries sort by ts) and makes a noisy host a hot partition.&lt;br&gt;• &lt;b&gt;Stream-evaluated alerts vs polling the store:&lt;/b&gt; polling = 83 scans/s competing with humans and minutes of latency; streaming = seconds, zero search load, at the cost of only supporting windowed aggregations over the live stream.&lt;br&gt;• &lt;b&gt;Ack after Kafka (at-least-once) vs ack after index:&lt;/b&gt; lower ingest latency + HA; duplicates removed by (batchId, offset) dedupe in the indexer." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2900" width="1730" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="o-dd" value="&lt;b&gt;Deep Dives&lt;/b&gt;&lt;br&gt;1. &lt;b&gt;Core problem: content search over 1.5 PB under 5 s p99.&lt;/b&gt; Naive: time-partitioned store scans everything in range (7 days ≈ 350 TB) → fails. Fix: prune by service + time + per-chunk bloom filter so a scoped query touches GBs, then parallel-scan those chunks across the querier fleet, early-terminating at limit. Return partial=true rather than blow the SLA.&lt;br&gt;2. &lt;b&gt;10× (15 PB hot):&lt;/b&gt; indexing throughput + cost break first for full-text; label-only indexing scales linearly with S3; add per-service ingest quotas, sampling of DEBUG level, and tiered retention by level.&lt;br&gt;3. &lt;b&gt;Hot keys:&lt;/b&gt; a noisy service floods its chunks → per-service quotas at the gateway, split chunks by labels + time, hash-partition Kafka.&lt;br&gt;4. &lt;b&gt;Consistency:&lt;/b&gt; at-least-once end to end, deduped at the indexer; logs searchable within ~seconds (freshness SLO), not instantly.&lt;br&gt;5. &lt;b&gt;Operability:&lt;/b&gt; freshness canary, lag alerts, loss reconciliation (agent dropped vs ingested vs indexed), DLQ for malformed batches, per-tier cost dashboard; the alert pipeline gets its own dead-man's-switch alert." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#fafafa;strokeColor=#999999;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3090" width="1730" height="180" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
