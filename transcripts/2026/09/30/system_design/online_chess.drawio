@@ -1,0 +1,304 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="System Design" id="system-design">
+    <mxGraphModel pageWidth="1650" pageHeight="4700">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Online Chess (chess.com / lichess)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="fr_h" value="Functional Requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="fr_b" value="1. Users can create accounts.&lt;br&gt;2. Users can find another opponent user to play a live timed game.&lt;br&gt;3. Users can see past games (complete move history).&lt;br&gt;4. Player picks a match type (e.g. 3+2 blitz, 10+0 rapid) and is paired with someone who picked the same match type and has a similar rating.&lt;br&gt;5. Users can spectate a live game in progress and see moves as they happen." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="115" width="760" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfr_h" value="Non-Functional Requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="270" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="nfr_b" value="1. Highly available for chess matches (99.99%); lower availability acceptable for past games.&lt;br&gt;2. Eventual consistency acceptable for past games.&lt;br&gt;3. Move propagation to opponent: p99 &amp;lt; 200 ms.&lt;br&gt;4. 10M DAU, 5 games/user/day -&amp;gt; 500 games/s. Data ingress -&amp;gt; 4 MB/s.&lt;br&gt;5. A game can be streamed by up to 1M live spectators. Read heavy for move updates." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="20" y="305" width="760" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_h" value="Core Entities" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="480" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="&lt;b&gt;User&lt;/b&gt;&lt;br&gt;id&lt;br&gt;name&lt;br&gt;rating&lt;br&gt;..." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="525" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="&lt;b&gt;Game&lt;/b&gt;&lt;br&gt;id&lt;br&gt;player1: userId&lt;br&gt;player2: userId&lt;br&gt;createdAt&lt;br&gt;status&lt;br&gt;winner&lt;br&gt;matchType&lt;br&gt;player clocks (remaining time)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="260" y="525" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="&lt;b&gt;GameMove&lt;/b&gt;&lt;br&gt;gameId&lt;br&gt;playerId&lt;br&gt;chessPieceType&lt;br&gt;startPosition&lt;br&gt;endPosition&lt;br&gt;moveNumber" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="500" y="525" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="&lt;b&gt;MatchTypeUserRating&lt;/b&gt;&lt;br&gt;matchType&lt;br&gt;userId&lt;br&gt;rating" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="740" y="525" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="&lt;b&gt;GameMatchingRequest&lt;/b&gt;&lt;br&gt;userId&lt;br&gt;status (e.g. MATCHED)&lt;br&gt;matchedUser" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="980" y="525" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="api_h" value="API Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="720" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="api_b" value="NOTE: identity extracted from auth headers&lt;br&gt;&lt;br&gt;&lt;b&gt;POST /gameMatchingRequests&lt;/b&gt; (Idempotency-Key header)&lt;br&gt;&amp;nbsp;&amp;nbsp;Request: {matchType}&lt;br&gt;&amp;nbsp;&amp;nbsp;Response: GameMatchingRequest(id, userId, matchType, status: MATCHING)&lt;br&gt;&amp;nbsp;&amp;nbsp;On match: notification sent to both players, containing the link to start the game.&lt;br&gt;&lt;br&gt;&lt;b&gt;WS /games/:id&lt;/b&gt; - WebSocket connection to the game&lt;br&gt;&amp;nbsp;&amp;nbsp;Client-&amp;gt;Server: sendMove(chessPiece, startPosition, endPosition)&lt;br&gt;&amp;nbsp;&amp;nbsp;Server-&amp;gt;Client: sendOpponentMove(chessPiece, startPosition, endPosition)&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /games?cursor={}&amp;amp;limit={}&lt;/b&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;Response: Game(id, status, ..)[], nextCursor&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /games/:id&lt;/b&gt; - SSE connection to receive updates about game moves&lt;br&gt;&lt;br&gt;&lt;b&gt;GET /games/:id/moves&lt;/b&gt; - full move list of a game (replay)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="755" width="760" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="hld_h" value="High-Level Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1150" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_client" value="Client (player)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1260" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_lb" value="Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1260" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_api" value="API + WebSocket layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="460" y="1260" width="180" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_mm" value="Matchmaking Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="460" y="1440" width="180" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_redis" value="Redis&lt;br&gt;(queues by match type + rating)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="460" y="1600" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_gs" value="Game Server&lt;br&gt;in-memory game state: board, current turn, clocks&lt;br&gt;processes moves sequentially" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="760" y="1440" width="220" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_kafka" value="Kafka&lt;br&gt;(events: rating updates, notifications, persistence)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="1440" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_pg" value="PostgreSQL&lt;br&gt;users, completed games, move history" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="1620" width="180" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_fan" value="Spectator fanout layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="760" y="1760" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_wsg" value="WebSocket gateways (spectators)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="760" y="1900" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_spec" value="Spectator client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="460" y="1900" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_rps" value="Redis Pub/Sub&lt;br&gt;(alternative: SSE push, at-most-once)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="1820" width="180" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="he1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_client" target="h_lb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_lb" target="h_api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he3" value="game request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_api" target="h_mm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he4" value="queues (match type, rating)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_mm" target="h_redis">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he5" value="assign paired players" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_mm" target="h_gs">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he6" value="accepted moves to both players (WebSocket)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="h_gs" target="h_api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he7" value="events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_gs" target="h_kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he8" value="live move updates" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_fan" target="h_wsg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he9" value="live moves (WS)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_wsg" target="h_spec">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he10" value="alternative: poll moves" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="h_spec" target="h_pg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he11" value="alternative: SSE (at-most-once)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="h_rps" target="h_spec">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_notif" value="Notification System&lt;br&gt;(in-app or other types)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="160" y="1440" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="he12" value="player moves (consistent hashing: all players of a game land on one server)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="h_api" target="h_gs">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he13" value="game moves" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="h_kafka" target="h_fan">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he14" value="every move as it arrives (Kafka consumer)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="h_kafka" target="h_pg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he15" value="match notification (game join link)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="h_mm" target="h_notif">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="he16" value="in-app / other notification" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="h_notif" target="h_client">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="h_note" value="Alternative to notification: UI lists the user's submitted matching requests; a matched request shows the game join link." style="text;html=1;whiteSpace=wrap;align=left;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1530" width="380" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd_h" value="Deep Dive (as described)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2020" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd_b" value="&lt;b&gt;Clocks:&lt;/b&gt; system clock maintained centrally at the Game Server; time remaining sent in WebSocket messages. Network trips eat into player time (~6 s of a 60 s game at 150 ms one-way x 40 moves). Proposed fix: use the timestamp from the player's machine when the move was made. (Open: outbound leg, untrusted client timestamps.)&lt;br&gt;&lt;br&gt;&lt;b&gt;Game Server failure:&lt;/b&gt; every move persisted to PostgreSQL as it arrives via a Kafka consumer. On failure, game restarted on a different server; state reconstructed from the DB; spectators redirected to the new server." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2055" width="1240" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="dd2_h" value="Spectator scale (1M on one game), as described" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2220" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="d_kc" value="Kafka consumer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2270" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="d_rps" value="Redis Pub/Sub&lt;br&gt;(one channel per game)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="320" y="2270" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="d_ss" value="Streaming Service instances&lt;br&gt;(spectators join the same instance based on the games subscribed)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="640" y="2270" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="d_sp" value="Spectators" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="2270" width="180" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="de1" value="one move push to game channel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="d_kc" target="d_rps">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de2" value="subscribed channels" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="d_rps" target="d_ss">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de3" value="relay move event" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="d_ss" target="d_sp">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_sep" value="" style="line;strokeWidth=4;html=1;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2450" width="1560" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_title" value="Optimal Reference (what a senior strong-hire would design)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2470" width="1200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_num" value="&lt;b&gt;Back-of-envelope (day = 10^5 s)&lt;/b&gt;: 10M DAU x 5 / 2 players = 25M games/day = 250 games/s (750 peak) | x80 moves = 2B moves/day = 20k moves/s (60k peak) | 250 x 600 s = 150k concurrent games (450k peak) = ~0.9M player WebSockets at peak | 2B x 100 B = 200 GB/day = ~70 TB/yr | 1 hot game: 1M spectator sockets.&lt;br&gt;&lt;b&gt;Deciding sentence&lt;/b&gt;: writes are small and modest; the hard parts are ~1M long-lived stateful connections, a single ordered owner per game, and a 1M-way fan-out." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2520" width="1560" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_ent_h" value="1. Core Entities" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2650" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e0" value="&lt;b&gt;User&lt;/b&gt;&lt;br&gt;id&lt;br&gt;name&lt;br&gt;createdAt" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2690" width="300" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e1" value="&lt;b&gt;Rating&lt;/b&gt;&lt;br&gt;userId&lt;br&gt;timeControl&lt;br&gt;rating&lt;br&gt;deviation&lt;br&gt;gamesPlayed&lt;br&gt;version" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="335" y="2690" width="300" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e2" value="&lt;b&gt;Game&lt;/b&gt;&lt;br&gt;id&lt;br&gt;whiteId&lt;br&gt;blackId&lt;br&gt;timeControl (base+inc)&lt;br&gt;status (ACTIVE / FINISHED / ABORTED)&lt;br&gt;result + reason (MATE / RESIGN / FLAG / DRAW / ABANDON)&lt;br&gt;ownerServerId&lt;br&gt;ownerEpoch&lt;br&gt;whiteMsLeft&lt;br&gt;blackMsLeft&lt;br&gt;lastMoveServerTs&lt;br&gt;fen&lt;br&gt;moveCount" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="650" y="2690" width="300" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e3" value="&lt;b&gt;Move&lt;/b&gt;&lt;br&gt;gameId&lt;br&gt;moveNumber (PK part)&lt;br&gt;uci&lt;br&gt;fenAfter&lt;br&gt;whiteMsLeft&lt;br&gt;blackMsLeft&lt;br&gt;serverTs&lt;br&gt;lagCreditMs" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="965" y="2690" width="300" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_e4" value="&lt;b&gt;MatchTicket&lt;/b&gt;&lt;br&gt;id&lt;br&gt;userId&lt;br&gt;timeControl&lt;br&gt;rating&lt;br&gt;status (SEARCHING / MATCHED / CANCELLED)&lt;br&gt;gameId&lt;br&gt;createdAt&lt;br&gt;idempotencyKey" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="2690" width="300" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_api_h" value="2. API Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2940" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_api" value="&lt;b&gt;POST /match-tickets&lt;/b&gt; (Idempotency-Key) {timeControl} -&amp;gt; 202 {ticketId, status: SEARCHING}&lt;br&gt;&lt;b&gt;DELETE /match-tickets/:id&lt;/b&gt; -&amp;gt; cancel (409 if already MATCHED)&lt;br&gt;&lt;b&gt;WS /ws&lt;/b&gt; (one socket per client) server-&amp;gt;client: MATCHED {ticketId, gameId}&lt;br&gt;&lt;b&gt;WS game messages&lt;/b&gt; client-&amp;gt;server: MOVE {gameId, moveNumber, uci} | RESIGN | OFFER_DRAW | ACCEPT_DRAW | RESUME {gameId, lastMoveNumber} | PONG&lt;br&gt;&amp;nbsp;&amp;nbsp;server-&amp;gt;client: MOVE_ACCEPTED / OPPONENT_MOVE {moveNumber, uci, fen, whiteMsLeft, blackMsLeft, serverTs} | MOVE_REJECTED {moveNumber, reason: ILLEGAL / NOT_YOUR_TURN / STALE} | GAME_OVER {result, reason} | PING&lt;br&gt;&amp;nbsp;&amp;nbsp;moveNumber = idempotency + ordering: apply only if == expected; duplicate -&amp;gt; resend prior ack; stale -&amp;gt; reject&lt;br&gt;&lt;b&gt;GET /games/:id&lt;/b&gt; -&amp;gt; Game (status, clocks, fen, moveCount)&lt;br&gt;&lt;b&gt;GET /games/:id/moves?after={moveNumber}&amp;amp;limit=&lt;/b&gt; -&amp;gt; Move[], nextAfter (replay + gap-fill)&lt;br&gt;&lt;b&gt;GET /users/:id/games?cursor=&amp;amp;limit=&lt;/b&gt; -&amp;gt; Game[], nextCursor (cursor = (endedAt, gameId), stable under inserts)&lt;br&gt;&lt;b&gt;GET /live/top?limit=50&lt;/b&gt; -&amp;gt; [{gameId, players, spectatorCount}] (cached, refreshed every few s)&lt;br&gt;&lt;b&gt;SSE /games/:id/watch?after={moveNumber}&lt;/b&gt; -&amp;gt; spectator stream (delayed); every event carries moveNumber" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2980" width="1560" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_hld_h" value="3. High-Level Design" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3270" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_cl" value="Player client" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3330" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_gw" value="Connection Gateways&lt;br&gt;(stateless WS termination, ~50k sockets each)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="280" y="3330" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_reg" value="Game Registry&lt;br&gt;(etcd/ZK: gameId -&amp;gt; owner, epoch lease)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="280" y="3520" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_gs" value="Game Owner Service&lt;br&gt;(one owner per game: rules, legal-move check, clocks, deadline timers)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="600" y="3330" width="240" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_log" value="Kafka: game-moves&lt;br&gt;(key = gameId, acks=all; source of truth)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="960" y="3330" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_pg" value="Postgres / Cassandra&lt;br&gt;(games, moves; replay)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="3290" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_rate" value="Rating Worker&lt;br&gt;(idempotent by gameId)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="3410" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_rps" value="Redis Pub/Sub&lt;br&gt;(channel per game, delayed feed)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="960" y="3560" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_sg" value="Spectator Gateways&lt;br&gt;(each subscribes once per game, fans out locally)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="600" y="3560" width="240" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_sp" value="Spectators (up to 1M/game)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="280" y="3710" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_mm" value="Matchmaker&lt;br&gt;(Redis ZSET per time control by rating; Lua atomic pair-pop; window widens with wait)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3520" width="190" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_top" value="Top-live cache&lt;br&gt;(spectator counts per game)" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=8;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="3560" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe1" value="WS: MOVE {moveNumber}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="o_cl" target="o_gw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe2" value="route via registry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="o_gw" target="o_gs">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe3" value="lookup owner" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="o_gw" target="o_reg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe4" value="1. append move + clocks (durable)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="o_gs" target="o_log">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe5" value="2. then ack + push to opponent" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=1;entryY=0.8;entryDx=0;entryDy=0;" edge="1" parent="1" source="o_gs" target="o_gw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe6" value="consumer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="o_log" target="o_pg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe7" value="GAME_OVER" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="o_log" target="o_rate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe8" value="publish (spectator delay)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="o_log" target="o_rps">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe9" value="1 msg per gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="o_rps" target="o_sg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe10" value="fan out locally" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="o_sg" target="o_sp">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe11" value="create game, assign owner" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="o_mm" target="o_reg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe12" value="heartbeat / lease renew" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;dashed=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="o_gs" target="o_reg">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="oe13" value="spectator counts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;dashed=1;exitX=1;exitY=0.8;exitDx=0;exitDy=0;entryX=0;entryY=0.8;entryDx=0;entryDy=0;" edge="1" parent="1" source="o_sg" target="o_top">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_tr_h" value="4. Key Trade-offs" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3830" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_tr" value="- &lt;b&gt;Single in-memory owner per game&lt;/b&gt; vs stateless servers + DB per move: owner gives ordering and sub-ms legality/clock checks; gives up easy failover, so it needs lease + fencing + log replay.&lt;br&gt;- &lt;b&gt;Registry/lease routing&lt;/b&gt; vs pure consistent hashing: CH remaps ~1/N of keys when a node joins, so live games move mid-play; the registry keeps a game sticky until it ends, at the cost of one (cached) lookup.&lt;br&gt;- &lt;b&gt;Kafka log keyed by gameId&lt;/b&gt; vs direct DB write per move: durable, ordered, replayable, and feeds rating/persistence/spectators; costs a few ms per move (inside the 200 ms p99).&lt;br&gt;- &lt;b&gt;Server clock + capped lag compensation&lt;/b&gt; vs trusting client timestamps: the server stays authoritative (cheat-proof); the cap bounds abuse while making a 300 ms player roughly fair.&lt;br&gt;- &lt;b&gt;Pub/Sub tree + moveNumber gap-fill&lt;/b&gt; vs a Kafka consumer per gateway or polling: at-most-once is fine because every event carries moveNumber and clients GET ?after= on a gap; polling 1M clients would be ~1M req/s." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="3870" width="1560" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd_h" value="5. Deep Dives" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="4090" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd0" value="&lt;b&gt;Clocks and lag&lt;/b&gt;&lt;br&gt;Clock runs from send of the opponent move to receipt of this one = full RTT. 300 ms x 40 = 12 s of 60 s (20%) vs 0.8 s at 20 ms. Server measures RTT via PING/PONG and credits min(estimated one-way lag, 500 ms cap) per move, with a per-game quota. Never trust a client timestamp. Timeout: the owner holds a deadline timer (now + remaining of side to move) and emits GAME_OVER{FLAG} even if the client is gone; a separate abandon timer handles disconnects." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="4130" width="380" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd1" value="&lt;b&gt;Crash recovery&lt;/b&gt;&lt;br&gt;Persist (Kafka acks=all) BEFORE acking/pushing, so no one sees a move the log lacks. Lease expires (~3 s) -&amp;gt; registry assigns a new owner with epoch+1 -&amp;gt; it replays the game from the log (not Postgres, which lags) and rebuilds fen + clocks from the last move event. Writes carry the epoch (fencing), so a zombie owner is rejected. Clients RESUME with lastMoveNumber and get the gap. Clocks pause for the failover window." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="413" y="4130" width="380" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd2" value="&lt;b&gt;1M spectators&lt;/b&gt;&lt;br&gt;1M sockets / ~50k per gateway = ~20+ gateways. Each gateway subscribes ONCE to the game channel: 1 publish -&amp;gt; ~20 subscriber msgs -&amp;gt; 1M local socket writes. Add a 2-5 s spectator delay (anti-cheat) and coalesce bursts. Events carry moveNumber; a gap triggers GET /moves?after=. For an extreme game, dedicate gateways to it or push via an SSE edge/CDN tier." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="806" y="4130" width="380" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="o_dd3" value="&lt;b&gt;Operability&lt;/b&gt;&lt;br&gt;Alerts: move-ack p99 (&amp;gt; 200 ms), owner lease failovers/min and failover duration, Kafka consumer lag into Postgres, gateway sockets + memory per node, spectators per hot game, matchmaking wait p95 per rating band, double-match count (must be 0), rating-worker duplicate skips. Cost: gateways scale with sockets, not QPS." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1199" y="4130" width="380" height="280" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
