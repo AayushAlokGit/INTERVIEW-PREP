@@ -202,3 +202,14 @@ Go through the quick pre-round self-check in `system_design_senior_guidance.md` 
 | 1 | Pushes scale / arithmetic slips: reads 10^4× high and called "read heavy", storage from the peak rate, alert load 60× high | *Numbers:* redo only the NFRs and back-of-envelope for this logging pipeline from the same givens. Write every step with day = 10^5 s: writes/s, bytes/s, TB/day, 30-day and 1-year totals, searches/s, alert evals/s. End on the one sentence that decides the architecture. | 8 min | All derived numbers within 2× of the reference (50 TB/day, 1.5 PB hot, ~5 searches/s, ~83 evals/s); "write-heavy by count, expensive reads" stated; no step skipped |
 | 2 | Trade-offs vs named alternatives: ClickHouse vs Elasticsearch asked twice, never answered | *Trade-offs:* a table comparing Elasticsearch, ClickHouse (skip indexes) and Loki-style label-index + S3 chunks for the 30-day search tier: what each gives up, cost at 1.5 PB, which breaks first at 10×, and your pick | 15 min | Three named options, each with what it gives up; a 10× verdict; a pick justified from your own numbers, unprompted |
 | 3 | Moves on from a break he identified: "don't know" on alerting at scale | *Scale break:* redesign alert evaluation for 10,000 rules without querying the search store. Compute the eval rate, give the mechanism in 3 bullets, and give the AlertRule contract fields. | 12 min | Correct eval rate; stream-side windowed evaluation; the rule contract has window + groupBy; fired-state dedupe named |
+
+---
+
+## Drill Follow-up (2026-09-29)
+| # | Drill | Start → End | Time | Result vs pass criterion | Verdict |
+|---|---|---|---|---|---|
+| 1 | NFRs + back-of-envelope | 20:15:24 → 20:20:43 | 5 min (budget 8) | **Correct:** writes 1M lines/s avg / 3M peak; 500 MB/s avg; 50 TB/day; ~5 searches/s; ~83 alert evals/s; "write-heavy" stated. **Misses:** peak bandwidth stated as 2× (should be 3×, so 1.5 GB/s); **30-day hot total 4.5 PB, 3× too high** (used 150 TB/day again; 50 × 30 = 1.5 PB); 1-year 21 PB is within 2× of ~18 PB. The deciding sentence is half there (write-heavy + expensive reads, but no "so optimise X, minimise Y"). Availability has no number, and the 2-min alert SLA was dropped. **No arithmetic steps written**, despite being required. | **Not passed.** One number off by more than 2×, and steps skipped. |
+
+Note: the reference numbers had been shown in the round feedback ~70 min earlier, so this attempt partly measures recall. The 30-day slip is the same "multiply the peak rate by a duration" error as in the round, and it survived even with the answer seen.
+
+Compared with the round: read rate fixed (5 searches/s vs 50M lines/s), read:write direction fixed, alert rate fixed (83 vs 5,000), and time 5 min vs 15 min for requirements.
