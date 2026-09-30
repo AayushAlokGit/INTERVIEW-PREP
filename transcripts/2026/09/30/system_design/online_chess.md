@@ -153,3 +153,16 @@ Checklist: see `system_design_senior_guidance.md` → "Quick pre-round self-chec
 | 1 | Pushes scale / arithmetic slips: 500 vs 250 games/s (double-counted players), no moves/s, no peak, no connection count | Redo only the NFRs and back-of-envelope for **online chess** from the same givens. Write every arithmetic step with day = 10^5 s, and end on the one sentence that decides the architecture | 8 min | 250 games/s, 20k/60k moves/s, 150k/450k concurrent games, ~0.9M peak player sockets, ~70 TB/yr, all within 2×. Deciding sentence names long-lived stateful connections. Done in ≤ 8 min. |
 | 2 | Deep dive: "unsure" on crash ordering and move retry (resilience, idempotency) | **Scale break / failure walk** on his chess design: a game owner crashes after pushing a move but before it's durable. Write the fixed sequence (persist → ack → push), the move-event fields, the ownership/fencing mechanism, and client reconnect-by-moveNumber | 15 min | Persist-before-ack stated; the move event carries moveNumber + both clocks + server ts; fencing token or lease named; duplicate/stale sendMove handling defined. No prompting. |
 | 3 | Leads with trade-offs, and the clock deep dive (lag compensation) | **Trade-off table** for the server clock: (a) raw server receipt time, (b) client-reported timestamp, (c) server-measured-lag compensation with cap. For each: what it gives up, how it's cheated, and what breaks for a 300 ms player at 1+0 | 12 min | Full-RTT charge computed (12 s vs 0.8 s); client-timestamp rejected with the cheating reason; capped compensation chosen; timeout owner timer defined |
+
+---
+
+## Drill Follow-up (2026-09-30)
+**Start:** 19:34:21 · **End:** 19:47:57 · **Duration:** 14 min (ended by Aayush during drill 3)
+
+| # | Drill | Time (box) | Result | Notes |
+|---|---|---|---|---|
+| 1 | Chess NFR numbers | 6 min (8) | **Fail** | Games/s fixed (250, no double count) and concurrency right (150k games, 900k peak sockets). Moves/s 25 vs 20k (per-game rate never multiplied by concurrent games), which cascaded into ingress 2.5 KB/s vs 2 MB/s and storage 2.5 GB/day vs 200 GB/day; no per-year figure; peaks written as "3×" not numbers. Read-heavy call right but not refined to "hot games only". |
+| 2 | Crash walkthrough | 4.5 min (15) | **Partial (2/4)** | Persist-to-Kafka-before-push stated unprompted (the key idea). Move event lacked moveNumber/serverTs. Takeover: "lock on the Kafka queue" — no lease holder, no failure detection, no fencing token/epoch. Reconnect: in-memory dedup on moveNumber, but no RESUME{lastMoveNumber}, no duplicate-vs-stale handling. |
+| 3 | Clock trade-off table | — (12) | **Fail (not attempted)** | "not sure how to answer"; scaffolded to row (a) only (one move, 150 ms each way); drill ended before an answer. |
+
+**Compared with the round:** real improvement on the two numbers he'd been shown (games/s, concurrency) and on persist-before-ack. The un-shown step — multiplying a per-entity rate by the population — failed, and the clock problem is still untouched after two exposures. Next attempt: redo drill 3 from row (a) cell by cell before any new round.
