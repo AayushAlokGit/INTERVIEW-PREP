@@ -146,3 +146,33 @@ You reached the optimal approach unaided, and the code and complexity were clean
 **3. The generalisation:** "count subarrays that satisfy at least X / contain all of Y" → the predicate is monotone under extension → for each left end, find the minimal right end and add n − R. Equivalently, for each right end, count the valid starts. The tell is **"at least"** or **"contains all"** in a counting problem. The flip side is "at most K", where the count per right end is r − l + 1. And "exactly K" = atMost(K) − atMost(K−1) (LC 992, LC 1248, LC 2962).
 
 **4. Drill:** LC 2962 (Count Subarrays Where Max Element Appears at Least K Times). The rule is: **say your first observation aloud within 3 minutes of the brute force**, and before coding, write the one-line contradiction proof of why the pointer never moves back. Then trace the code yourself on an input you invent, not one from the statement.
+
+---
+
+## Drill Follow-up: LC 2962 (Count Subarrays Where Max Element Appears at Least K Times)
+**Start:** 13:13:16 · **End:** 13:29:02 · **Duration:** 15.8 min
+**Rules set:** (1) state the first real observation within 3 min of the brute force, (2) write a one-line proof that the pointer never moves back before coding, (3) trace the code on a self-made input before declaring done.
+
+| Rule | Result |
+|---|---|
+| 1. Early observation | **Pass.** He asked for constraints (+1m), converted them to an O(n)/O(n log n) budget, then gave the brute force, the redundancy, the monotone right boundary and the full sliding-window plan in one message (+7m). |
+| 2. Monotonicity proof | **Pass, with a slip.** The contradiction argument was correct ("[i, j'] would also be valid, but j is minimal for i"), but he concluded "so j' = j" instead of j' ≥ j. This was corrected. |
+| 3. Self-made trace | **Fail.** He was asked explicitly and said "skipping this". |
+
+**Code** (submitted at +12m) is correct. It finds the global max, then shrinks the window while `freq[mx] >= k` and adds `n - r` each time. It returns `long long`.
+
+**Complexity:** he said O(n) time, O(n) space, and "no" when asked whether either could be improved. **The space answer is wrong.** The only count the code ever reads is `freq[mx]`, so the `unordered_map` over all values can be replaced by one integer `cnt`, which gives O(1) space. This is the same "can't optimise without checking auxiliary space" gap again.
+
+```cpp
+long long countSubarrays(vector<int>& nums, int k) {
+    int n = nums.size(), mx = *max_element(nums.begin(), nums.end());
+    long long ans = 0; int cnt = 0, l = 0;
+    for (int r = 0; r < n; ++r) {
+        cnt += nums[r] == mx;
+        while (cnt >= k) { ans += n - r; cnt -= nums[l++] == mx; }
+    }
+    return ans;
+}
+```
+
+**Verdict:** the approach speed was fixed (+7m vs +25m in the round), and the proof habit mostly landed. Self-tracing is still refused even when it's an explicit drill rule. That makes it the top live gap, alongside declaring "can't optimise" without auditing what each data structure is actually used for.
