@@ -233,3 +233,26 @@ Many queries, all known up front, each filtered by a threshold condition (`<= q`
 
 **4. One concrete drill**
 LC 2070 Most Beautiful Item for Each Query, then LC 1847 Closest Room. For each, before any code, write two lines: (a) the per-item condition(s) that make an item eligible for a query, (b) which of them becomes monotone if queries are sorted. Then write the proof sentence for whatever you discard: "X can never matter again because ___." If you can't fill the blank, the rule is wrong — that's the check that would have killed three of today's four approaches in a minute each.
+
+---
+
+## Drill Follow-up (12:24:02 – 13:04:27, 40 min)
+
+### Drill 1 — LC 2070 Most Beautiful Item for Each Query (12:24:02 – 12:43:31)
+- **Unaided:** eligibility condition (`price <= q`), that sorting queries makes the candidate set only grow, two-pointer sweep. Named the redundant work himself (candidate set of a larger query is a superset).
+- **Over-built:** proposed a max-heap of `{beauty, price}`, carried over from the morning's solution. Skipped the "does anything leave the pool?" sentence when first asked.
+- **Needed three prompts** to drop the heap: (1) "does an item ever leave?" → "never leaves"; still said the heap must be carried. (2) "can a non-top item ever be the answer again?" → "no, a higher beauty is already in the set and the set only grows". (3) "then what are you storing them for?" → running max.
+- Said "complexity reduces to O(1)"; corrected on request to O(n log n + q log q + n + q) time, O(q) space.
+- **Code:** correct on first submission (by reading; not executed). Self-made trace: `items=[[10,1000]], queries=[5]` → 0, correct. An edge case only; no main-path input.
+
+### Drill 2 — LC 1847 Closest Room (12:43:31 – 13:04:27)
+- **First attempt at the four lines had two statement-reading errors:** wrote eligibility as `size <= minSize` (statement says "at least"), and "a room leaves the pool when it is assigned to a query" (example 1 reuses room 3 for two queries). Both fixed immediately when pointed at the statement text.
+- **Unaided:** the per-query operation (closest id in a sorted collection via binary search), `lower_bound` plus predecessor, both end cases.
+- Suggested a multiset "if ids can repeat" — the statement says ids are unique; not registered.
+- **Never gave**, despite being asked twice: sort directions in words, empty-set case, the tie rule, a hand trace, a self-made tie input.
+- **Code:** correct (by reading; not executed) — descending sorts on size, `set<int>` of ids, `<=` on the left candidate implements the smallest-id tie. Submitted 2.5 minutes after the request, in a visibly different style from his other code today (`array<int,3>`, generic lambdas, block comments). Asked directly; he said he wrote it. Recorded as his.
+- Complexity: O(q log n + n log n + q log q) time, O(q + n) space — correct.
+- **Ended by him** ("end this") with the trace still owed.
+
+### Read
+The "does anything leave the pool?" question is not yet automatic — he reached for the previous problem's structure in drill 1 and invented a leave rule in drill 2. The sweep itself (sort both, advance a pointer, answer by original index) is now solid. Tracing on request remains the thing he will not do.
