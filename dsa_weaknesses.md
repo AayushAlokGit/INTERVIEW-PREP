@@ -7,41 +7,40 @@ Last updated: 2026-10-19
 ## Problem Understanding & Clarification
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't proactively ask about input semantics (sorted, duplicates) | 34 | 8 | 2026-10-19 |
-| Asks for constraints but can't translate them to a budget | 30 | 8 | 2026-10-19 |
+| Asks for constraints but can't translate them to a budget | 31 | 9 | 2026-10-19 |
+| Doesn't proactively ask about input semantics (sorted, duplicates) | 34 | 7 | 2026-10-19 |
 
 ## Approach & Thought Process
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Adopts an optimality principle without proving it | 23 | 10 | 2026-10-19 |
-| Defaults to generic pattern over structure-exploiting one | 43 | 8 | 2026-10-01 |
+| Adopts an optimality principle without proving it | 24 | 10 | 2026-10-19 |
+| Defaults to generic pattern over structure-exploiting one | 44 | 9 | 2026-10-19 |
 | Patches base cases per size instead of fixing definition | 1 | 1 | 2026-10-19 |
 
 ## Code Quality & Correctness
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Tests only the given examples, never a self-made input | 21 | 10 | 2026-10-19 |
-| Doesn't self-verify/dry-run before declaring done | 98 | 10 | 2026-10-19 |
+| Tests only the given examples, never a self-made input | 22 | 10 | 2026-10-19 |
+| Doesn't self-verify/dry-run before declaring done | 99 | 10 | 2026-10-19 |
 
 ## Complexity Analysis
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Doesn't check own complexity against the constraint budget | 23 | 10 | 2026-10-19 |
-| Declares "can't optimise" without checking state or space | 9 | 4 | 2026-10-19 |
-| Omits sort terms from time complexity until challenged | 1 | 1 | 2026-10-01 |
+| Doesn't check own complexity against the constraint budget | 24 | 10 | 2026-10-19 |
+| Declares "can't optimise" without checking state or space | 10 | 5 | 2026-10-19 |
 
 ## Communication
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Defends/asserts instead of tracing when asked to dry-run | 38 | 10 | 2026-10-19 |
-| Long silence (7+ min) when stuck instead of thinking aloud | 33 | 7 | 2026-10-01 |
-| Asks for a hint instead of attempting the question posed | 8 | 2 | 2026-10-19 |
+| Defends/asserts instead of tracing when asked to dry-run | 38 | 9 | 2026-10-19 |
+| Long silence (7+ min) when stuck instead of thinking aloud | 33 | 6 | 2026-10-01 |
+| Asks for a hint instead of attempting the question posed | 8 | 1 | 2026-10-19 |
 
 ## Time Management
 | Weakness | Sessions | Active | Last Seen |
 |---|---|---|---|
-| Never reaches approach independently within budget | 35 | 10 | 2026-10-19 |
-| No code written within the coding-phase budget | 33 | 9 | 2026-10-19 |
+| Never reaches approach independently within budget | 36 | 10 | 2026-10-19 |
+| No code written within the coding-phase budget | 33 | 8 | 2026-10-19 |
 
 ## Derivation Questions
 <!-- Updated by /derive-optimal-algorithm. Ran = times he invoked the question unprompted
